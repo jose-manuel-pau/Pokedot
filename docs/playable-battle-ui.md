@@ -32,6 +32,7 @@ The Tonic action is disabled at full HP. Capsule and Tonic actions display and c
 Headless coverage instantiates the real scenes and verifies:
 
 - combatant names, levels, arena data, available moves, inventory counts, and initial log;
+- all five creature silhouettes remain inside the viewport and clear of the name, HP, log, turn, and command panels on both battle sides;
 - move selection submits both commands, resolves damage, advances the turn, and redraws HP/log state;
 - Run finishes a wild battle through the domain state machine and exposes the result panel;
 - a field encounter opens the graphical screen and completing it resumes exploration.

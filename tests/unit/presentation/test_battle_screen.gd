@@ -13,6 +13,7 @@ func _init() -> void:
 
 func run() -> void:
 	_test_scene_presents_live_combatants_and_actions()
+	_test_every_creature_stays_visible_and_clear_of_interface()
 	_test_move_button_resolves_a_complete_turn()
 	_test_run_shows_result_and_emits_close()
 	_test_exploration_encounter_opens_playable_battle()
@@ -61,6 +62,46 @@ func _test_scene_presents_live_combatants_and_actions() -> void:
 	assert_equal(screen.get_move_button_count(), 2)
 	assert_true(screen.capture_button.text.contains("x5"))
 	assert_true(screen.battle_log.text.contains("wild Reedling appeared"))
+	screen.free()
+
+
+func _test_every_creature_stays_visible_and_clear_of_interface() -> void:
+	begin_case("all creature silhouettes are unobscured")
+	var fixture := _battle_fixture()
+	var screen := fixture["screen"] as BattleScreen
+	var species_ids: Array[StringName] = []
+	for raw_species_id in catalog.species_by_id.keys():
+		species_ids.append(StringName(str(raw_species_id)))
+	species_ids.sort()
+	assert_equal(species_ids.size(), 5)
+	for species_id in species_ids:
+		for side in [BattleConstants.SIDE_PLAYER, BattleConstants.SIDE_OPPONENT]:
+			var bounds := screen.arena.get_creature_screen_bounds(side, species_id)
+			assert_true(
+				screen.arena.get_rect().encloses(bounds),
+				"%s must stay inside the viewport on the %s side." % [species_id, side]
+			)
+			assert_true(
+				screen.is_creature_unobscured(side, species_id),
+				"%s must not be covered by a HUD on the %s side." % [species_id, side]
+			)
+	var large_text := PlayerPreferences.new()
+	large_text.text_scale = 1.5
+	screen.set_preferences(large_text)
+	for species_id in species_ids:
+		for side in [BattleConstants.SIDE_PLAYER, BattleConstants.SIDE_OPPONENT]:
+			assert_true(
+				screen.is_creature_unobscured(side, species_id),
+				"%s must remain clear at 150%% text size on the %s side." % [species_id, side]
+			)
+	var cindermite_bounds := screen.arena.get_creature_screen_bounds(
+		BattleConstants.SIDE_PLAYER,
+		&"cindermite"
+	)
+	assert_false(
+		screen.player_hud.get_rect().intersects(cindermite_bounds),
+		"The player name/HP panel must not cover Cindermite."
+	)
 	screen.free()
 
 
