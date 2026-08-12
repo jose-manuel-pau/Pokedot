@@ -17,7 +17,7 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Battle participants | HP synchronization, four active moves, per-battle move uses |
 | Damage | Physical/special stats, accuracy boundary, status moves, critical, variance, STAB, weakness, immunity |
 | Turn order | Move priority, Speed, and reproducible exact ties |
-| State machine | Initialization, phases, turn readiness, next turn, terminal state, both victory outcomes |
+| State machine | Initialization, phases, turn readiness, next turn, terminal state, both victory outcomes, wild retreat |
 | Commands | Missing, invalid side, unknown/unlearned/depleted move, duplicate submission |
 | Resolution | Damage application, misses, move-use consumption, knockout and skipped queued action |
 | Events/signals | Observer notifications, ordered history, status resolution, defeat and final outcome |
@@ -44,7 +44,9 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Wild encounters | Trigger boundary, weighted first/last entries, inclusive levels, invalid tables, seeded reproducibility |
 | Encounter state | Active/transition phases, movement lock during transition, resume, and cooldown roll suppression |
 | Battle handoff | Request validation, wild instance identity/XP/moves, capturable battle initialization, error forwarding |
-| Playable scene | Project bootstrap, keyboard adapter, code-drawn map, dialogue panel, and battle-transition preview |
+| Playable scene | Project bootstrap, keyboard adapter, code-drawn map, dialogue panel, and live graphical battle |
+| Battle presentation | Original creature silhouettes, combatant HUDs, move/capsule/tonic/run actions, logs and outcomes |
+| Encounter UI bridge | Wild handoff opens command-ready battle, retreat closes it, and exploration resumes |
 | XP rewards | Species yields, wild formula, trainer premium, invalid inputs, minimum reward |
 | Creature growth | XP normalization, no-level award, multi-level jump, max-level clamp, six-stat recalculation |
 | Growth HP | Conscious maximum-HP increase, existing-damage preservation, defeated creature remains at zero |

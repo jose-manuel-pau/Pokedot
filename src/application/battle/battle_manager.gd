@@ -172,6 +172,10 @@ func submit_command(command: BattleCommand) -> bool:
 		validation_error = _validate_capture_command(command as CaptureCommand)
 		if not str(validation_error).is_empty():
 			return _reject_command(command, validation_error)
+	elif command is RunCommand:
+		validation_error = _validate_run_command(command as RunCommand)
+		if not str(validation_error).is_empty():
+			return _reject_command(command, validation_error)
 
 	pending_commands_by_side[command.actor_side] = command
 	_emit_event(BattleConstants.EVENT_COMMAND_SUBMITTED, {
@@ -265,6 +269,9 @@ func events_of_type(event_type: StringName) -> Array[BattleEvent]:
 
 
 func _resolve_command(command: BattleCommand) -> void:
+	if command is RunCommand:
+		_resolve_run(command as RunCommand)
+		return
 	if command is SwitchCreatureCommand:
 		_resolve_switch(command as SwitchCreatureCommand, false)
 		return
@@ -288,6 +295,16 @@ func _resolve_command(command: BattleCommand) -> void:
 		"side": command.actor_side,
 		"reason": &"unsupported_command",
 	})
+
+
+func _resolve_run(command: RunCommand) -> void:
+	outcome = BattleConstants.OUTCOME_PLAYER_ESCAPED
+	_emit_event(BattleConstants.EVENT_ESCAPE_ATTEMPTED, {
+		"side": command.actor_side,
+		"success": true,
+	})
+	_change_phase(BattleConstants.PHASE_FINISHED)
+	_emit_event(BattleConstants.EVENT_BATTLE_FINISHED, {"outcome": outcome})
 
 
 func _resolve_use_item(command: UseItemCommand) -> void:
@@ -591,6 +608,14 @@ func _validate_capture_command(command: CaptureCommand) -> StringName:
 		return &"invalid_capture_target"
 	if _capture_collection.contains_instance(target.creature.instance_id):
 		return &"duplicate_instance_id"
+	return &""
+
+
+func _validate_run_command(command: RunCommand) -> StringName:
+	if command.actor_side != BattleConstants.SIDE_PLAYER:
+		return &"run_player_only"
+	if not is_wild_encounter:
+		return &"run_not_allowed"
 	return &""
 
 

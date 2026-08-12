@@ -13,8 +13,7 @@ signal preferences_changed(preferences: PlayerPreferences)
 @onready var dialogue_panel: PanelContainer = $Interface/DialoguePanel
 @onready var speaker_label: Label = $Interface/DialoguePanel/Margin/Content/Speaker
 @onready var dialogue_label: Label = $Interface/DialoguePanel/Margin/Content/Dialogue
-@onready var battle_panel: PanelContainer = $Interface/BattlePanel
-@onready var battle_label: Label = $Interface/BattlePanel/Margin/Content/BattleText
+@onready var battle_screen: BattleScreen = $Interface/BattleScreen
 @onready var controls_label: Label = $Interface/Controls
 @onready var accessibility_label: Label = $Interface/AccessibilityStatus
 @onready var help_panel: PanelContainer = $Interface/HelpPanel
@@ -63,7 +62,8 @@ func initialize(
 
 func _ready() -> void:
 	dialogue_panel.hide()
-	battle_panel.hide()
+	battle_screen.hide()
+	battle_screen.battle_closed.connect(_on_battle_closed)
 	help_panel.show()
 	set_process_unhandled_input(true)
 	set_process(true)
@@ -88,13 +88,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if key.keycode in [KEY_ENTER, KEY_ESCAPE, KEY_SPACE]:
 			help_panel.hide()
 		return
-	if battle_panel.visible:
-		if key.keycode in [KEY_ENTER, KEY_ESCAPE, KEY_SPACE]:
-			battle_panel.hide()
-			active_battle = null
-			session.resume_after_battle()
-			status_label.text = "Returned to the field. Encounter cooldown: %d steps." % session.state.encounter_cooldown_steps
-			queue_redraw()
+	if battle_screen.visible:
 		return
 	if dialogue_panel.visible:
 		if key.keycode in [KEY_E, KEY_ENTER, KEY_ESCAPE, KEY_SPACE]:
@@ -223,14 +217,23 @@ func _begin_battle_transition(request: WildEncounterRequest) -> void:
 		session.resume_after_battle()
 		return
 	active_battle = transition.battle_manager
-	var species := _catalog.get_species(request.species_id)
-	battle_label.text = "WILD ENCOUNTER\n\n%s  ·  Level %d\n%s\n\nBattle state: %s\n5 Basic Capsules available\n\nPress Enter, Space, or Escape to return to exploration." % [
-		species.display_name,
-		request.level,
-		_catalog.get_map(request.map_id).get_zone_for_cell(request.grid_position).display_name,
-		active_battle.phase,
+	battle_screen.initialize(
+		_catalog,
+		active_battle,
+		_inventory,
+		_preferences_service.preferences
+	)
+
+
+func _on_battle_closed(outcome: StringName) -> void:
+	_restore_demo_party()
+	active_battle = null
+	session.resume_after_battle()
+	status_label.text = "%s Encounter cooldown: %d steps." % [
+		_battle_outcome_message(outcome),
+		session.state.encounter_cooldown_steps,
 	]
-	battle_panel.show()
+	queue_redraw()
 
 
 func _create_demo_player() -> void:
@@ -247,7 +250,29 @@ func _create_demo_player() -> void:
 	starter.learned_move_ids = species.available_moves_at_level(starter.level)
 	_player_party.append(starter)
 	_collection.party.append(starter)
-	InventoryService.new(_catalog).add(_inventory, &"basic_capsule", 5)
+	var inventory_service := InventoryService.new(_catalog)
+	inventory_service.add(_inventory, &"basic_capsule", 5)
+	inventory_service.add(_inventory, &"field_tonic", 3)
+
+
+func _restore_demo_party() -> void:
+	# The vertical slice has no healing center yet, so field encounters reset the
+	# starter between battles and remain continuously playtestable.
+	for creature in _player_party:
+		creature.current_hp = 999999
+
+
+func _battle_outcome_message(outcome: StringName) -> String:
+	match outcome:
+		BattleConstants.OUTCOME_PLAYER_VICTORY:
+			return "Victory! Returned to the field."
+		BattleConstants.OUTCOME_OPPONENT_CAPTURED:
+			return "Capture complete! Returned to the field."
+		BattleConstants.OUTCOME_PLAYER_ESCAPED:
+			return "Retreat successful. Returned to the field."
+		BattleConstants.OUTCOME_OPPONENT_VICTORY:
+			return "Your companion recovered. Returned to the field."
+	return "Battle ended. Returned to the field."
 
 
 func _on_exploration_event(event: ExplorationEvent) -> void:
@@ -265,6 +290,8 @@ func _on_exploration_event(event: ExplorationEvent) -> void:
 func _handle_preference_shortcut(keycode: Key) -> bool:
 	match keycode:
 		KEY_F1:
+			if battle_screen.visible:
+				return true
 			help_panel.visible = not help_panel.visible
 			return true
 		KEY_F2:
@@ -306,6 +333,8 @@ func _apply_preferences() -> void:
 		"Reduced" if preferences.reduced_motion else "Full",
 		"Muted" if preferences.mute_audio else "On",
 	]
+	if battle_screen != null:
+		battle_screen.set_preferences(preferences)
 	queue_redraw()
 
 

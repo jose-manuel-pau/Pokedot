@@ -18,8 +18,11 @@ The Combat Vertical Slice adds:
 - Validated move commands and per-battle move uses
 - Priority, Speed, and seeded tie-breaking
 - Accuracy, physical/special damage, criticals, variance, STAB, and types
-- Decoupled battle events and signals for future presentation
+- Decoupled battle events and signals consumed by presentation and tests
 - Deterministic battle replay behavior
+- A playable graphical wild-battle screen with original code-drawn creatures
+- Mouse and keyboard controls for moves, capture capsules, tonics, and retreat
+- Live HP, status, move-use, turn, combat-log, and outcome feedback
 
 Statuses and Battle AI adds:
 
@@ -80,6 +83,7 @@ See [Exploration](docs/exploration.md) for controls, map content, encounter sele
 See [Progression and Persistence](docs/progression-persistence.md) for XP, move learning, save validation, and recovery.
 See [Original Content Pipeline](docs/content-pipeline.md) for the five concepts, prompt contracts, validation, and export workflow.
 See [Production Pass and Playtest Guide](docs/production-pass.md) to launch the game, test controls, run audits, and create a Windows build.
+See [Playable Battle UI](docs/playable-battle-ui.md) for controls, presentation architecture, and encounter integration.
 Progress and module completion evidence are tracked in [the delivery roadmap](docs/roadmap.md).
 
 ## Run

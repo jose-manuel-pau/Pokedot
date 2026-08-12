@@ -19,6 +19,8 @@ func run() -> void:
 	_test_status_move_event()
 	_test_priority_knockout_finishes_battle()
 	_test_opponent_victory()
+	_test_run_command_finishes_wild_battle()
+	_test_run_command_is_rejected_outside_wild_battle()
 	_test_seeded_battles_are_reproducible()
 
 
@@ -247,6 +249,38 @@ func _test_opponent_victory() -> void:
 	manager.resolve_turn()
 	assert_equal(manager.outcome, BattleConstants.OUTCOME_OPPONENT_VICTORY)
 	assert_equal(manager.phase, BattleConstants.PHASE_FINISHED)
+
+
+func _test_run_command_finishes_wild_battle() -> void:
+	begin_case("run from wild battle")
+	var manager := _manager()
+	var player := _creature(&"cindermite", [&"cinder_jab"])
+	var wild := _creature(&"gustlet", [&"updraft"])
+	assert_true(manager.start_wild_battle(
+		[player], wild, Inventory.new(), CreatureCollection.new()
+	))
+	var player_hp := manager.get_participant(BattleConstants.SIDE_PLAYER).current_hp
+	assert_true(manager.submit_command(RunCommand.new(BattleConstants.SIDE_PLAYER)))
+	assert_true(manager.submit_command(UseMoveCommand.new(BattleConstants.SIDE_OPPONENT, &"updraft")))
+	assert_true(manager.resolve_turn())
+	assert_equal(manager.phase, BattleConstants.PHASE_FINISHED)
+	assert_equal(manager.outcome, BattleConstants.OUTCOME_PLAYER_ESCAPED)
+	assert_equal(manager.get_participant(BattleConstants.SIDE_PLAYER).current_hp, player_hp)
+	assert_equal(manager.events_of_type(BattleConstants.EVENT_ESCAPE_ATTEMPTED).size(), 1)
+	assert_equal(manager.events_of_type(BattleConstants.EVENT_MOVE_USED).size(), 0)
+
+
+func _test_run_command_is_rejected_outside_wild_battle() -> void:
+	begin_case("run validation")
+	var manager := _manager()
+	assert_true(manager.start_battle(
+		_creature(&"cindermite", [&"cinder_jab"]),
+		_creature(&"gustlet", [&"updraft"])
+	))
+	assert_false(manager.submit_command(RunCommand.new(BattleConstants.SIDE_PLAYER)))
+	assert_equal(manager.last_error, &"run_not_allowed")
+	assert_false(manager.submit_command(RunCommand.new(BattleConstants.SIDE_OPPONENT)))
+	assert_equal(manager.last_error, &"run_player_only")
 
 
 func _test_seeded_battles_are_reproducible() -> void:

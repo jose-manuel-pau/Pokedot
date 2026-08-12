@@ -16,7 +16,9 @@ Controls:
 | --- | --- |
 | Move | WASD or arrow keys |
 | Interact / advance dialogue | E, Space, or Enter |
-| Return from the battle-transition preview | Enter, Space, or Escape |
+| Battle moves | 1–4 or click |
+| Capture / item / run | C / I / R (Escape also runs) |
+| Return after battle | Enter, Space, Escape, or click Continue |
 
 Walk through bright grass or mistferns to trigger wild encounters. Stand next to Ranger Mira, face her, and interact to read her dialogue. Walls and NPC tiles block movement.
 
