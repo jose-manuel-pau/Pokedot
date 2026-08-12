@@ -65,6 +65,52 @@
         {"level": 1, "move_id": "updraft"},
         {"level": 7, "move_id": "stonepulse"}
       ]
+    },
+    {
+      "id": "aurorook",
+      "display_name": "Aurorook",
+      "description": "A polar navigator that reads sea currents through the luminous ribbons of its tail.",
+      "base_stats": {
+        "hp": 44,
+        "attack": 38,
+        "defense": 41,
+        "special_attack": 70,
+        "special_defense": 55,
+        "speed": 72
+      },
+      "types": ["tide", "gale"],
+      "catch_rate": 170,
+      "experience_yield": 68,
+      "growth_curve_id": "patient",
+      "learnset": [
+        {"level": 1, "move_id": "updraft"},
+        {"level": 4, "move_id": "brook_bash"},
+        {"level": 8, "move_id": "prism_gust"},
+        {"level": 12, "move_id": "rime_current"}
+      ]
+    },
+    {
+      "id": "cairnback",
+      "display_name": "Cairnback",
+      "description": "A patient trail guardian whose interlocking stone scales shelter moss and alpine flowers.",
+      "base_stats": {
+        "hp": 68,
+        "attack": 58,
+        "defense": 78,
+        "special_attack": 35,
+        "special_defense": 62,
+        "speed": 24
+      },
+      "types": ["stone", "grove"],
+      "catch_rate": 155,
+      "experience_yield": 70,
+      "growth_curve_id": "standard",
+      "learnset": [
+        {"level": 1, "move_id": "cairn_roll"},
+        {"level": 4, "move_id": "thorn_lance"},
+        {"level": 8, "move_id": "snaring_moss"},
+        {"level": 12, "move_id": "stonepulse"}
+      ]
     }
   ]
 }

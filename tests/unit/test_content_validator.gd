@@ -12,6 +12,8 @@ func run() -> void:
 	_test_invalid_content_id()
 	_test_invalid_item_rules()
 	_test_invalid_map_rules()
+	_test_invalid_art_direction_rules()
+	_test_invalid_creature_concept_rules()
 
 
 func _fresh_catalog() -> ContentCatalog:
@@ -125,3 +127,46 @@ func _test_invalid_map_rules() -> void:
 	assert_has_issue(issues, &"invalid_encounter_weight")
 	assert_has_issue(issues, &"invalid_npc_facing")
 	assert_has_issue(issues, &"npc_without_dialogue")
+
+
+func _test_invalid_art_direction_rules() -> void:
+	begin_case("art direction constraints")
+	var catalog := _fresh_catalog()
+	var direction := catalog.get_art_direction(&"field_sprite_v1")
+	direction.prompt_version = 0
+	direction.canvas_size = Vector2i(8, 2048)
+	direction.rendering_style = ""
+	direction.composition_rules.clear()
+	direction.negative_terms.clear()
+	var issues := ContentValidator.new().validate(catalog)
+	assert_has_issue(issues, &"invalid_prompt_version")
+	assert_has_issue(issues, &"invalid_sprite_canvas")
+	assert_has_issue(issues, &"missing_art_brief_text")
+	assert_has_issue(issues, &"missing_composition_rules")
+	assert_has_issue(issues, &"missing_negative_terms")
+
+
+func _test_invalid_creature_concept_rules() -> void:
+	begin_case("creature concept constraints")
+	var catalog := _fresh_catalog()
+	var concept := catalog.get_creature_concept(&"cindermite")
+	concept.species_id = &"missing_species"
+	concept.art_direction_id = &"missing_direction"
+	concept.elemental_type_ids = [&"tide"]
+	concept.mythology_inspirations.clear()
+	concept.wildlife_inspirations.clear()
+	concept.signature_features = ["one feature"]
+	concept.visual_exclusions.clear()
+	concept.palette.primary = "not-a-color"
+	concept.personality = "A Pokemon-like mascot"
+	var issues := ContentValidator.new().validate(catalog)
+	assert_has_issue(issues, &"concept_id_mismatch")
+	assert_has_issue(issues, &"unknown_concept_species")
+	assert_has_issue(issues, &"unknown_art_direction")
+	assert_has_issue(issues, &"missing_mythology_inspiration")
+	assert_has_issue(issues, &"missing_wildlife_inspiration")
+	assert_has_issue(issues, &"insufficient_signature_features")
+	assert_has_issue(issues, &"missing_visual_exclusions")
+	assert_has_issue(issues, &"invalid_palette_color")
+	assert_has_issue(issues, &"protected_ip_reference")
+	assert_has_issue(issues, &"missing_species_concept")

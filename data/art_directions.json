@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "id": "field_sprite_v1",
+      "display_name": "Field Sprite V1",
+      "prompt_version": 1,
+      "canvas_size": [96, 96],
+      "rendering_style": "clean hand-pixeled 2D RPG creature sprite, crisp clusters, selective anti-aliasing, limited color ramp, no painterly texture",
+      "view_instruction": "three-quarter side view facing screen-right, full body visible, readable silhouette, centered with twelve percent breathing room",
+      "lighting_instruction": "single soft upper-left key light, one shadow ramp and one highlight ramp per material, no dramatic rim light",
+      "background_instruction": "transparent background represented as clean alpha, no environment, no floor plane, no cast shadow",
+      "composition_rules": [
+        "one creature only",
+        "feet and extremities remain inside the canvas",
+        "eye and signature features remain legible at one-to-one scale",
+        "use large intentional pixel clusters instead of noisy single pixels"
+      ],
+      "negative_terms": [
+        "text",
+        "logo",
+        "interface",
+        "frame",
+        "photorealism",
+        "3D render",
+        "blurry edges",
+        "extra limbs",
+        "cropped anatomy",
+        "complex scenery"
+      ],
+      "midjourney_parameters": "--ar 1:1 --stylize 50 --chaos 0"
+    }
+  ]
+}

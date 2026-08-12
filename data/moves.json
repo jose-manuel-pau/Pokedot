@@ -84,6 +84,54 @@
       "priority": 0,
       "status_effect_id": "",
       "status_chance": 0.0
+    },
+    {
+      "id": "prism_gust",
+      "display_name": "Prism Gust",
+      "type_id": "gale",
+      "category": "special",
+      "power": 52,
+      "accuracy": 95.0,
+      "max_uses": 20,
+      "priority": 0,
+      "status_effect_id": "",
+      "status_chance": 0.0
+    },
+    {
+      "id": "rime_current",
+      "display_name": "Rime Current",
+      "type_id": "tide",
+      "category": "special",
+      "power": 44,
+      "accuracy": 100.0,
+      "max_uses": 25,
+      "priority": 0,
+      "status_effect_id": "drowsy",
+      "status_chance": 10.0
+    },
+    {
+      "id": "cairn_roll",
+      "display_name": "Cairn Roll",
+      "type_id": "stone",
+      "category": "physical",
+      "power": 55,
+      "accuracy": 90.0,
+      "max_uses": 20,
+      "priority": 0,
+      "status_effect_id": "",
+      "status_chance": 0.0
+    },
+    {
+      "id": "snaring_moss",
+      "display_name": "Snaring Moss",
+      "type_id": "grove",
+      "category": "status",
+      "power": 0,
+      "accuracy": 90.0,
+      "max_uses": 15,
+      "priority": 0,
+      "status_effect_id": "rooted",
+      "status_chance": 100.0
     }
   ]
 }
