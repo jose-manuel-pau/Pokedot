@@ -182,6 +182,8 @@ func _validate_species(catalog: ContentCatalog, issues: Array[ValidationIssue]) 
 			seen_types[type_id] = true
 		if definition.catch_rate < 1 or definition.catch_rate > 255:
 			_add_error(issues, &"invalid_catch_rate", path + ".catch_rate", "Must be from 1 to 255.")
+		if definition.experience_yield < 1 or definition.experience_yield > 1000:
+			_add_error(issues, &"invalid_experience_yield", path + ".experience_yield", "Must be from 1 to 1000.")
 		if not catalog.growth_curves_by_id.has(definition.growth_curve_id):
 			_add_error(issues, &"unknown_growth_curve", path + ".growth_curve_id", "Growth curve does not exist.")
 		_validate_base_stats(definition.base_stats, path + ".base_stats", issues)

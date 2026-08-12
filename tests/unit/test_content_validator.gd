@@ -23,6 +23,7 @@ func _test_invalid_species_rules() -> void:
 	var catalog := _fresh_catalog()
 	var species := catalog.get_species(&"cindermite")
 	species.catch_rate = 0
+	species.experience_yield = 0
 	species.base_stats.hp = 0
 	species.element_types.append(&"missing_type")
 	var unknown_move := LearnsetEntry.new()
@@ -31,6 +32,7 @@ func _test_invalid_species_rules() -> void:
 	species.learnset.append(unknown_move)
 	var issues := ContentValidator.new().validate(catalog)
 	assert_has_issue(issues, &"invalid_catch_rate")
+	assert_has_issue(issues, &"invalid_experience_yield")
 	assert_has_issue(issues, &"invalid_base_stat")
 	assert_has_issue(issues, &"invalid_species_type_count")
 	assert_has_issue(issues, &"unknown_species_type")

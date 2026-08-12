@@ -15,6 +15,7 @@
       },
       "types": ["ember", "stone"],
       "catch_rate": 180,
+      "experience_yield": 62,
       "growth_curve_id": "standard",
       "learnset": [
         {"level": 1, "move_id": "cinder_jab"},
@@ -36,6 +37,7 @@
       },
       "types": ["tide", "grove"],
       "catch_rate": 200,
+      "experience_yield": 64,
       "growth_curve_id": "swift",
       "learnset": [
         {"level": 1, "move_id": "brook_bash"},
@@ -57,6 +59,7 @@
       },
       "types": ["gale"],
       "catch_rate": 210,
+      "experience_yield": 60,
       "growth_curve_id": "patient",
       "learnset": [
         {"level": 1, "move_id": "updraft"},

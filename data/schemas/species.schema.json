@@ -48,6 +48,7 @@
         "base_stats",
         "types",
         "catch_rate",
+        "experience_yield",
         "growth_curve_id",
         "learnset"
       ],
@@ -64,6 +65,7 @@
           "items": {"$ref": "#/$defs/contentId"}
         },
         "catch_rate": {"type": "integer", "minimum": 1, "maximum": 255},
+        "experience_yield": {"type": "integer", "minimum": 1, "maximum": 1000},
         "growth_curve_id": {"$ref": "#/$defs/contentId"},
         "learnset": {
           "type": "array",

@@ -45,11 +45,22 @@ Exploration adds:
 - NPC interaction and observer events
 - A typed handoff that creates a live capturable wild battle
 
+Progression and Persistence adds:
+
+- Species XP yields, wild/trainer reward formulas, and participant sharing
+- Multi-level stat growth with conscious/fainted HP rules
+- Automatic and choice-based move learning
+- One-time battle reward claims
+- Versioned, validated party/storage, inventory, creature, and field snapshots
+- Transactional party/storage transfers and lead ordering
+- Recoverable JSON save slots with legacy migration
+
 See [Creature Data & Stats](docs/creature-data-and-stats.md) for formulas and extension rules.
 See [Combat Vertical Slice](docs/combat-vertical-slice.md) for the state machine, damage formula, and event contract.
 See [Statuses and Battle AI](docs/statuses-battle-ai.md) for hooks, party switching, and AI policy.
 See [Capture and Inventory](docs/capture-inventory.md) for item contracts, encounter rules, and the capture formula.
 See [Exploration](docs/exploration.md) for controls, map content, encounter selection, and battle transitions.
+See [Progression and Persistence](docs/progression-persistence.md) for XP, move learning, save validation, and recovery.
 Progress and module completion evidence are tracked in [the delivery roadmap](docs/roadmap.md).
 
 ## Run

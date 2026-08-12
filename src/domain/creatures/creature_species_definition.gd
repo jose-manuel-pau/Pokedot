@@ -8,6 +8,7 @@ extends Resource
 @export var base_stats: CreatureStats = CreatureStats.new()
 @export var element_types: Array[StringName] = []
 @export_range(1, 255, 1) var catch_rate: int = 100
+@export_range(1, 1000, 1) var experience_yield: int = 50
 @export var growth_curve_id: StringName
 @export var learnset: Array[LearnsetEntry] = []
 
