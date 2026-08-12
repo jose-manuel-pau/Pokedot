@@ -8,7 +8,7 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Stat boundaries | Invalid base, level, potential, training, and aptitude bounding |
 | Training | Per-stat and total allocation limits |
 | Experience | Threshold calculation, reverse lookup, progress, minimum and maximum level |
-| JSON repository | All five content documents, typed conversion, expected counts |
+| JSON repository | All nine content documents, typed conversion, expected counts |
 | Catalog | Species, move, type, status, and growth-curve lookup |
 | Cross-references | Species types, learnsets, growth curves, move types and statuses |
 | Validation | Bad stats, catch rate, type count, learn level, references, accuracy, move category, matchup range |
@@ -55,4 +55,12 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Save migration | Current deep copy, version-zero upgrade, invalid root and future-version rejection |
 | Save repository | Write/load, overwrite, sorted slots, invalid-state rejection, corrupt/missing file, backup recovery |
 | Party/storage roster | Transfer, six-member limit, final-member guard, lead reordering, atomic invalid requests |
+| Original creature roster | Five typed gameplay species, eleven moves, concept/species/art-direction cross-references |
+| Art direction | Prompt version, sprite canvas, camera, lighting, composition and shared exclusions |
+| Creature concepts | Elements, inspirations, silhouette, anatomy, materials, personality, palette, pose and signature features |
+| Content originality guard | Obvious third-party franchise references block pipeline compilation |
+| Prompt compilation | Five lexical packages, provider-specific formatting, palettes, negative terms and deterministic manifests |
+| Pipeline failure gate | Invalid or missing catalogs produce diagnostics and no generated artifacts |
+| Prompt manifest export | JSON write, safe overwrite, temp/backup cleanup, output and manifest rejection |
+| Pipeline CLI | Headless source load, compile, custom output selection and non-zero failure contract |
 

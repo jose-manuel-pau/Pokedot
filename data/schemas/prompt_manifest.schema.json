@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pokedot.local/schemas/prompt_manifest.schema.json",
+  "title": "Pokedot Generated Creature Prompt Manifest",
+  "type": "object",
+  "required": ["schema_version", "generator", "prompt_count", "prompts"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "generator": {"const": "pokedot_content_pipeline"},
+    "prompt_count": {"type": "integer", "minimum": 0},
+    "prompts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "species_id", "display_name", "art_direction_id", "prompt_version",
+          "dalle_3", "midjourney", "negative_prompt"
+        ],
+        "properties": {
+          "species_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+          "display_name": {"type": "string", "minLength": 1},
+          "art_direction_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+          "prompt_version": {"type": "integer", "minimum": 1},
+          "dalle_3": {"type": "string", "minLength": 1},
+          "midjourney": {"type": "string", "minLength": 1},
+          "negative_prompt": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

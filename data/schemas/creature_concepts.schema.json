@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pokedot.local/schemas/creature_concepts.schema.json",
+  "title": "Pokedot Creature Art Concepts",
+  "type": "object",
+  "required": ["schema_version", "items"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "items": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/concept"}}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "contentId": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "palette": {
+      "type": "object",
+      "required": ["primary", "secondary", "accent", "outline"],
+      "properties": {
+        "primary": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"},
+        "secondary": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"},
+        "accent": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"},
+        "outline": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"}
+      },
+      "additionalProperties": false
+    },
+    "concept": {
+      "type": "object",
+      "required": [
+        "id", "species_id", "art_direction_id", "elemental_type_ids",
+        "elemental_archetype", "mythology_inspirations", "wildlife_inspirations",
+        "silhouette", "anatomy", "materials", "personality", "scale", "palette",
+        "signature_features", "pose_instruction", "visual_exclusions"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/contentId"},
+        "species_id": {"$ref": "#/$defs/contentId"},
+        "art_direction_id": {"$ref": "#/$defs/contentId"},
+        "elemental_type_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/contentId"}
+        },
+        "elemental_archetype": {"type": "string", "minLength": 1},
+        "mythology_inspirations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "wildlife_inspirations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "silhouette": {"type": "string", "minLength": 1},
+        "anatomy": {"type": "string", "minLength": 1},
+        "materials": {"type": "string", "minLength": 1},
+        "personality": {"type": "string", "minLength": 1},
+        "scale": {"type": "string", "minLength": 1},
+        "palette": {"$ref": "#/$defs/palette"},
+        "signature_features": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "pose_instruction": {"type": "string", "minLength": 1},
+        "visual_exclusions": {"$ref": "#/$defs/nonEmptyStrings"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

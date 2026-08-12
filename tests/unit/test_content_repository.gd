@@ -12,6 +12,7 @@ func run() -> void:
 	_test_typed_species_data()
 	_test_learnset_query()
 	_test_cross_references_are_resolved()
+	_test_typed_creature_concepts()
 
 
 func _load() -> ContentLoadResult:
@@ -23,13 +24,15 @@ func _test_valid_catalog_loads() -> void:
 	var result := _load()
 	assert_equal(result.error_count(), 0)
 	assert_equal(result.warning_count(), 0)
-	assert_equal(result.catalog.species_by_id.size(), 3)
-	assert_equal(result.catalog.moves_by_id.size(), 7)
+	assert_equal(result.catalog.species_by_id.size(), 5)
+	assert_equal(result.catalog.moves_by_id.size(), 11)
 	assert_equal(result.catalog.types_by_id.size(), 5)
 	assert_equal(result.catalog.statuses_by_id.size(), 3)
 	assert_equal(result.catalog.growth_curves_by_id.size(), 3)
 	assert_equal(result.catalog.items_by_id.size(), 9)
 	assert_equal(result.catalog.maps_by_id.size(), 1)
+	assert_equal(result.catalog.art_directions_by_id.size(), 1)
+	assert_equal(result.catalog.creature_concepts_by_id.size(), 5)
 
 
 func _test_typed_species_data() -> void:
@@ -72,4 +75,23 @@ func _test_cross_references_are_resolved() -> void:
 	for zone in map.encounter_zones:
 		for entry in zone.entries:
 			assert_not_null(catalog.get_species(entry.species_id))
+	for raw_concept in catalog.creature_concepts_by_id.values():
+		var concept := raw_concept as CreatureConceptDefinition
+		assert_not_null(catalog.get_species(concept.species_id))
+		assert_not_null(catalog.get_art_direction(concept.art_direction_id))
+
+
+func _test_typed_creature_concepts() -> void:
+	begin_case("typed art concepts")
+	var catalog := _load().catalog
+	var concept := catalog.get_creature_concept(&"aurorook")
+	assert_not_null(concept)
+	assert_equal(concept.species_id, &"aurorook")
+	assert_equal(concept.elemental_type_ids, [&"tide", &"gale"])
+	assert_equal(concept.palette.accent, "#9DE09D")
+	assert_equal(concept.signature_features.size(), 3)
+	var direction := catalog.get_art_direction(&"field_sprite_v1")
+	assert_not_null(direction)
+	assert_equal(direction.canvas_size, Vector2i(96, 96))
+	assert_equal(direction.prompt_version, 1)
 

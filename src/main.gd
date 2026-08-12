@@ -15,7 +15,7 @@ func _ready() -> void:
 		return
 
 	print(
-		"Content ready: %d species, %d moves, %d types, %d statuses, %d growth curves, %d items, %d maps"
+		"Content ready: %d species, %d moves, %d types, %d statuses, %d growth curves, %d items, %d maps, %d art concepts"
 		% [
 			result.catalog.species_by_id.size(),
 			result.catalog.moves_by_id.size(),
@@ -24,6 +24,7 @@ func _ready() -> void:
 			result.catalog.growth_curves_by_id.size(),
 			result.catalog.items_by_id.size(),
 			result.catalog.maps_by_id.size(),
+			result.catalog.creature_concepts_by_id.size(),
 		]
 	)
 	exploration_screen.initialize(result.catalog)

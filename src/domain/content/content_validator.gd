@@ -2,6 +2,14 @@ class_name ContentValidator
 extends RefCounted
 ## Validates domain rules and every cross-reference after JSON deserialization.
 
+const PROHIBITED_REFERENCE_TERMS: Array[String] = [
+	"pokemon",
+	"pokémon",
+	"pikachu",
+	"digimon",
+	"monster hunter",
+]
+
 
 func validate(catalog: ContentCatalog) -> Array[ValidationIssue]:
 	var issues: Array[ValidationIssue] = []
@@ -11,6 +19,8 @@ func validate(catalog: ContentCatalog) -> Array[ValidationIssue]:
 	_validate_growth_curves(catalog, issues)
 	_validate_moves(catalog, issues)
 	_validate_species(catalog, issues)
+	_validate_art_directions(catalog, issues)
+	_validate_creature_concepts(catalog, issues)
 	_validate_maps(catalog, issues)
 	return issues
 
@@ -190,6 +200,92 @@ func _validate_species(catalog: ContentCatalog, issues: Array[ValidationIssue]) 
 		_validate_learnset(definition, catalog, path + ".learnset", issues)
 
 
+func _validate_art_directions(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> void:
+	for raw_definition in catalog.art_directions_by_id.values():
+		var definition := raw_definition as SpriteArtDirectionDefinition
+		var path := "art_directions.%s" % definition.direction_id
+		_validate_content_id(definition.direction_id, path + ".id", issues)
+		_validate_display_name(definition.display_name, path, issues)
+		if definition.prompt_version < 1 or definition.prompt_version > 100:
+			_add_error(issues, &"invalid_prompt_version", path + ".prompt_version", "Must be from 1 to 100.")
+		if (
+			definition.canvas_size.x < 16
+			or definition.canvas_size.x > 1024
+			or definition.canvas_size.y < 16
+			or definition.canvas_size.y > 1024
+		):
+			_add_error(issues, &"invalid_sprite_canvas", path + ".canvas_size", "Each axis must be from 16 to 1024 pixels.")
+		_validate_required_text(definition.rendering_style, path + ".rendering_style", issues)
+		_validate_required_text(definition.view_instruction, path + ".view_instruction", issues)
+		_validate_required_text(definition.lighting_instruction, path + ".lighting_instruction", issues)
+		_validate_required_text(definition.background_instruction, path + ".background_instruction", issues)
+		if definition.composition_rules.is_empty():
+			_add_error(issues, &"missing_composition_rules", path + ".composition_rules", "At least one rule is required.")
+		if definition.negative_terms.is_empty():
+			_add_error(issues, &"missing_negative_terms", path + ".negative_terms", "At least one exclusion is required.")
+		_validate_originality_text(" ".join([
+			definition.display_name,
+			definition.rendering_style,
+			definition.view_instruction,
+			definition.lighting_instruction,
+			definition.background_instruction,
+			" ".join(definition.composition_rules),
+			" ".join(definition.negative_terms),
+			definition.midjourney_parameters,
+		]), path, issues)
+
+
+func _validate_creature_concepts(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> void:
+	var species_with_concepts: Dictionary = {}
+	for raw_definition in catalog.creature_concepts_by_id.values():
+		var definition := raw_definition as CreatureConceptDefinition
+		var path := "creature_concepts.%s" % definition.concept_id
+		_validate_content_id(definition.concept_id, path + ".id", issues)
+		if definition.concept_id != definition.species_id:
+			_add_error(issues, &"concept_id_mismatch", path + ".species_id", "Concept and species IDs must match.")
+		var species := catalog.get_species(definition.species_id)
+		if species == null:
+			_add_error(issues, &"unknown_concept_species", path + ".species_id", "Species does not exist.")
+		elif definition.elemental_type_ids != species.element_types:
+			_add_error(issues, &"concept_type_mismatch", path + ".elemental_type_ids", "Types must match the gameplay species in order.")
+		if species_with_concepts.has(definition.species_id):
+			_add_error(issues, &"duplicate_species_concept", path + ".species_id", "Species already has an art concept.")
+		species_with_concepts[definition.species_id] = true
+		if catalog.get_art_direction(definition.art_direction_id) == null:
+			_add_error(issues, &"unknown_art_direction", path + ".art_direction_id", "Art direction does not exist.")
+		for type_id in definition.elemental_type_ids:
+			if catalog.get_type(type_id) == null:
+				_add_error(issues, &"unknown_concept_type", path + ".elemental_type_ids", "Type '%s' does not exist." % type_id)
+		_validate_required_text(definition.elemental_archetype, path + ".elemental_archetype", issues)
+		_validate_required_text(definition.silhouette, path + ".silhouette", issues)
+		_validate_required_text(definition.anatomy, path + ".anatomy", issues)
+		_validate_required_text(definition.materials, path + ".materials", issues)
+		_validate_required_text(definition.personality, path + ".personality", issues)
+		_validate_required_text(definition.scale, path + ".scale", issues)
+		_validate_required_text(definition.pose_instruction, path + ".pose_instruction", issues)
+		if definition.mythology_inspirations.is_empty():
+			_add_error(issues, &"missing_mythology_inspiration", path + ".mythology_inspirations", "At least one transformed folklore source is required.")
+		if definition.wildlife_inspirations.is_empty():
+			_add_error(issues, &"missing_wildlife_inspiration", path + ".wildlife_inspirations", "At least one wildlife source is required.")
+		if definition.signature_features.size() < 2:
+			_add_error(issues, &"insufficient_signature_features", path + ".signature_features", "At least two identifying features are required.")
+		if definition.visual_exclusions.is_empty():
+			_add_error(issues, &"missing_visual_exclusions", path + ".visual_exclusions", "At least one concept-specific exclusion is required.")
+		for color in definition.palette.colors():
+			if not color.is_valid_html_color():
+				_add_error(issues, &"invalid_palette_color", path + ".palette", "Every palette value must be an HTML color.")
+		_validate_originality_text(definition.all_authored_text(), path, issues)
+	for raw_species_id in catalog.species_by_id.keys():
+		var species_id := StringName(str(raw_species_id))
+		if not species_with_concepts.has(species_id):
+			_add_error(
+				issues,
+				&"missing_species_concept",
+				"species.%s" % species_id,
+				"Every gameplay species needs an art concept."
+			)
+
+
 func _validate_maps(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> void:
 	for raw_definition in catalog.maps_by_id.values():
 		var definition := raw_definition as ExplorationMapDefinition
@@ -333,6 +429,23 @@ func _validate_learnset(
 func _validate_display_name(name: String, path: String, issues: Array[ValidationIssue]) -> void:
 	if name.strip_edges().is_empty():
 		_add_error(issues, &"missing_display_name", path + ".display_name", "Display name is required.")
+
+
+func _validate_required_text(value: String, path: String, issues: Array[ValidationIssue]) -> void:
+	if value.strip_edges().is_empty():
+		_add_error(issues, &"missing_art_brief_text", path, "A non-empty art instruction is required.")
+
+
+func _validate_originality_text(value: String, path: String, issues: Array[ValidationIssue]) -> void:
+	var normalized := value.to_lower()
+	for term in PROHIBITED_REFERENCE_TERMS:
+		if normalized.contains(term):
+			_add_error(
+				issues,
+				&"protected_ip_reference",
+				path,
+				"Remove third-party franchise reference '%s'." % term
+			)
 
 
 func _validate_content_id(content_id: StringName, path: String, issues: Array[ValidationIssue]) -> void:

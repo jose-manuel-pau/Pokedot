@@ -9,6 +9,8 @@ var statuses_by_id: Dictionary = {}
 var growth_curves_by_id: Dictionary = {}
 var items_by_id: Dictionary = {}
 var maps_by_id: Dictionary = {}
+var art_directions_by_id: Dictionary = {}
+var creature_concepts_by_id: Dictionary = {}
 
 
 func add_species(definition: CreatureSpeciesDefinition) -> bool:
@@ -39,6 +41,14 @@ func add_map(definition: ExplorationMapDefinition) -> bool:
 	return _add_unique(maps_by_id, definition.map_id, definition)
 
 
+func add_art_direction(definition: SpriteArtDirectionDefinition) -> bool:
+	return _add_unique(art_directions_by_id, definition.direction_id, definition)
+
+
+func add_creature_concept(definition: CreatureConceptDefinition) -> bool:
+	return _add_unique(creature_concepts_by_id, definition.concept_id, definition)
+
+
 func get_species(species_id: StringName) -> CreatureSpeciesDefinition:
 	return species_by_id.get(species_id) as CreatureSpeciesDefinition
 
@@ -65,6 +75,14 @@ func get_item(item_id: StringName) -> ItemDefinition:
 
 func get_map(map_id: StringName) -> ExplorationMapDefinition:
 	return maps_by_id.get(map_id) as ExplorationMapDefinition
+
+
+func get_art_direction(direction_id: StringName) -> SpriteArtDirectionDefinition:
+	return art_directions_by_id.get(direction_id) as SpriteArtDirectionDefinition
+
+
+func get_creature_concept(concept_id: StringName) -> CreatureConceptDefinition:
+	return creature_concepts_by_id.get(concept_id) as CreatureConceptDefinition
 
 
 func _add_unique(target: Dictionary, content_id: StringName, definition: Resource) -> bool:

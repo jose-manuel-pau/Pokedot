@@ -55,12 +55,22 @@ Progression and Persistence adds:
 - Transactional party/storage transfers and lead ordering
 - Recoverable JSON save slots with legacy migration
 
+The Original Content Pipeline adds:
+
+- Five original, playable creature concepts spanning the existing elemental roster
+- Structured wildlife, folklore, silhouette, anatomy, palette, pose, and exclusion briefs
+- A shared 96×96 pixel-sprite art direction with versioned JSON schemas
+- Deterministic DALL-E 3 and Midjourney prompt compilation
+- Cross-reference, originality, and art-brief validation
+- Atomic export of provider-ready prompt manifests
+
 See [Creature Data & Stats](docs/creature-data-and-stats.md) for formulas and extension rules.
 See [Combat Vertical Slice](docs/combat-vertical-slice.md) for the state machine, damage formula, and event contract.
 See [Statuses and Battle AI](docs/statuses-battle-ai.md) for hooks, party switching, and AI policy.
 See [Capture and Inventory](docs/capture-inventory.md) for item contracts, encounter rules, and the capture formula.
 See [Exploration](docs/exploration.md) for controls, map content, encounter selection, and battle transitions.
 See [Progression and Persistence](docs/progression-persistence.md) for XP, move learning, save validation, and recovery.
+See [Original Content Pipeline](docs/content-pipeline.md) for the five concepts, prompt contracts, validation, and export workflow.
 Progress and module completion evidence are tracked in [the delivery roadmap](docs/roadmap.md).
 
 ## Run

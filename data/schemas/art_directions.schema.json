@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pokedot.local/schemas/art_directions.schema.json",
+  "title": "Pokedot Sprite Art Directions",
+  "type": "object",
+  "required": ["schema_version", "items"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "items": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/artDirection"}}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "contentId": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "artDirection": {
+      "type": "object",
+      "required": [
+        "id", "display_name", "prompt_version", "canvas_size", "rendering_style",
+        "view_instruction", "lighting_instruction", "background_instruction",
+        "composition_rules", "negative_terms", "midjourney_parameters"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/contentId"},
+        "display_name": {"type": "string", "minLength": 1},
+        "prompt_version": {"type": "integer", "minimum": 1, "maximum": 100},
+        "canvas_size": {
+          "type": "array",
+          "prefixItems": [
+            {"type": "integer", "minimum": 16, "maximum": 1024},
+            {"type": "integer", "minimum": 16, "maximum": 1024}
+          ],
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "rendering_style": {"type": "string", "minLength": 1},
+        "view_instruction": {"type": "string", "minLength": 1},
+        "lighting_instruction": {"type": "string", "minLength": 1},
+        "background_instruction": {"type": "string", "minLength": 1},
+        "composition_rules": {"$ref": "#/$defs/nonEmptyStrings"},
+        "negative_terms": {"$ref": "#/$defs/nonEmptyStrings"},
+        "midjourney_parameters": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

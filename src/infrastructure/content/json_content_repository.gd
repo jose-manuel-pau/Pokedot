@@ -15,6 +15,8 @@ func load_catalog(base_path: String) -> ContentLoadResult:
 	_load_moves(_read_items(base_path.path_join("moves.json"), result), result)
 	_load_species(_read_items(base_path.path_join("species.json"), result), result)
 	_load_maps(_read_items(base_path.path_join("maps.json"), result), result)
+	_load_art_directions(_read_items(base_path.path_join("art_directions.json"), result), result)
+	_load_creature_concepts(_read_items(base_path.path_join("creature_concepts.json"), result), result)
 	result.issues.append_array(ContentValidator.new().validate(result.catalog))
 	return result
 
@@ -220,6 +222,72 @@ func _load_maps(items: Array, result: ContentLoadResult) -> void:
 		_add_map(definition, path + ".id", result)
 
 
+func _load_art_directions(items: Array, result: ContentLoadResult) -> void:
+	for index in items.size():
+		var path := "art_directions.items[%d]" % index
+		var data := _as_dictionary(items[index], path, result)
+		if data.is_empty():
+			continue
+		var definition := SpriteArtDirectionDefinition.new()
+		definition.direction_id = _read_id(data, "id", path + ".id", result)
+		definition.display_name = str(data.get("display_name", ""))
+		definition.prompt_version = int(data.get("prompt_version", 0))
+		definition.canvas_size = _to_vector2i(data.get("canvas_size", []), path + ".canvas_size", result)
+		definition.rendering_style = str(data.get("rendering_style", ""))
+		definition.view_instruction = str(data.get("view_instruction", ""))
+		definition.lighting_instruction = str(data.get("lighting_instruction", ""))
+		definition.background_instruction = str(data.get("background_instruction", ""))
+		definition.composition_rules = _read_string_array(
+			data, "composition_rules", path + ".composition_rules", result
+		)
+		definition.negative_terms = _read_string_array(
+			data, "negative_terms", path + ".negative_terms", result
+		)
+		definition.midjourney_parameters = str(data.get("midjourney_parameters", ""))
+		_add_art_direction(definition, path + ".id", result)
+
+
+func _load_creature_concepts(items: Array, result: ContentLoadResult) -> void:
+	for index in items.size():
+		var path := "creature_concepts.items[%d]" % index
+		var data := _as_dictionary(items[index], path, result)
+		if data.is_empty():
+			continue
+		var definition := CreatureConceptDefinition.new()
+		definition.concept_id = _read_id(data, "id", path + ".id", result)
+		definition.species_id = StringName(str(data.get("species_id", "")))
+		definition.art_direction_id = StringName(str(data.get("art_direction_id", "")))
+		definition.elemental_type_ids = _to_string_name_array(data.get("elemental_type_ids", []))
+		definition.elemental_archetype = str(data.get("elemental_archetype", ""))
+		definition.mythology_inspirations = _read_string_array(
+			data, "mythology_inspirations", path + ".mythology_inspirations", result
+		)
+		definition.wildlife_inspirations = _read_string_array(
+			data, "wildlife_inspirations", path + ".wildlife_inspirations", result
+		)
+		definition.silhouette = str(data.get("silhouette", ""))
+		definition.anatomy = str(data.get("anatomy", ""))
+		definition.materials = str(data.get("materials", ""))
+		definition.personality = str(data.get("personality", ""))
+		definition.scale = str(data.get("scale", ""))
+		definition.signature_features = _read_string_array(
+			data, "signature_features", path + ".signature_features", result
+		)
+		definition.pose_instruction = str(data.get("pose_instruction", ""))
+		definition.visual_exclusions = _read_string_array(
+			data, "visual_exclusions", path + ".visual_exclusions", result
+		)
+		var raw_palette: Variant = data.get("palette", {})
+		if raw_palette is Dictionary:
+			definition.palette.primary = str(raw_palette.get("primary", ""))
+			definition.palette.secondary = str(raw_palette.get("secondary", ""))
+			definition.palette.accent = str(raw_palette.get("accent", ""))
+			definition.palette.outline = str(raw_palette.get("outline", ""))
+		else:
+			_add_error(result, &"invalid_field_type", path + ".palette", "Expected an object.")
+		_add_creature_concept(definition, path + ".id", result)
+
+
 func _to_encounter_zone(data: Dictionary) -> EncounterZoneDefinition:
 	var zone := EncounterZoneDefinition.new()
 	zone.zone_id = StringName(str(data.get("id", "")))
@@ -298,6 +366,22 @@ func _to_string_name_array(value: Variant) -> Array[StringName]:
 	return output
 
 
+func _read_string_array(
+	data: Dictionary,
+	key: String,
+	path: String,
+	result: ContentLoadResult
+) -> Array[String]:
+	var output: Array[String] = []
+	var value: Variant = data.get(key, [])
+	if not value is Array:
+		_add_error(result, &"invalid_field_type", path, "Expected an array.")
+		return output
+	for item in value:
+		output.append(str(item))
+	return output
+
+
 func _add_species(definition: CreatureSpeciesDefinition, path: String, result: ContentLoadResult) -> void:
 	if not result.catalog.add_species(definition) and not str(definition.species_id).is_empty():
 		_add_error(result, &"duplicate_id", path, "Species ID is already defined.")
@@ -331,6 +415,24 @@ func _add_item(definition: ItemDefinition, path: String, result: ContentLoadResu
 func _add_map(definition: ExplorationMapDefinition, path: String, result: ContentLoadResult) -> void:
 	if not result.catalog.add_map(definition) and not str(definition.map_id).is_empty():
 		_add_error(result, &"duplicate_id", path, "Map ID is already defined.")
+
+
+func _add_art_direction(
+	definition: SpriteArtDirectionDefinition,
+	path: String,
+	result: ContentLoadResult
+) -> void:
+	if not result.catalog.add_art_direction(definition) and not str(definition.direction_id).is_empty():
+		_add_error(result, &"duplicate_id", path, "Art direction ID is already defined.")
+
+
+func _add_creature_concept(
+	definition: CreatureConceptDefinition,
+	path: String,
+	result: ContentLoadResult
+) -> void:
+	if not result.catalog.add_creature_concept(definition) and not str(definition.concept_id).is_empty():
+		_add_error(result, &"duplicate_id", path, "Creature concept ID is already defined.")
 
 
 func _add_error(result: ContentLoadResult, code: StringName, path: String, message: String) -> void:

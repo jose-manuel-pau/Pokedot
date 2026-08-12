@@ -30,6 +30,8 @@ const STATE_VALIDATOR_TEST := preload("res://tests/unit/persistence/test_game_st
 const SAVE_MIGRATOR_TEST := preload("res://tests/unit/persistence/test_save_game_migrator.gd")
 const SAVE_REPOSITORY_TEST := preload("res://tests/unit/persistence/test_save_game_repository.gd")
 const ROSTER_SERVICE_TEST := preload("res://tests/unit/collection/test_creature_roster_service.gd")
+const CONTENT_PIPELINE_TEST := preload("res://tests/unit/content/test_content_pipeline_service.gd")
+const PROMPT_MANIFEST_TEST := preload("res://tests/unit/content/test_prompt_manifest_repository.gd")
 
 
 func _initialize() -> void:
@@ -67,6 +69,8 @@ func _run_all() -> void:
 		SAVE_MIGRATOR_TEST.new(),
 		SAVE_REPOSITORY_TEST.new(),
 		ROSTER_SERVICE_TEST.new(),
+		CONTENT_PIPELINE_TEST.new(),
+		PROMPT_MANIFEST_TEST.new(),
 	]
 	var total_cases := 0
 	var total_assertions := 0
