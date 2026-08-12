@@ -1,11 +1,15 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource path="res://src/presentation/exploration/exploration_screen.gd" type="Script" id="1_screen"]
+[ext_resource path="res://src/presentation/audio/procedural_audio_feedback.gd" type="Script" id="2_audio"]
 
 [node name="ExplorationScreen" type="Node2D"]
 script = ExtResource("1_screen")
 
 [node name="Interface" type="CanvasLayer" parent="."]
+
+[node name="ProceduralAudioFeedback" type="AudioStreamPlayer" parent="."]
+script = ExtResource("2_audio")
 
 [node name="Title" type="Label" parent="Interface"]
 offset_left = 208.0
@@ -31,8 +35,18 @@ offset_top = 666.0
 offset_right = 1072.0
 offset_bottom = 694.0
 theme_override_colors/font_color = Color(0.63, 0.74, 0.78, 1)
-theme_override_font_sizes/font_size = 15
-text = "Move: WASD / Arrow Keys     Interact: E / Space / Enter"
+theme_override_font_sizes/font_size = 14
+text = "Move: WASD / Arrows  ·  Interact: E / Space / Enter  ·  F1 Help  ·  M Mute"
+horizontal_alignment = 1
+
+[node name="AccessibilityStatus" type="Label" parent="Interface"]
+offset_left = 208.0
+offset_top = 650.0
+offset_right = 1072.0
+offset_bottom = 674.0
+theme_override_colors/font_color = Color(0.53, 0.78, 0.74, 1)
+theme_override_font_sizes/font_size = 13
+text = "Contrast: Standard  ·  Text: 100%  ·  Motion: Full  ·  Audio: On"
 horizontal_alignment = 1
 
 [node name="DialoguePanel" type="PanelContainer" parent="Interface"]
@@ -81,5 +95,29 @@ theme_override_colors/font_color = Color(0.9, 0.95, 0.96, 1)
 theme_override_font_sizes/font_size = 20
 text = "Wild encounter"
 horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="HelpPanel" type="PanelContainer" parent="Interface"]
+offset_left = 292.0
+offset_top = 108.0
+offset_right = 988.0
+offset_bottom = 604.0
+
+[node name="Margin" type="MarginContainer" parent="Interface/HelpPanel"]
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 36
+theme_override_constants/margin_bottom = 30
+
+[node name="Scroll" type="ScrollContainer" parent="Interface/HelpPanel/Margin"]
+custom_minimum_size = Vector2(624, 436)
+horizontal_scroll_mode = 0
+
+[node name="HelpText" type="Label" parent="Interface/HelpPanel/Margin/Scroll"]
+custom_minimum_size = Vector2(600, 0)
+theme_override_colors/font_color = Color(0.9, 0.95, 0.96, 1)
+theme_override_font_sizes/font_size = 17
+text = "POKEDOT PLAYTEST\n\nExplore Mosslight Crossing and look for creatures in bright grass and mistferns. Face Ranger Mira and interact to read her field advice. Wild encounters currently open the tested battle-transition preview; press Enter, Space, or Escape to return to the field.\n\nMOVE        WASD or Arrow Keys\nINTERACT    E, Space, or Enter\nHELP        F1\nCONTRAST    F2\nTEXT SIZE   F3\nMOTION      F4\nMUTE        M\n\nAccessibility choices save automatically.\n\nPress Enter, Space, or Escape to begin."
 vertical_alignment = 1
 autowrap_mode = 2

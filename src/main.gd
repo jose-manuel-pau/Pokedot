@@ -4,6 +4,8 @@ const CONTENT_PATH := "res://data"
 
 @onready var exploration_screen: ExplorationScreen = $ExplorationScreen
 
+var _preferences_repository := PreferencesRepository.new()
+
 
 func _ready() -> void:
 	var repository := JsonContentRepository.new()
@@ -27,5 +29,13 @@ func _ready() -> void:
 			result.catalog.creature_concepts_by_id.size(),
 		]
 	)
-	exploration_screen.initialize(result.catalog)
+	var preferences_result := _preferences_repository.load()
+	exploration_screen.preferences_changed.connect(_on_preferences_changed)
+	exploration_screen.initialize(result.catalog, preferences_result.preferences)
+
+
+func _on_preferences_changed(preferences: PlayerPreferences) -> void:
+	var save_result := _preferences_repository.save(preferences)
+	if not save_result.success:
+		push_warning("Could not save player preferences: %s" % save_result.reason)
 

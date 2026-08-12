@@ -64,6 +64,14 @@ The Original Content Pipeline adds:
 - Cross-reference, originality, and art-brief validation
 - Atomic export of provider-ready prompt manifests
 
+The Production Pass adds:
+
+- Deterministic balance and aggregate release-readiness reports
+- Persistent high-contrast, text-size, reduced-motion, and mute controls
+- Observer-driven visual feedback and original procedural audio cues
+- Original application branding, version metadata, and a Windows Desktop export preset
+- A one-click Windows playtest launcher and hands-on verification guide
+
 See [Creature Data & Stats](docs/creature-data-and-stats.md) for formulas and extension rules.
 See [Combat Vertical Slice](docs/combat-vertical-slice.md) for the state machine, damage formula, and event contract.
 See [Statuses and Battle AI](docs/statuses-battle-ai.md) for hooks, party switching, and AI policy.
@@ -71,11 +79,12 @@ See [Capture and Inventory](docs/capture-inventory.md) for item contracts, encou
 See [Exploration](docs/exploration.md) for controls, map content, encounter selection, and battle transitions.
 See [Progression and Persistence](docs/progression-persistence.md) for XP, move learning, save validation, and recovery.
 See [Original Content Pipeline](docs/content-pipeline.md) for the five concepts, prompt contracts, validation, and export workflow.
+See [Production Pass and Playtest Guide](docs/production-pass.md) to launch the game, test controls, run audits, and create a Windows build.
 Progress and module completion evidence are tracked in [the delivery roadmap](docs/roadmap.md).
 
 ## Run
 
-Open `project.godot` in Godot 4.7.1 and run the project. The bootstrap loads and validates all content.
+On Windows, double-click `play_pokedot.cmd`, or open `project.godot` in Godot 4.7.1 and run the project. The startup help panel lists all controls, and the bootstrap loads and validates all content.
 
 Run tests from the repository root:
 

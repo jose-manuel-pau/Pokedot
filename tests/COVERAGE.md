@@ -63,4 +63,13 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Pipeline failure gate | Invalid or missing catalogs produce diagnostics and no generated artifacts |
 | Prompt manifest export | JSON write, safe overwrite, temp/backup cleanup, output and manifest rejection |
 | Pipeline CLI | Headless source load, compile, custom output selection and non-zero failure contract |
+| Balance audit | Base-stat envelope, move power, elemental coverage, encounter dominance and obtainability |
+| Balance metrics | Deterministic species, reward, move and encounter report serialization |
+| Player preferences | Defaults, bounds, high contrast, text scale, reduced motion, mute and observer signals |
+| Preferences repository | Versioned round-trip, atomic overwrite, missing/corrupt/future fallback and null rejection |
+| Exploration feedback | Semantic map, movement, collision, dialogue, encounter and resume cues |
+| Optional audio/VFX | Muted/headless safety, distinct cue colors/frequencies, reduced-motion presentation seam |
+| Production readiness | Main scene, icon, version, launcher, Windows preset, prompts, preferences and balance gate |
+| Export packaging | Windows preset resource collection and headless PCK generation |
+| Playtest onboarding | Startup help, complete keyboard controls, accessibility status and vertical-slice scope |
 
