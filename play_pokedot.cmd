@@ -2,7 +2,10 @@
 setlocal
 
 set "PROJECT_DIR=%~dp0"
-set "BUNDLED_GODOT=%PROJECT_DIR%.tools\godot-4.7.1\Godot_v4.7.1-stable_win64.exe"
+rem %~dp0 includes a trailing backslash. Remove it so Windows does not pass
+rem the closing quote to Godot as part of the --path argument.
+if "%PROJECT_DIR:~-1%"=="\" set "PROJECT_DIR=%PROJECT_DIR:~0,-1%"
+set "BUNDLED_GODOT=%PROJECT_DIR%\.tools\godot-4.7.1\Godot_v4.7.1-stable_win64.exe"
 
 if exist "%BUNDLED_GODOT%" (
   set "GODOT_EXE=%BUNDLED_GODOT%"
@@ -17,6 +20,6 @@ if exist "%BUNDLED_GODOT%" (
   set "GODOT_EXE=godot"
 )
 
-set "APPDATA=%PROJECT_DIR%.godot-user"
-set "LOCALAPPDATA=%PROJECT_DIR%.godot-user"
+set "APPDATA=%PROJECT_DIR%\.godot-user"
+set "LOCALAPPDATA=%PROJECT_DIR%\.godot-user"
 start "Pokedot" "%GODOT_EXE%" --path "%PROJECT_DIR%"
