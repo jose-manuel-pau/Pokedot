@@ -25,6 +25,8 @@ const MOVE_BUTTON_PATHS := [
 @onready var player_health: ProgressBar = $PlayerHud/Margin/Content/Health
 @onready var player_health_text: Label = $PlayerHud/Margin/Content/HealthText
 @onready var player_status: Label = $PlayerHud/Margin/Content/Status
+@onready var player_experience: ProgressBar = $PlayerHud/Margin/Content/Experience
+@onready var player_experience_text: Label = $PlayerHud/Margin/Content/ExperienceText
 @onready var battle_log: RichTextLabel = $BattleLog/Margin/Log
 @onready var battle_log_panel: PanelContainer = $BattleLog
 @onready var prompt_label: Label = $CommandPanel/Margin/Content/Prompt
@@ -38,11 +40,14 @@ const MOVE_BUTTON_PATHS := [
 @onready var continue_button: Button = $FinishPanel/Margin/Content/Continue
 
 var battle_manager: BattleManager
+var last_battle_progression: BattleProgressionResult
 
 var _catalog: ContentCatalog
 var _inventory: Inventory
 var _ai: BattleAiController
 var _preferences: PlayerPreferences
+var _experience_progress: ExperienceProgressService
+var _reward_service: BattleRewardService
 var _move_buttons: Array[Button] = []
 var _move_ids: Array[StringName] = []
 var _log_lines: Array[String] = []
@@ -72,6 +77,9 @@ func initialize(
 	_inventory = inventory
 	_preferences = preferences
 	_ai = BattleAiController.new(_catalog, SeededBattleRandomSource.new(7301))
+	_experience_progress = ExperienceProgressService.new(_catalog)
+	_reward_service = BattleRewardService.new(_catalog)
+	last_battle_progression = null
 	_log_lines.clear()
 	finish_panel.hide()
 	show()
@@ -209,6 +217,8 @@ func _resolve_player_command(command: BattleCommand) -> bool:
 		_refresh()
 		return false
 	_present_events_from(event_cursor)
+	if battle_manager.phase == BattleConstants.PHASE_FINISHED:
+		_apply_victory_rewards()
 	_refresh()
 	if battle_manager.phase == BattleConstants.PHASE_FINISHED:
 		_show_finish()
@@ -223,6 +233,7 @@ func _refresh() -> void:
 	arena.present(player, opponent)
 	turn_label.text = "TURN %d" % battle_manager.turn_number
 	_update_hud(player, player_name, player_health, player_health_text, player_status)
+	_update_experience(player.creature)
 	_update_hud(opponent, opponent_name, opponent_health, opponent_health_text, opponent_status)
 	_rebuild_move_buttons(player)
 	var accepts_commands := battle_manager.phase == BattleConstants.PHASE_AWAITING_COMMANDS
@@ -266,6 +277,47 @@ func _update_hud(
 	fill.corner_radius_bottom_left = 6
 	fill.corner_radius_bottom_right = 6
 	health_bar.add_theme_stylebox_override("fill", fill)
+
+
+func _update_experience(creature: CreatureInstance) -> void:
+	var progress := _experience_progress.calculate(creature)
+	if not progress.success:
+		player_experience.value = 0.0
+		player_experience_text.text = "XP unavailable"
+		return
+	player_experience.value = progress.ratio() * 100.0
+	if progress.is_max_level:
+		player_experience_text.text = "XP  MAX LEVEL  ·  Total %d" % progress.total_experience
+		return
+	player_experience_text.text = "XP  %d / %d  ·  Total %d" % [
+		progress.experience_into_level,
+		progress.experience_for_level,
+		progress.total_experience,
+	]
+
+
+func _apply_victory_rewards() -> void:
+	if battle_manager.outcome != BattleConstants.OUTCOME_PLAYER_VICTORY:
+		return
+	last_battle_progression = _reward_service.award_player_victory(battle_manager)
+	if not last_battle_progression.success:
+		_append_log("Experience reward unavailable: %s." % _humanize(last_battle_progression.reason))
+		return
+	var player := battle_manager.get_participant(BattleConstants.SIDE_PLAYER)
+	var progression := last_battle_progression.progression_by_instance_id.get(
+		player.creature.instance_id
+	) as ProgressionResult
+	if progression == null:
+		return
+	_append_log("%s gained %d XP!" % [
+		player.species.display_name,
+		progression.experience_gained,
+	])
+	if progression.levels_gained() > 0:
+		_append_log("Level up! %d → %d" % [
+			progression.old_level,
+			progression.new_level,
+		])
 
 
 func _rebuild_move_buttons(player: BattleParticipant) -> void:
@@ -341,7 +393,7 @@ func _show_finish() -> void:
 	match battle_manager.outcome:
 		BattleConstants.OUTCOME_PLAYER_VICTORY:
 			finish_title.text = "VICTORY"
-			finish_detail.text = "The wild %s was defeated." % opponent.species.display_name
+			finish_detail.text = _victory_detail(opponent)
 		BattleConstants.OUTCOME_OPPONENT_CAPTURED:
 			finish_title.text = "CREATURE CAPTURED"
 			finish_detail.text = "%s joined your collection." % opponent.species.display_name
@@ -372,6 +424,7 @@ func _apply_accessibility() -> void:
 	_set_scaled_font(player_name, 21, text_scale)
 	_set_scaled_font(player_health_text, 14, text_scale)
 	_set_scaled_font(player_status, 13, text_scale)
+	_set_scaled_font(player_experience_text, 13, text_scale)
 	_set_scaled_font(prompt_label, 18, text_scale)
 	battle_log.add_theme_font_size_override("normal_font_size", int(round(16.0 * text_scale)))
 	for button in _move_buttons:
@@ -392,6 +445,31 @@ func _focus_first_action() -> void:
 		if not button.disabled:
 			button.grab_focus()
 			return
+
+
+func _victory_detail(opponent: BattleParticipant) -> String:
+	var detail := "The wild %s was defeated." % opponent.species.display_name
+	if last_battle_progression == null or not last_battle_progression.success:
+		return detail
+	var player := battle_manager.get_participant(BattleConstants.SIDE_PLAYER)
+	var progression := last_battle_progression.progression_by_instance_id.get(
+		player.creature.instance_id
+	) as ProgressionResult
+	if progression == null:
+		return detail
+	detail += "\n\n+%d XP" % progression.experience_gained
+	if progression.levels_gained() > 0:
+		detail += "\nLEVEL UP!  %d → %d" % [
+			progression.old_level,
+			progression.new_level,
+		]
+	if not progression.learned_move_ids.is_empty():
+		var learned_names: Array[String] = []
+		for move_id in progression.learned_move_ids:
+			var move := _catalog.get_move(move_id)
+			learned_names.append(move.display_name if move != null else str(move_id))
+		detail += "\nLearned %s" % ", ".join(learned_names)
+	return detail
 
 
 func _append_log(line: String) -> void:

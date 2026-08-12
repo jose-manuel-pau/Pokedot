@@ -10,6 +10,8 @@ signal roster_closed
 @onready var creature_grid: GridContainer = $Shade/Panel/Margin/Content/Body/List/Scroll/CreatureGrid
 @onready var detail_name: Label = $Shade/Panel/Margin/Content/Body/Details/DetailMargin/DetailContent/Name
 @onready var detail_meta: Label = $Shade/Panel/Margin/Content/Body/Details/DetailMargin/DetailContent/Meta
+@onready var experience_bar: ProgressBar = $Shade/Panel/Margin/Content/Body/Details/DetailMargin/DetailContent/Experience
+@onready var experience_label: Label = $Shade/Panel/Margin/Content/Body/Details/DetailMargin/DetailContent/ExperienceLabel
 @onready var detail_description: Label = $Shade/Panel/Margin/Content/Body/Details/DetailMargin/DetailContent/Description
 @onready var detail_moves: Label = $Shade/Panel/Margin/Content/Body/Details/DetailMargin/DetailContent/Moves
 @onready var selection_label: Label = $Shade/Panel/Margin/Content/Selection
@@ -19,6 +21,7 @@ var _catalog: ContentCatalog
 var _collection: CreatureCollection
 var _lead_instance_id: String = ""
 var _preferences: PlayerPreferences
+var _experience_progress: ExperienceProgressService
 var _entry_buttons: Array[Button] = []
 
 
@@ -38,6 +41,7 @@ func open_roster(
 	_collection = collection
 	_lead_instance_id = lead_instance_id
 	_preferences = preferences
+	_experience_progress = ExperienceProgressService.new(_catalog)
 	_rebuild_entries()
 	_apply_preferences()
 	show()
@@ -140,11 +144,15 @@ func _refresh_entry_buttons() -> void:
 		var species := _catalog.get_species(creature.species_id)
 		var location := str(_collection.get_location(instance_id)).to_upper()
 		var marker := "★ NEXT FIGHTER" if instance_id == _lead_instance_id else location
-		button.text = "%s   Lv. %d\n%s  ·  %s" % [
+		var progress := _experience_progress.calculate(creature)
+		var experience_percent := int(round(progress.ratio() * 100.0)) \
+			if progress.success else 0
+		button.text = "%s   Lv. %d\n%s  ·  %s  ·  XP %d%%" % [
 			_display_name(creature),
 			creature.level,
 			_type_names(species),
 			marker,
+			experience_percent,
 		]
 		button.button_pressed = instance_id == _lead_instance_id
 
@@ -162,6 +170,21 @@ func _show_details(creature: CreatureInstance) -> void:
 		maximum_hp,
 		str(_collection.get_location(creature.instance_id)).to_upper(),
 	]
+	var progress := _experience_progress.calculate(creature)
+	if progress.success:
+		experience_bar.value = progress.ratio() * 100.0
+		if progress.is_max_level:
+			experience_label.text = "XP  MAX LEVEL  ·  Total %d" % progress.total_experience
+		else:
+			experience_label.text = "XP  %d / %d  ·  Total %d  ·  %d to next" % [
+				progress.experience_into_level,
+				progress.experience_for_level,
+				progress.total_experience,
+				progress.experience_remaining,
+			]
+	else:
+		experience_bar.value = 0.0
+		experience_label.text = "XP unavailable"
 	detail_description.text = species.description
 	var move_names: Array[String] = []
 	for move_id in creature.learned_move_ids:
@@ -202,6 +225,7 @@ func _apply_preferences() -> void:
 	count_label.add_theme_font_size_override("font_size", int(round(15.0 * text_scale)))
 	detail_name.add_theme_font_size_override("font_size", int(round(28.0 * text_scale)))
 	detail_meta.add_theme_font_size_override("font_size", int(round(16.0 * text_scale)))
+	experience_label.add_theme_font_size_override("font_size", int(round(13.0 * text_scale)))
 	detail_description.add_theme_font_size_override("font_size", int(round(16.0 * text_scale)))
 	detail_moves.add_theme_font_size_override("font_size", int(round(15.0 * text_scale)))
 	selection_label.add_theme_font_size_override("font_size", int(round(16.0 * text_scale)))

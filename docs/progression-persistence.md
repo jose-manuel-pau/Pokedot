@@ -26,6 +26,21 @@ Reward rules:
 
 The reward service returns `BattleProgressionResult`, including the reward pool, applied XP by instance ID, and each creature's detailed progression result.
 
+## Live battle and roster presentation
+
+The graphical battle screen now claims `BattleRewardService` exactly once when a wild battle reaches player victory. Every defeated opposing creature contributes its configured reward to the pool. The result is applied to the persistent `CreatureInstance` before the final HUD refresh, so the fighter's new level and cumulative XP appear immediately.
+
+The battle HUD shows:
+
+- current progress inside the creature's active level;
+- cumulative saved XP;
+- reward and level-up messages in the battle log; and
+- exact XP, crossed levels, and learned moves in the victory result.
+
+The captured-creature roster shows the same progress as a percentage on every card and as an exact bar in the selected creature details. `ExperienceProgressService` is a read-only presentation projection shared by both screens. It normalizes old saves for display without mutating them, handles different growth curves, and reports a full bar at maximum level.
+
+The saved `total_experience` remains the source of truth. Filling the current-level bar crosses the next growth-curve threshold; `ProgressionService` then updates the creature's level, stats, HP allowance, and unlocked moves. Returning from battle therefore preserves the new level and partially filled next-level bar in the roster.
+
 ## Level growth
 
 `ProgressionService.grant_experience()` owns permanent mutation of a `CreatureInstance`:

@@ -59,6 +59,10 @@ func award_player_victory(battle: BattleManager) -> BattleProgressionResult:
 			participant.creature,
 			requested
 		)
+		if progression_result.success:
+			# Keep the finished battle HUD synchronized with the persistent creature.
+			participant.calculated_stats = progression_result.stats_after
+			participant.current_hp = participant.creature.current_hp
 		result.experience_by_instance_id[instance_id] = progression_result.experience_gained
 		result.progression_by_instance_id[instance_id] = progression_result
 		progression_applied.emit(instance_id, progression_result)

@@ -15,6 +15,7 @@ func run() -> void:
 	_test_scene_presents_live_combatants_and_actions()
 	_test_every_creature_stays_visible_and_clear_of_interface()
 	_test_move_button_resolves_a_complete_turn()
+	_test_victory_awards_experience_and_updates_level_bar()
 	_test_run_shows_result_and_emits_close()
 	_test_exploration_encounter_opens_playable_battle()
 
@@ -117,6 +118,44 @@ func _test_move_button_resolves_a_complete_turn() -> void:
 	assert_equal(manager.events_of_type(BattleConstants.EVENT_MOVE_USED).size(), 2)
 	assert_true(screen.battle_log.text.contains("Cinder Jab"))
 	assert_true(screen.opponent_health.value < 100.0)
+	screen.free()
+
+
+func _test_victory_awards_experience_and_updates_level_bar() -> void:
+	begin_case("victory XP and level-up presentation")
+	var inventory := Inventory.new()
+	var player := BattleTestFactory.create_creature(&"cindermite", 1, [&"updraft"])
+	player.total_experience = 0
+	var wild := BattleTestFactory.create_creature(&"gustlet", 1, [&"brook_bash"], 1)
+	wild.instance_id = "wild-gustlet-xp-ui"
+	var manager := BattleManager.new(
+		catalog,
+		FixedBattleRandomSource.new([0.0, 0.5, 1.0], 0.2)
+	)
+	manager.start_wild_battle(
+		[player], wild, inventory, CreatureCollection.new()
+	)
+	var screen := BATTLE_SCENE.instantiate() as BattleScreen
+	var tree := Engine.get_main_loop() as SceneTree
+	tree.root.add_child(screen)
+	screen.initialize(catalog, manager, inventory, PlayerPreferences.new())
+	assert_float_equal(screen.player_experience.value, 0.0)
+	assert_true(screen.choose_move(&"updraft"))
+	assert_equal(manager.outcome, BattleConstants.OUTCOME_PLAYER_VICTORY)
+	assert_true(manager.progression_rewards_claimed)
+	assert_not_null(screen.last_battle_progression)
+	assert_true(screen.last_battle_progression.success)
+	assert_equal(screen.last_battle_progression.reward_pool, 12)
+	assert_equal(player.total_experience, 12)
+	assert_equal(player.level, 2)
+	assert_equal(screen.player_name.text, "Cindermite   Lv. 2")
+	assert_true(screen.player_experience_text.text.contains("XP  5 / 19"))
+	assert_true(screen.player_experience_text.text.contains("Total 12"))
+	assert_float_equal(screen.player_experience.value, 5.0 / 19.0 * 100.0, 0.01)
+	assert_true(screen.battle_log.text.contains("gained 12 XP"))
+	assert_true(screen.battle_log.text.contains("Level up! 1 → 2"))
+	assert_true(screen.finish_detail.text.contains("+12 XP"))
+	assert_true(screen.finish_detail.text.contains("LEVEL UP!  1 → 2"))
 	screen.free()
 
 

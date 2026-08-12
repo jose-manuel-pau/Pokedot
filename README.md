@@ -82,6 +82,14 @@ The Captured Creature Roster adds:
 - Mouse and keyboard selection of the creature that leads the next wild battle
 - Live refresh after captures and support for choosing stored creatures
 
+The Battle Experience UI adds:
+
+- Automatic cumulative XP awards for every defeated opposing creature
+- Immediate level updates when a growth-curve threshold is crossed
+- A live current-level XP bar, exact progress, and reward/level-up feedback in battle
+- XP percentages on roster cards and exact progress in the selected creature details
+- One shared read-only progress projection for consistent battle and roster values
+
 See [Creature Data & Stats](docs/creature-data-and-stats.md) for formulas and extension rules.
 See [Combat Vertical Slice](docs/combat-vertical-slice.md) for the state machine, damage formula, and event contract.
 See [Statuses and Battle AI](docs/statuses-battle-ai.md) for hooks, party switching, and AI policy.
@@ -92,6 +100,7 @@ See [Original Content Pipeline](docs/content-pipeline.md) for the five concepts,
 See [Production Pass and Playtest Guide](docs/production-pass.md) to launch the game, test controls, run audits, and create a Windows build.
 See [Playable Battle UI](docs/playable-battle-ui.md) for controls, presentation architecture, and encounter integration.
 See [Captured Creature Roster](docs/captured-creature-roster.md) for collection-menu controls and next-battle selection behavior.
+See [Progression and Persistence](docs/progression-persistence.md#live-battle-and-roster-presentation) for live reward and XP-bar behavior.
 Progress and module completion evidence are tracked in [the delivery roadmap](docs/roadmap.md).
 
 ## Run

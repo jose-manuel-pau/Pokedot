@@ -25,6 +25,7 @@ const WILD_BATTLE_FACTORY_TEST := preload("res://tests/unit/exploration/test_wil
 const PROGRESSION_TEST := preload("res://tests/unit/progression/test_progression_service.gd")
 const XP_REWARD_TEST := preload("res://tests/unit/progression/test_experience_reward_calculator.gd")
 const BATTLE_REWARD_TEST := preload("res://tests/unit/progression/test_battle_reward_service.gd")
+const EXPERIENCE_PROGRESS_TEST := preload("res://tests/unit/progression/test_experience_progress_service.gd")
 const STATE_SERIALIZER_TEST := preload("res://tests/unit/persistence/test_game_state_serializer.gd")
 const STATE_VALIDATOR_TEST := preload("res://tests/unit/persistence/test_game_state_validator.gd")
 const SAVE_MIGRATOR_TEST := preload("res://tests/unit/persistence/test_save_game_migrator.gd")
@@ -72,6 +73,7 @@ func _run_all() -> void:
 		PROGRESSION_TEST.new(),
 		XP_REWARD_TEST.new(),
 		BATTLE_REWARD_TEST.new(),
+		EXPERIENCE_PROGRESS_TEST.new(),
 		STATE_SERIALIZER_TEST.new(),
 		STATE_VALIDATOR_TEST.new(),
 		SAVE_MIGRATOR_TEST.new(),
