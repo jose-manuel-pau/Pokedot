@@ -6,6 +6,9 @@ const EXPERIENCE_TEST := preload("res://tests/unit/test_experience_calculator.gd
 const REPOSITORY_TEST := preload("res://tests/unit/test_content_repository.gd")
 const VALIDATOR_TEST := preload("res://tests/unit/test_content_validator.gd")
 const EFFECTIVENESS_TEST := preload("res://tests/unit/test_type_effectiveness_service.gd")
+const DAMAGE_TEST := preload("res://tests/unit/battle/test_damage_calculator.gd")
+const TURN_ORDER_TEST := preload("res://tests/unit/battle/test_turn_order_resolver.gd")
+const BATTLE_MANAGER_TEST := preload("res://tests/unit/battle/test_battle_manager.gd")
 
 
 func _initialize() -> void:
@@ -19,6 +22,9 @@ func _run_all() -> void:
 		REPOSITORY_TEST.new(),
 		VALIDATOR_TEST.new(),
 		EFFECTIVENESS_TEST.new(),
+		DAMAGE_TEST.new(),
+		TURN_ORDER_TEST.new(),
+		BATTLE_MANAGER_TEST.new(),
 	]
 	var total_cases := 0
 	var total_assertions := 0
