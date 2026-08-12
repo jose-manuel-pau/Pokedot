@@ -9,6 +9,10 @@ const EFFECTIVENESS_TEST := preload("res://tests/unit/test_type_effectiveness_se
 const DAMAGE_TEST := preload("res://tests/unit/battle/test_damage_calculator.gd")
 const TURN_ORDER_TEST := preload("res://tests/unit/battle/test_turn_order_resolver.gd")
 const BATTLE_MANAGER_TEST := preload("res://tests/unit/battle/test_battle_manager.gd")
+const STATUS_SERVICE_TEST := preload("res://tests/unit/battle/test_status_effect_service.gd")
+const STATUS_INTEGRATION_TEST := preload("res://tests/unit/battle/test_status_battle_integration.gd")
+const PARTY_SWITCHING_TEST := preload("res://tests/unit/battle/test_party_switching.gd")
+const BATTLE_AI_TEST := preload("res://tests/unit/battle/test_battle_ai_controller.gd")
 
 
 func _initialize() -> void:
@@ -25,6 +29,10 @@ func _run_all() -> void:
 		DAMAGE_TEST.new(),
 		TURN_ORDER_TEST.new(),
 		BATTLE_MANAGER_TEST.new(),
+		STATUS_SERVICE_TEST.new(),
+		STATUS_INTEGRATION_TEST.new(),
+		PARTY_SWITCHING_TEST.new(),
+		BATTLE_AI_TEST.new(),
 	]
 	var total_cases := 0
 	var total_assertions := 0

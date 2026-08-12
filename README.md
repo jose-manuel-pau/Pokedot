@@ -21,8 +21,17 @@ The Combat Vertical Slice adds:
 - Decoupled battle events and signals for future presentation
 - Deterministic battle replay behavior
 
+Statuses and Battle AI adds:
+
+- Composable before-action, stat, damage, switch, and end-turn status hooks
+- Persistent, volatile, finite-duration, and stackable status lifecycle
+- Parties of up to six creatures with manual and forced switching
+- Deterministic move, status, and low-HP switch decisions
+- Status and switching domain events for presentation
+
 See [Creature Data & Stats](docs/creature-data-and-stats.md) for formulas and extension rules.
 See [Combat Vertical Slice](docs/combat-vertical-slice.md) for the state machine, damage formula, and event contract.
+See [Statuses and Battle AI](docs/statuses-battle-ai.md) for hooks, party switching, and AI policy.
 Progress and module completion evidence are tracked in [the delivery roadmap](docs/roadmap.md).
 
 ## Run

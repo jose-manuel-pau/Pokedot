@@ -105,5 +105,5 @@ Payloads contain stable IDs and primitive values suitable for animation queues a
 
 This slice supports physical, special, and status-category move selection. Status moves currently resolve accuracy, consume a use, and publish `status_move_resolved`; applying persistent or volatile effects belongs to the next Statuses and Battle AI module.
 
-Items, capture, switching, and running will become additional `BattleCommand` implementations in their respective modules. Their addition does not require changing `TurnOrderResolver`.
+Party switching is now implemented by `SwitchCreatureCommand` in the Statuses and Battle AI module. Items, capture, and running will become additional `BattleCommand` implementations in their respective modules. Their addition does not require changing `TurnOrderResolver`.
 

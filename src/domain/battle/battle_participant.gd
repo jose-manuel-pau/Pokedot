@@ -11,6 +11,7 @@ var creature: CreatureInstance
 var calculated_stats: CreatureStats
 var current_hp: int
 var move_slots_by_id: Dictionary = {}
+var active_statuses_by_id: Dictionary = {}
 
 
 static func from_instance(
@@ -59,6 +60,10 @@ func apply_damage(requested_damage: int) -> int:
 
 func get_move_slot(move_id: StringName) -> BattleMoveSlot:
 	return move_slots_by_id.get(move_id) as BattleMoveSlot
+
+
+func has_status(status_id: StringName) -> bool:
+	return active_statuses_by_id.has(status_id)
 
 
 func _initialize_move_slots(catalog: ContentCatalog) -> void:

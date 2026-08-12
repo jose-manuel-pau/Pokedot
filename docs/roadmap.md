@@ -5,9 +5,9 @@ Each module is considered complete only after its automated behavior coverage pa
 | Module | Status | Completion evidence |
 | --- | --- | --- |
 | 1. Creature Data & Stats | Complete — 2026-08-12 | Typed domain model, JSON repository, validator, formulas, sample content |
-| 2. Combat vertical slice | Complete — 2026-08-12 | One-versus-one state machine, command queue, deterministic RNG, damage, events; cumulative 40 cases / 173 assertions passing |
-| 3. Statuses and battle AI | Next | Hook-based effects, enemy decisions, switching |
-| 4. Capture and inventory | Planned | Capture service, devices, items, party insertion |
+| 2. Combat vertical slice | Complete — 2026-08-12 | One-versus-one state machine, command queue, deterministic RNG, damage, events |
+| 3. Statuses and battle AI | Complete — 2026-08-12 | Composable status hooks, durations, party switching, deterministic enemy decisions; cumulative 68 cases / 292 assertions passing |
+| 4. Capture and inventory | Next | Capture service, devices, items, party insertion |
 | 5. Exploration | Planned | Playable map, encounters, NPCs, battle transitions |
 | 6. Progression and persistence | Planned | XP awards, move learning, party/storage, versioned saves |
 | 7. Original content pipeline | Planned | Five creatures, art briefs, consistent sprite prompts |
