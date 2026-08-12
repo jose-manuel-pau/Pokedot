@@ -55,6 +55,8 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Growth HP | Conscious maximum-HP increase, existing-damage preservation, defeated creature remains at zero |
 | Move learning | Automatic open-slot learning, full-set pending choices, replacement, decline, invalid choices |
 | Battle rewards | Victory-only rule, entry participation, manual switch sharing, deterministic remainder, one-time claim |
+| XP progress projection | Current-level bar ratio, cumulative total, remaining XP, legacy normalization, invalid content and max level |
+| Live progression UI | Battle victory reward, immediate level/bar refresh, result feedback, and exploration-to-roster persistence |
 | Save serialization | JSON-compatible full aggregate round-trip and reference independence |
 | Save validation | Profile, exploration, inventory, party/storage identity, XP/level, HP, build, moves, statuses |
 | Save migration | Current deep copy, version-zero upgrade, invalid root and future-version rejection |

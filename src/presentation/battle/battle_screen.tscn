@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource path="res://src/presentation/battle/battle_screen.gd" type="Script" id="1_screen"]
 [ext_resource path="res://src/presentation/battle/battle_arena.gd" type="Script" id="2_arena"]
@@ -45,6 +45,13 @@ corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="Style_xp_fill"]
+bg_color = Color(0.28, 0.74, 0.96, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
 [sub_resource type="StyleBoxFlat" id="Style_finish"]
 bg_color = Color(0.02, 0.055, 0.07, 0.985)
@@ -144,9 +151,9 @@ text = "STATUS —"
 [node name="PlayerHud" type="PanelContainer" parent="."]
 layout_mode = 0
 offset_left = 48.0
-offset_top = 274.0
+offset_top = 258.0
 offset_right = 548.0
-offset_bottom = 400.0
+offset_bottom = 426.0
 theme_override_styles/panel = SubResource("Style_panel")
 
 [node name="Margin" type="MarginContainer" parent="PlayerHud"]
@@ -184,6 +191,21 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 0.78, 0.38, 1)
 theme_override_font_sizes/font_size = 13
 text = "STATUS —"
+
+[node name="Experience" type="ProgressBar" parent="PlayerHud/Margin/Content"]
+custom_minimum_size = Vector2(0, 13)
+layout_mode = 2
+theme_override_styles/background = SubResource("Style_bar_bg")
+theme_override_styles/fill = SubResource("Style_xp_fill")
+value = 0.0
+show_percentage = false
+
+[node name="ExperienceText" type="Label" parent="PlayerHud/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.52, 0.86, 0.98, 1)
+theme_override_font_sizes/font_size = 13
+text = "XP  0 / 1  ·  Total 0"
+horizontal_alignment = 2
 
 [node name="BattleLog" type="PanelContainer" parent="."]
 layout_mode = 0

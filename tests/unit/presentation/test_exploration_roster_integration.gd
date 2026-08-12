@@ -12,6 +12,7 @@ func _init() -> void:
 
 func run() -> void:
 	_test_storage_capture_can_lead_next_encounter()
+	_test_victory_progress_persists_into_roster()
 	_test_menu_is_only_available_during_active_exploration()
 
 
@@ -80,6 +81,37 @@ func _test_storage_capture_can_lead_next_encounter() -> void:
 		screen.status_label.text.contains("Reedling"),
 		"Exploration status should retain the selected lead name."
 	)
+	screen.free()
+
+
+func _test_victory_progress_persists_into_roster() -> void:
+	begin_case("battle progression persists into roster")
+	var screen := _screen()
+	var starter := screen.get_selected_battle_creature()
+	starter.level = 1
+	starter.total_experience = 0
+	starter.learned_move_ids = [&"cinder_jab"]
+	starter.current_hp = StatCalculator.new().calculate_for_instance(
+		catalog.get_species(starter.species_id),
+		starter
+	).hp
+	var request := _request()
+	request.level = 1
+	screen.session.state.phase = ExplorationConstants.PHASE_BATTLE_TRANSITION
+	screen._begin_battle_transition(request)
+	var opponent := screen.active_battle.get_participant(BattleConstants.SIDE_OPPONENT)
+	opponent.apply_damage(opponent.current_hp - 1)
+	assert_true(screen.battle_screen.choose_move(&"cinder_jab"))
+	assert_equal(screen.active_battle.outcome, BattleConstants.OUTCOME_PLAYER_VICTORY)
+	assert_equal(starter.total_experience, 12)
+	assert_equal(starter.level, 2)
+	screen.battle_screen.close_battle()
+	assert_equal(screen.session.state.phase, ExplorationConstants.PHASE_ACTIVE)
+	screen.open_creature_roster()
+	assert_true(screen.creature_roster_menu.visible)
+	assert_true(screen.creature_roster_menu.detail_meta.text.contains("LEVEL 2"))
+	assert_true(screen.creature_roster_menu.experience_label.text.contains("Total 12"))
+	assert_true(screen.creature_roster_menu.experience_bar.value > 0.0)
 	screen.free()
 
 

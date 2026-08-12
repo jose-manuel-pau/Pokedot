@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource path="res://src/presentation/collection/creature_roster_menu.gd" type="Script" id="1_menu"]
 
@@ -37,6 +37,20 @@ corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="Style_xp_bg"]
+bg_color = Color(0.04, 0.09, 0.11, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="Style_xp_fill"]
+bg_color = Color(0.28, 0.74, 0.96, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [node name="CreatureRosterMenu" type="Control"]
 layout_mode = 3
@@ -148,6 +162,21 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.86, 0.93, 0.93, 1)
 theme_override_font_sizes/font_size = 16
 text = "Level · Types · HP"
+
+[node name="Experience" type="ProgressBar" parent="Shade/Panel/Margin/Content/Body/Details/DetailMargin/DetailContent"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+theme_override_styles/background = SubResource("Style_xp_bg")
+theme_override_styles/fill = SubResource("Style_xp_fill")
+value = 0.0
+show_percentage = false
+
+[node name="ExperienceLabel" type="Label" parent="Shade/Panel/Margin/Content/Body/Details/DetailMargin/DetailContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.52, 0.86, 0.98, 1)
+theme_override_font_sizes/font_size = 13
+text = "XP 0 / 1 · Total 0 · 1 to next"
+autowrap_mode = 2
 
 [node name="Description" type="Label" parent="Shade/Panel/Margin/Content/Body/Details/DetailMargin/DetailContent"]
 layout_mode = 2

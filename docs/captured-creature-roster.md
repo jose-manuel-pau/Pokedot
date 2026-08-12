@@ -2,7 +2,7 @@
 
 Press **P** while actively exploring to open the complete captured-creature menu. The field pauses while the roster is visible.
 
-Every owned creature appears, including captures routed to storage after the six-member party fills. Each card shows its display name, level, elemental types, and whether it is in the party or storage. The detail panel shows HP, description, and learned moves.
+Every owned creature appears, including captures routed to storage after the six-member party fills. Each card shows its display name, level, elemental types, party/storage location, and current-level XP percentage. The detail panel shows HP, an accumulative XP bar with exact totals and XP remaining, description, and learned moves.
 
 ## Select the next fighter
 
@@ -19,4 +19,4 @@ New captures use the same live `CreatureCollection`; reopening the menu immediat
 - `ExplorationScreen` owns the selected lead and creates the next 1v1 player party from that instance.
 - `WildBattleFactory` and `BattleManager` remain unchanged and receive a normal typed creature array.
 
-Headless scene coverage verifies the full menu and the map → selection → next battle → map round trip.
+Headless scene coverage verifies the full menu, XP projection, and the map → selection → battle victory → level-up → roster round trip.

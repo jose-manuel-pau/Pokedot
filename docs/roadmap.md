@@ -15,4 +15,5 @@ Each module is considered complete only after its automated behavior coverage pa
 | 9. Playable battle presentation | Complete — 2026-08-12 | Graphical original-creature arena, live HUD/log, move/capture/item/run controls, wild AI response, encounter bridge; cumulative 183 cases / 966 assertions passing |
 | 9.1 Battle creature visibility | Complete — 2026-08-12 | Separated HUD/silhouette zones, conservative bounds for all five species on both sides and maximum text size, five rendered matchup inspections; cumulative 184 cases / 998 assertions passing |
 | 10. Captured creature roster | Complete — 2026-08-12 | Explorer collection menu, party/storage aggregation, live capture refresh, selected-instance battle handoff and input guards; cumulative 191 cases / 1,046 assertions passing |
+| 11. Battle experience presentation | Complete — 2026-08-12 | Victory reward application, cumulative current-level XP projection, battle/roster bars, immediate level-up feedback and cross-screen persistence; cumulative 196 cases / 1,097 assertions passing |
 

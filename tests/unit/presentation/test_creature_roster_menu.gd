@@ -28,6 +28,11 @@ func _creature(
 	creature.species_id = species_id
 	creature.level = level
 	creature.learned_move_ids = species.available_moves_at_level(level)
+	var curve := catalog.get_growth_curve(species.growth_curve_id)
+	creature.total_experience = ExperienceCalculator.new().total_experience_for_level(
+		curve,
+		level
+	) + 10
 	creature.current_hp = StatCalculator.new().calculate_for_instance(
 		species,
 		creature
@@ -64,6 +69,10 @@ func _test_menu_lists_party_and_storage_captures() -> void:
 	assert_true(menu.get_entry_button("capture-storage").text.contains("STORAGE"))
 	assert_equal(menu.detail_name.text, "Reedling")
 	assert_true(menu.detail_meta.text.contains("TIDE / GROVE"))
+	assert_true(menu.get_entry_button("capture-party").text.contains("XP "))
+	assert_true(menu.experience_bar.value > 0.0)
+	assert_true(menu.experience_label.text.contains("Total"))
+	assert_true(menu.experience_label.text.contains("to next"))
 	menu.free()
 
 

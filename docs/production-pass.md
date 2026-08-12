@@ -1,6 +1,6 @@
 # Production Pass and Playtest Guide
 
-Pokedot version 0.10.0 is a production-hardened PC vertical slice. It includes balance diagnostics, persistent accessibility preferences, semantic audio/visual feedback, original branding, a verified Windows export preset, playable graphical wild battles, and an explorer-accessible captured-creature roster for selecting the next fighter.
+Pokedot version 0.11.0 is a production-hardened PC vertical slice. It includes balance diagnostics, persistent accessibility preferences, semantic audio/visual feedback, original branding, a verified Windows export preset, playable graphical wild battles, cumulative battle XP and level-ups, and an explorer-accessible captured-creature roster for selecting the next fighter.
 
 ## Start playing
 
@@ -56,12 +56,13 @@ Accessibility choices save immediately. A corrupt, missing, or future-version pr
 5. Press P on the explorer map and confirm every party and storage capture is listed. Select a creature and close the menu with P or Escape.
 6. Confirm the graphical battle uses the selected creature and shows both original silhouettes, levels, HP, statuses, the combat log, two to four moves, capsule count, tonic count, and Run.
 7. Select moves and verify the wild AI responds, HP bars change, move uses decrease, statuses appear, and the turn counter advances.
-8. Weaken a creature and press C to test capture, press I after taking damage to test healing, or press R to retreat. Complete the result panel to return to exploration.
-9. Reopen the roster and confirm the new capture appears; select it and verify it leads the following encounter.
-10. Toggle F2, F3, F4, and M. Restart the game and verify those preferences remain active.
-11. Check that map-start, movement, collision, dialogue, encounter, battle, and resume feedback remain visually distinct.
+8. Defeat the wild creature and verify the XP reward, level-up message when a threshold is crossed, and updated blue XP bar.
+9. Weaken a creature and press C to test capture, press I after taking damage to test healing, or press R to retreat. Complete the result panel to return to exploration.
+10. Reopen the roster and confirm earned XP and level persist; also confirm a new capture appears, then select it and verify it leads the following encounter.
+11. Toggle F2, F3, F4, and M. Restart the game and verify those preferences remain active.
+12. Check that map-start, movement, collision, dialogue, encounter, battle, and resume feedback remain visually distinct.
 
-Wild encounters are now command-driven one-versus-one battles. The UI observes the same tested battle events used by headless coverage; it does not duplicate damage, status, AI, inventory, or capture rules. Party switching, rewards, and save-slot management remain domain-complete but are not yet exposed in this compact battle screen.
+Wild encounters are now command-driven one-versus-one battles. The UI observes the same tested battle events used by headless coverage; it does not duplicate damage, status, AI, inventory, capture, or progression rules. Battle XP rewards and automatic level-ups are exposed in this compact screen; party switching and save-slot management remain domain-complete but do not yet have dedicated battle/menu controls.
 
 ## Production diagnostics
 
