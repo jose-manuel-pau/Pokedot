@@ -1,6 +1,6 @@
 # Production Pass and Playtest Guide
 
-Pokedot version 0.9.0 is a production-hardened PC vertical slice. It includes balance diagnostics, persistent accessibility preferences, semantic audio/visual feedback, original branding, a verified Windows export preset, and a playable graphical wild-battle screen.
+Pokedot version 0.9.1 is a production-hardened PC vertical slice. It includes balance diagnostics, persistent accessibility preferences, semantic audio/visual feedback, original branding, a verified Windows export preset, and a playable graphical wild-battle screen with unobstructed layouts for every current creature.
 
 ## Start playing
 

@@ -144,9 +144,9 @@ text = "STATUS —"
 [node name="PlayerHud" type="PanelContainer" parent="."]
 layout_mode = 0
 offset_left = 48.0
-offset_top = 332.0
+offset_top = 274.0
 offset_right = 548.0
-offset_bottom = 458.0
+offset_bottom = 400.0
 theme_override_styles/panel = SubResource("Style_panel")
 
 [node name="Margin" type="MarginContainer" parent="PlayerHud"]

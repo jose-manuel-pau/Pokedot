@@ -12,6 +12,25 @@ const TYPE_COLORS := {
 	&"gale": Color("b5e5e8"),
 }
 
+const PLAYER_CREATURE_CENTER := Vector2(355.0, 540.0)
+const OPPONENT_CREATURE_CENTER := Vector2(866.0, 292.0)
+const PLAYER_PLATFORM_CENTER := Vector2(355.0, 640.0)
+const OPPONENT_PLATFORM_CENTER := Vector2(866.0, 388.0)
+const PLAYER_CREATURE_SCALE := 1.28
+const OPPONENT_CREATURE_SCALE := 1.0
+
+# Conservative local-space silhouette bounds include line widths, antlers,
+# wings, tails, legs, and spikes. Presentation tests use them to guarantee that
+# every current creature remains inside the viewport and clear of every HUD.
+const CREATURE_LOCAL_BOUNDS := {
+	&"cindermite": Rect2(-76.0, -66.0, 152.0, 108.0),
+	&"reedling": Rect2(-72.0, -84.0, 144.0, 150.0),
+	&"gustlet": Rect2(-82.0, -64.0, 164.0, 112.0),
+	&"aurorook": Rect2(-108.0, -78.0, 216.0, 148.0),
+	&"cairnback": Rect2(-84.0, -72.0, 168.0, 138.0),
+}
+const GENERIC_LOCAL_BOUNDS := Rect2(-72.0, -58.0, 144.0, 112.0)
+
 var player: BattleParticipant
 var opponent: BattleParticipant
 var high_contrast: bool = false
@@ -46,6 +65,24 @@ func show_impact(target_side: StringName) -> void:
 	queue_redraw()
 
 
+func get_creature_screen_bounds(
+	side: StringName,
+	species_id: StringName
+) -> Rect2:
+	var local_bounds: Rect2 = CREATURE_LOCAL_BOUNDS.get(
+		species_id,
+		GENERIC_LOCAL_BOUNDS
+	)
+	var center := PLAYER_CREATURE_CENTER \
+		if side == BattleConstants.SIDE_PLAYER else OPPONENT_CREATURE_CENTER
+	var scale_factor := PLAYER_CREATURE_SCALE \
+		if side == BattleConstants.SIDE_PLAYER else OPPONENT_CREATURE_SCALE
+	return Rect2(
+		center + local_bounds.position * scale_factor,
+		local_bounds.size * scale_factor
+	)
+
+
 func _process(delta: float) -> void:
 	if _impact_remaining <= 0.0:
 		return
@@ -65,14 +102,26 @@ func _draw() -> void:
 	]), horizon)
 	draw_rect(Rect2(0, 375, size.x, size.y - 375), ground)
 	_draw_grass()
-	_draw_platform(Vector2(866, 315), Vector2(205, 58))
-	_draw_platform(Vector2(355, 535), Vector2(245, 72))
+	_draw_platform(OPPONENT_PLATFORM_CENTER, Vector2(205, 48))
+	_draw_platform(PLAYER_PLATFORM_CENTER, Vector2(245, 58))
 	if opponent != null:
-		_draw_creature(opponent, Vector2(866, 245), 1.0, false)
+		_draw_creature(
+			opponent,
+			OPPONENT_CREATURE_CENTER,
+			OPPONENT_CREATURE_SCALE,
+			false
+		)
 	if player != null:
-		_draw_creature(player, Vector2(355, 445), 1.28, true)
+		_draw_creature(
+			player,
+			PLAYER_CREATURE_CENTER,
+			PLAYER_CREATURE_SCALE,
+			true
+		)
 	if _impact_remaining > 0.0:
-		var center := Vector2(355, 445) if _impact_side == BattleConstants.SIDE_PLAYER else Vector2(866, 245)
+		var center := PLAYER_CREATURE_CENTER \
+			if _impact_side == BattleConstants.SIDE_PLAYER \
+			else OPPONENT_CREATURE_CENTER
 		var alpha := _impact_remaining / 0.28
 		draw_circle(center, 82.0 + (1.0 - alpha) * 24.0, Color(1.0, 0.92, 0.45, alpha * 0.38), false, 8.0)
 

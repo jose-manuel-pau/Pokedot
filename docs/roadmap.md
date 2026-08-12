@@ -13,4 +13,5 @@ Each module is considered complete only after its automated behavior coverage pa
 | 7. Original content pipeline | Complete — 2026-08-12 | Five playable creatures, structured art briefs, shared direction, deterministic provider prompts, validated atomic manifest export; cumulative 159 cases / 841 assertions passing |
 | 8. Production pass | Complete — 2026-08-12 | Balance/readiness audits, persistent accessibility, semantic audio/VFX, branding, Windows preset and verified PCK export; cumulative 177 cases / 924 assertions passing |
 | 9. Playable battle presentation | Complete — 2026-08-12 | Graphical original-creature arena, live HUD/log, move/capture/item/run controls, wild AI response, encounter bridge; cumulative 183 cases / 966 assertions passing |
+| 9.1 Battle creature visibility | Complete — 2026-08-12 | Separated HUD/silhouette zones, conservative bounds for all five species on both sides and maximum text size, five rendered matchup inspections; cumulative 184 cases / 998 assertions passing |
 

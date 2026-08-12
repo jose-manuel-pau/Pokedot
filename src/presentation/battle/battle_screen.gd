@@ -14,16 +14,21 @@ const MOVE_BUTTON_PATHS := [
 
 @onready var arena: BattleArena = $Arena
 @onready var turn_label: Label = $TurnBadge/Margin/Turn
+@onready var turn_badge: PanelContainer = $TurnBadge
+@onready var opponent_hud: PanelContainer = $OpponentHud
 @onready var opponent_name: Label = $OpponentHud/Margin/Content/Name
 @onready var opponent_health: ProgressBar = $OpponentHud/Margin/Content/Health
 @onready var opponent_health_text: Label = $OpponentHud/Margin/Content/HealthText
 @onready var opponent_status: Label = $OpponentHud/Margin/Content/Status
 @onready var player_name: Label = $PlayerHud/Margin/Content/Name
+@onready var player_hud: PanelContainer = $PlayerHud
 @onready var player_health: ProgressBar = $PlayerHud/Margin/Content/Health
 @onready var player_health_text: Label = $PlayerHud/Margin/Content/HealthText
 @onready var player_status: Label = $PlayerHud/Margin/Content/Status
 @onready var battle_log: RichTextLabel = $BattleLog/Margin/Log
+@onready var battle_log_panel: PanelContainer = $BattleLog
 @onready var prompt_label: Label = $CommandPanel/Margin/Content/Prompt
+@onready var command_panel: PanelContainer = $CommandPanel
 @onready var capture_button: Button = $CommandPanel/Margin/Content/ActionRow/Capture
 @onready var item_button: Button = $CommandPanel/Margin/Content/ActionRow/Item
 @onready var run_button: Button = $CommandPanel/Margin/Content/ActionRow/Run
@@ -120,6 +125,27 @@ func close_battle() -> void:
 
 func get_move_button_count() -> int:
 	return _move_ids.size()
+
+
+func is_creature_unobscured(
+	side: StringName,
+	species_id: StringName
+) -> bool:
+	if not is_node_ready():
+		return false
+	var creature_bounds := arena.get_creature_screen_bounds(side, species_id)
+	if not arena.get_rect().encloses(creature_bounds):
+		return false
+	for panel in [
+		turn_badge,
+		opponent_hud,
+		player_hud,
+		battle_log_panel,
+		command_panel,
+	]:
+		if panel.visible and panel.get_rect().intersects(creature_bounds):
+			return false
+	return true
 
 
 func _unhandled_input(event: InputEvent) -> void:
