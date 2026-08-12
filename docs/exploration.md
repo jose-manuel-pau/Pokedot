@@ -16,6 +16,9 @@ Controls:
 | --- | --- |
 | Move | WASD or arrow keys |
 | Interact / advance dialogue | E, Space, or Enter |
+| Open captured creatures | P |
+| Choose the next fighter | Click/focus a creature card and press Enter |
+| Close captured creatures | P or Escape |
 | Battle moves | 1–4 or click |
 | Capture / item / run | C / I / R (Escape also runs) |
 | Return after battle | Enter, Space, Escape, or click Continue |
@@ -42,7 +45,7 @@ WildBattleFactory
 BattleManager.start_wild_battle()
 ```
 
-`ExplorationScreen` translates keyboard input into session commands and renders command results. It does not decide collision, select creatures, or construct battles. This lets a future sprite and TileMap presentation replace the code-drawn field without changing the rules.
+`ExplorationScreen` translates keyboard input into session commands and renders command results. It does not decide collision or implement battle construction rules. It owns only the player's explicit next-fighter selection and passes that typed creature instance to `WildBattleFactory`. This lets a future sprite and TileMap presentation replace the code-drawn field without changing the rules.
 
 ## Versioned map content
 

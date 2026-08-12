@@ -66,7 +66,7 @@ This two-stage contract lets a future UI animate a level-up first and then prese
 
 Creature snapshots include identity, species, nickname, level, total XP, current HP, genetics, training, aptitude modifiers, learned moves, and persistent statuses.
 
-`CreatureRosterService` moves creatures between party and storage and reorders the party transactionally. It enforces the six-member cap and prevents storing the final party member. Party index zero is the default field and battle lead.
+`CreatureRosterService` moves creatures between party and storage and reorders the party transactionally. It enforces the six-member cap and prevents storing the final party member. Party index zero is the default lead for systems without an explicit selection; the explorer roster can temporarily select any owned instance for its next one-versus-one wild battle.
 
 The formal JSON contract is `data/schemas/save_game.schema.json`.
 

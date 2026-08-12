@@ -1,0 +1,173 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource path="res://src/presentation/collection/creature_roster_menu.gd" type="Script" id="1_menu"]
+
+[sub_resource type="StyleBoxFlat" id="Style_panel"]
+bg_color = Color(0.025, 0.055, 0.07, 0.985)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.31, 0.82, 0.73, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="Style_list"]
+bg_color = Color(0.02, 0.035, 0.045, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.22, 0.39, 0.43, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="Style_details"]
+bg_color = Color(0.035, 0.095, 0.105, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.75, 0.64, 0.25, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="CreatureRosterMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 0
+script = ExtResource("1_menu")
+
+[node name="Shade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.005, 0.015, 0.02, 0.9)
+
+[node name="Panel" type="PanelContainer" parent="Shade"]
+layout_mode = 0
+offset_left = 112.0
+offset_top = 58.0
+offset_right = 1168.0
+offset_bottom = 662.0
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="Margin" type="MarginContainer" parent="Shade/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 26
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 26
+theme_override_constants/margin_bottom = 20
+
+[node name="Content" type="VBoxContainer" parent="Shade/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Header" type="HBoxContainer" parent="Shade/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Shade/Panel/Margin/Content/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.98, 0.84, 0.35, 1)
+theme_override_font_sizes/font_size = 28
+text = "CAPTURED CREATURES"
+
+[node name="Count" type="Label" parent="Shade/Panel/Margin/Content/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.52, 0.88, 0.8, 1)
+theme_override_font_sizes/font_size = 15
+text = "0 CAPTURED"
+vertical_alignment = 1
+
+[node name="Close" type="Button" parent="Shade/Panel/Margin/Content/Header"]
+custom_minimum_size = Vector2(160, 42)
+layout_mode = 2
+text = "CLOSE  [P / ESC]"
+
+[node name="Body" type="HBoxContainer" parent="Shade/Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 450)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="List" type="PanelContainer" parent="Shade/Panel/Margin/Content/Body"]
+custom_minimum_size = Vector2(640, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("Style_list")
+
+[node name="Scroll" type="ScrollContainer" parent="Shade/Panel/Margin/Content/Body/List"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="CreatureGrid" type="GridContainer" parent="Shade/Panel/Margin/Content/Body/List/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="Details" type="PanelContainer" parent="Shade/Panel/Margin/Content/Body"]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("Style_details")
+
+[node name="DetailMargin" type="MarginContainer" parent="Shade/Panel/Margin/Content/Body/Details"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 22
+
+[node name="DetailContent" type="VBoxContainer" parent="Shade/Panel/Margin/Content/Body/Details/DetailMargin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Name" type="Label" parent="Shade/Panel/Margin/Content/Body/Details/DetailMargin/DetailContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.84, 0.35, 1)
+theme_override_font_sizes/font_size = 28
+text = "Creature"
+autowrap_mode = 2
+
+[node name="Meta" type="Label" parent="Shade/Panel/Margin/Content/Body/Details/DetailMargin/DetailContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.93, 0.93, 1)
+theme_override_font_sizes/font_size = 16
+text = "Level · Types · HP"
+
+[node name="Description" type="Label" parent="Shade/Panel/Margin/Content/Body/Details/DetailMargin/DetailContent"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.82, 0.89, 0.9, 1)
+theme_override_font_sizes/font_size = 16
+text = "Creature description"
+autowrap_mode = 2
+
+[node name="Moves" type="Label" parent="Shade/Panel/Margin/Content/Body/Details/DetailMargin/DetailContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.56, 0.86, 0.79, 1)
+theme_override_font_sizes/font_size = 15
+text = "MOVES"
+autowrap_mode = 2
+
+[node name="Selection" type="Label" parent="Shade/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.52, 0.88, 0.8, 1)
+theme_override_font_sizes/font_size = 16
+text = "Choose the creature that will lead your next wild battle."
+horizontal_alignment = 1
+autowrap_mode = 2

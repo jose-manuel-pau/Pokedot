@@ -33,6 +33,7 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Inventory transactions | Add/remove, zero cleanup, invalid amounts, insufficient stock, atomic stack and slot limits |
 | Item effects | Flat and fractional healing, max-HP cap, defeated/full rejection, remedy persistence sync |
 | Creature collection | Party insertion, storage routing, missing data and duplicate instance rejection |
+| Complete collection queries | Stable party/storage aggregation, instance lookup, and location lookup |
 | Capture probability | HP, status, device and encounter multipliers, min/max clamps, deterministic success and critical rolls |
 | Encounter rules | Trainer capture rejection, wild failure continuation, device consumption, successful terminal state |
 | Battle items | Command priority, healing/remedy events, stock consumption, target and item validation |
@@ -47,6 +48,8 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Playable scene | Project bootstrap, keyboard adapter, code-drawn map, dialogue panel, and live graphical battle |
 | Battle presentation | Original creature silhouettes, all-species viewport/HUD clearance at default and maximum text size, combatant HUDs, move/capsule/tonic/run actions, logs and outcomes |
 | Encounter UI bridge | Wild handoff opens command-ready battle, retreat closes it, and exploration resumes |
+| Captured roster menu | Party/storage cards, detail view, live capture refresh, selection, close signal and invalid ID rejection |
+| Next-fighter handoff | P-key access, field-input blocking, stored-creature selection, 1v1 participant identity and retained lead |
 | XP rewards | Species yields, wild formula, trainer premium, invalid inputs, minimum reward |
 | Creature growth | XP normalization, no-level award, multi-level jump, max-level clamp, six-stat recalculation |
 | Growth HP | Conscious maximum-HP increase, existing-damage preservation, defeated creature remains at zero |

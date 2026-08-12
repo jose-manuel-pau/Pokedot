@@ -75,6 +75,13 @@ The Production Pass adds:
 - Original application branding, version metadata, and a Windows Desktop export preset
 - A one-click Windows playtest launcher and hands-on verification guide
 
+The Captured Creature Roster adds:
+
+- An explorer-accessible collection menu opened with P
+- A complete party-and-storage list with levels, elements, HP, moves, and location
+- Mouse and keyboard selection of the creature that leads the next wild battle
+- Live refresh after captures and support for choosing stored creatures
+
 See [Creature Data & Stats](docs/creature-data-and-stats.md) for formulas and extension rules.
 See [Combat Vertical Slice](docs/combat-vertical-slice.md) for the state machine, damage formula, and event contract.
 See [Statuses and Battle AI](docs/statuses-battle-ai.md) for hooks, party switching, and AI policy.
@@ -84,6 +91,7 @@ See [Progression and Persistence](docs/progression-persistence.md) for XP, move 
 See [Original Content Pipeline](docs/content-pipeline.md) for the five concepts, prompt contracts, validation, and export workflow.
 See [Production Pass and Playtest Guide](docs/production-pass.md) to launch the game, test controls, run audits, and create a Windows build.
 See [Playable Battle UI](docs/playable-battle-ui.md) for controls, presentation architecture, and encounter integration.
+See [Captured Creature Roster](docs/captured-creature-roster.md) for collection-menu controls and next-battle selection behavior.
 Progress and module completion evidence are tracked in [the delivery roadmap](docs/roadmap.md).
 
 ## Run

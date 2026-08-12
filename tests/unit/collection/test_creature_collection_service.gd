@@ -11,6 +11,7 @@ func run() -> void:
 	_test_adds_to_party_when_space_exists()
 	_test_routes_to_storage_when_party_is_full()
 	_test_rejects_invalid_and_duplicate_creatures()
+	_test_complete_collection_queries_preserve_locations()
 
 
 func _creature(instance_id: String) -> CreatureInstance:
@@ -54,3 +55,20 @@ func _test_rejects_invalid_and_duplicate_creatures() -> void:
 	var duplicate := service.add_captured(collection, _creature("same-id"))
 	assert_false(duplicate.success)
 	assert_equal(duplicate.reason, &"duplicate_instance_id")
+
+
+func _test_complete_collection_queries_preserve_locations() -> void:
+	begin_case("complete collection queries")
+	var collection := CreatureCollection.new()
+	var lead := _creature("lead")
+	var reserve := _creature("reserve")
+	var stored := _creature("stored")
+	collection.party = [lead, reserve]
+	collection.storage = [stored]
+	assert_equal(collection.get_all_creatures(), [lead, reserve, stored])
+	assert_equal(collection.find_instance("reserve"), reserve)
+	assert_equal(collection.find_instance("stored"), stored)
+	assert_equal(collection.find_instance("missing"), null)
+	assert_equal(collection.get_location("lead"), &"party")
+	assert_equal(collection.get_location("stored"), &"storage")
+	assert_equal(collection.get_location("missing"), &"")
