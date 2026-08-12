@@ -1,0 +1,327 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource path="res://src/presentation/battle/battle_screen.gd" type="Script" id="1_screen"]
+[ext_resource path="res://src/presentation/battle/battle_arena.gd" type="Script" id="2_arena"]
+
+[sub_resource type="StyleBoxFlat" id="Style_panel"]
+bg_color = Color(0.035, 0.075, 0.09, 0.94)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.35, 0.79, 0.75, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="Style_command"]
+bg_color = Color(0.025, 0.052, 0.065, 0.97)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.94, 0.79, 0.3, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="Style_log"]
+bg_color = Color(0.02, 0.04, 0.05, 0.82)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.6, 0.61, 0.8)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="Style_bar_bg"]
+bg_color = Color(0.07, 0.12, 0.13, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="Style_finish"]
+bg_color = Color(0.02, 0.055, 0.07, 0.985)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.98, 0.82, 0.32, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[node name="BattleScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 0
+script = ExtResource("1_screen")
+
+[node name="Arena" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_arena")
+
+[node name="TurnBadge" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 568.0
+offset_top = 18.0
+offset_right = 712.0
+offset_bottom = 62.0
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="Margin" type="MarginContainer" parent="TurnBadge"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 7
+
+[node name="Turn" type="Label" parent="TurnBadge/Margin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.85, 0.4, 1)
+theme_override_font_sizes/font_size = 18
+text = "TURN 1"
+horizontal_alignment = 1
+
+[node name="OpponentHud" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 724.0
+offset_top = 74.0
+offset_right = 1218.0
+offset_bottom = 196.0
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="Margin" type="MarginContainer" parent="OpponentHud"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 12
+
+[node name="Content" type="VBoxContainer" parent="OpponentHud/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Name" type="Label" parent="OpponentHud/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.96, 0.89, 1)
+theme_override_font_sizes/font_size = 21
+text = "Wild creature"
+
+[node name="Health" type="ProgressBar" parent="OpponentHud/Margin/Content"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+theme_override_styles/background = SubResource("Style_bar_bg")
+value = 100.0
+show_percentage = false
+
+[node name="HealthText" type="Label" parent="OpponentHud/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "HP"
+horizontal_alignment = 2
+
+[node name="Status" type="Label" parent="OpponentHud/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.78, 0.38, 1)
+theme_override_font_sizes/font_size = 13
+text = "STATUS —"
+
+[node name="PlayerHud" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 332.0
+offset_right = 548.0
+offset_bottom = 458.0
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="Margin" type="MarginContainer" parent="PlayerHud"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 12
+
+[node name="Content" type="VBoxContainer" parent="PlayerHud/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Name" type="Label" parent="PlayerHud/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.96, 0.89, 1)
+theme_override_font_sizes/font_size = 21
+text = "Player creature"
+
+[node name="Health" type="ProgressBar" parent="PlayerHud/Margin/Content"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+theme_override_styles/background = SubResource("Style_bar_bg")
+value = 100.0
+show_percentage = false
+
+[node name="HealthText" type="Label" parent="PlayerHud/Margin/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "HP"
+horizontal_alignment = 2
+
+[node name="Status" type="Label" parent="PlayerHud/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.78, 0.38, 1)
+theme_override_font_sizes/font_size = 13
+text = "STATUS —"
+
+[node name="BattleLog" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 28.0
+offset_right = 540.0
+offset_bottom = 252.0
+theme_override_styles/panel = SubResource("Style_log")
+
+[node name="Margin" type="MarginContainer" parent="BattleLog"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="Log" type="RichTextLabel" parent="BattleLog/Margin"]
+custom_minimum_size = Vector2(456, 196)
+layout_mode = 2
+theme_override_colors/default_color = Color(0.88, 0.94, 0.94, 1)
+theme_override_font_sizes/normal_font_size = 16
+text = "Battle log"
+fit_content = true
+scroll_active = false
+
+[node name="CommandPanel" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 606.0
+offset_top = 438.0
+offset_right = 1238.0
+offset_bottom = 696.0
+theme_override_styles/panel = SubResource("Style_command")
+
+[node name="Margin" type="MarginContainer" parent="CommandPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="Content" type="VBoxContainer" parent="CommandPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Prompt" type="Label" parent="CommandPanel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.84, 0.38, 1)
+theme_override_font_sizes/font_size = 18
+text = "Choose your action"
+horizontal_alignment = 1
+
+[node name="MoveGrid" type="GridContainer" parent="CommandPanel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 7
+columns = 2
+
+[node name="Move1" type="Button" parent="CommandPanel/Margin/Content/MoveGrid"]
+custom_minimum_size = Vector2(290, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "[1] Move"
+
+[node name="Move2" type="Button" parent="CommandPanel/Margin/Content/MoveGrid"]
+custom_minimum_size = Vector2(290, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "[2] Move"
+
+[node name="Move3" type="Button" parent="CommandPanel/Margin/Content/MoveGrid"]
+custom_minimum_size = Vector2(290, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "[3] Move"
+
+[node name="Move4" type="Button" parent="CommandPanel/Margin/Content/MoveGrid"]
+custom_minimum_size = Vector2(290, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "[4] Move"
+
+[node name="ActionRow" type="HBoxContainer" parent="CommandPanel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Capture" type="Button" parent="CommandPanel/Margin/Content/ActionRow"]
+custom_minimum_size = Vector2(184, 38)
+layout_mode = 2
+text = "[C] CAPSULE"
+
+[node name="Item" type="Button" parent="CommandPanel/Margin/Content/ActionRow"]
+custom_minimum_size = Vector2(184, 38)
+layout_mode = 2
+text = "[I] TONIC"
+
+[node name="Run" type="Button" parent="CommandPanel/Margin/Content/ActionRow"]
+custom_minimum_size = Vector2(184, 38)
+layout_mode = 2
+text = "[R] RUN"
+
+[node name="FinishPanel" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 348.0
+offset_top = 238.0
+offset_right = 932.0
+offset_bottom = 482.0
+theme_override_styles/panel = SubResource("Style_finish")
+
+[node name="Margin" type="MarginContainer" parent="FinishPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 34
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 34
+theme_override_constants/margin_bottom = 28
+
+[node name="Content" type="VBoxContainer" parent="FinishPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="Title" type="Label" parent="FinishPanel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.86, 0.39, 1)
+theme_override_font_sizes/font_size = 30
+text = "VICTORY"
+horizontal_alignment = 1
+
+[node name="Detail" type="Label" parent="FinishPanel/Margin/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 0.95, 1)
+theme_override_font_sizes/font_size = 18
+text = "Battle result"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Continue" type="Button" parent="FinishPanel/Margin/Content"]
+custom_minimum_size = Vector2(300, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "CONTINUE  [ENTER]"

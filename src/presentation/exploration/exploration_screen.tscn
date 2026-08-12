@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource path="res://src/presentation/exploration/exploration_screen.gd" type="Script" id="1_screen"]
 [ext_resource path="res://src/presentation/audio/procedural_audio_feedback.gd" type="Script" id="2_audio"]
+[ext_resource path="res://src/presentation/battle/battle_screen.tscn" type="PackedScene" id="3_battle"]
 
 [node name="ExplorationScreen" type="Node2D"]
 script = ExtResource("1_screen")
@@ -75,28 +76,7 @@ theme_override_font_sizes/font_size = 17
 text = "Dialogue"
 autowrap_mode = 2
 
-[node name="BattlePanel" type="PanelContainer" parent="Interface"]
-offset_left = 376.0
-offset_top = 164.0
-offset_right = 904.0
-offset_bottom = 540.0
-
-[node name="Margin" type="MarginContainer" parent="Interface/BattlePanel"]
-theme_override_constants/margin_left = 32
-theme_override_constants/margin_top = 28
-theme_override_constants/margin_right = 32
-theme_override_constants/margin_bottom = 28
-
-[node name="Content" type="VBoxContainer" parent="Interface/BattlePanel/Margin"]
-
-[node name="BattleText" type="Label" parent="Interface/BattlePanel/Margin/Content"]
-custom_minimum_size = Vector2(464, 310)
-theme_override_colors/font_color = Color(0.9, 0.95, 0.96, 1)
-theme_override_font_sizes/font_size = 20
-text = "Wild encounter"
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 2
+[node name="BattleScreen" parent="Interface" instance=ExtResource("3_battle")]
 
 [node name="HelpPanel" type="PanelContainer" parent="Interface"]
 offset_left = 292.0
@@ -118,6 +98,6 @@ horizontal_scroll_mode = 0
 custom_minimum_size = Vector2(600, 0)
 theme_override_colors/font_color = Color(0.9, 0.95, 0.96, 1)
 theme_override_font_sizes/font_size = 17
-text = "POKEDOT PLAYTEST\n\nExplore Mosslight Crossing and look for creatures in bright grass and mistferns. Face Ranger Mira and interact to read her field advice. Wild encounters currently open the tested battle-transition preview; press Enter, Space, or Escape to return to the field.\n\nMOVE        WASD or Arrow Keys\nINTERACT    E, Space, or Enter\nHELP        F1\nCONTRAST    F2\nTEXT SIZE   F3\nMOTION      F4\nMUTE        M\n\nAccessibility choices save automatically.\n\nPress Enter, Space, or Escape to begin."
+text = "POKEDOT PLAYTEST\n\nExplore Mosslight Crossing and look for creatures in bright grass and mistferns. Face Ranger Mira and interact to read her field advice. Wild encounters open a playable one-versus-one battle with original code-drawn creature graphics.\n\nFIELD\nMOVE        WASD or Arrow Keys\nINTERACT    E, Space, or Enter\n\nBATTLE\nMOVES       1–4 or click\nCAPTURE     C\nTONIC       I\nRUN         R or Escape\n\nHELP F1  ·  CONTRAST F2  ·  TEXT F3  ·  MOTION F4  ·  MUTE M\n\nAccessibility choices save automatically.\n\nPress Enter, Space, or Escape to begin."
 vertical_alignment = 1
 autowrap_mode = 2

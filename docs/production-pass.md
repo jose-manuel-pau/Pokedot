@@ -1,6 +1,6 @@
 # Production Pass and Playtest Guide
 
-Pokedot version 0.8.0 is a production-hardened PC vertical slice. This pass adds balance diagnostics, persistent accessibility preferences, semantic audio/visual feedback, original branding, and a verified Windows export preset without changing combat or exploration domain rules.
+Pokedot version 0.9.0 is a production-hardened PC vertical slice. It includes balance diagnostics, persistent accessibility preferences, semantic audio/visual feedback, original branding, a verified Windows export preset, and a playable graphical wild-battle screen.
 
 ## Start playing
 
@@ -31,7 +31,11 @@ From PowerShell in the repository root:
 | --- | --- |
 | Move | WASD or Arrow Keys |
 | Interact / advance dialogue | E, Space, or Enter |
-| Close battle preview | Enter, Space, or Escape |
+| Select battle move | 1–4 or click a move button |
+| Throw Basic Capsule | C or click Capsule |
+| Use Field Tonic | I or click Tonic |
+| Run from wild encounter | R, Escape, or click Run |
+| Continue after battle | Enter, Space, Escape, or click Continue |
 | Open/close help | F1 |
 | Toggle high contrast | F2 |
 | Cycle text size: 100%, 125%, 150% | F3 |
@@ -46,11 +50,13 @@ Accessibility choices save immediately. A corrupt, missing, or future-version pr
 2. Walk into a wall and verify movement is blocked with red visual/audio feedback.
 3. Walk toward Ranger Mira, face her, and press E to read both dialogue lines.
 4. Walk through bright grass (`g`) and mistferns (`f`) until a seeded wild encounter appears.
-5. Confirm the encounter preview names the creature, level, zone, battle phase, and available capsules; then return to exploration.
-6. Toggle F2, F3, F4, and M. Restart the game and verify those preferences remain active.
-7. Check that map-start, movement, collision, dialogue, encounter, and resume cues are visually distinct. With reduced motion enabled, the screen-edge pulse should stop; with mute enabled, tones should stop.
+5. Confirm the graphical battle shows both original creature silhouettes, levels, HP, statuses, the combat log, two to four moves, capsule count, tonic count, and Run.
+6. Select moves and verify the wild AI responds, HP bars change, move uses decrease, statuses appear, and the turn counter advances.
+7. Weaken a creature and press C to test capture, press I after taking damage to test healing, or press R to retreat. Complete the result panel to return to exploration.
+8. Toggle F2, F3, F4, and M. Restart the game and verify those preferences remain active.
+9. Check that map-start, movement, collision, dialogue, encounter, battle, and resume feedback remain visually distinct.
 
-The interactive scene currently presents wild encounters as a battle-transition preview. The underlying turn resolution, statuses, AI, switching, capture, inventory, rewards, and persistence systems are automated and fully tested, but a complete command-driven battle screen is outside this vertical slice. This distinction is intentional so playtest observations are attributed to the UI that actually exists.
+Wild encounters are now command-driven one-versus-one battles. The UI observes the same tested battle events used by headless coverage; it does not duplicate damage, status, AI, inventory, or capture rules. Party switching, rewards, and save-slot management remain domain-complete but are not yet exposed in this compact battle screen.
 
 ## Production diagnostics
 
@@ -95,5 +101,7 @@ To create a distributable `Pokedot.exe`, install the matching Godot 4.7.1 export
 - `ExplorationFeedbackRouter` translates domain events into semantic cues without knowing about nodes or audio devices.
 - `ProceduralAudioFeedback` synthesizes short original tones at runtime, avoiding licensed audio assets.
 - `ExplorationScreen` remains an input/rendering adapter and observes preferences and cues.
+- `BattleScreen` translates player controls into domain commands and battle events into HUD/log feedback.
+- `BattleArena` supplies replaceable code-drawn original creature graphics without entering the battle domain.
 
 Generated reports, exports, local settings, and imported editor data remain ignored by Git.
