@@ -1,0 +1,5 @@
+.godot/
+.godot-user/
+.tools/
+builds/
+*.tmp

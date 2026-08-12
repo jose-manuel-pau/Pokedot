@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "id": "cindermite",
+      "display_name": "Cindermite",
+      "description": "A heat-loving burrower that plates its back with cooled volcanic grit.",
+      "base_stats": {
+        "hp": 48,
+        "attack": 64,
+        "defense": 45,
+        "special_attack": 52,
+        "special_defense": 40,
+        "speed": 61
+      },
+      "types": ["ember", "stone"],
+      "catch_rate": 180,
+      "growth_curve_id": "standard",
+      "learnset": [
+        {"level": 1, "move_id": "cinder_jab"},
+        {"level": 5, "move_id": "stonepulse"},
+        {"level": 9, "move_id": "ember_haze"}
+      ]
+    },
+    {
+      "id": "reedling",
+      "display_name": "Reedling",
+      "description": "A shy marsh browser whose flexible antlers filter clean water through living reeds.",
+      "base_stats": {
+        "hp": 55,
+        "attack": 43,
+        "defense": 52,
+        "special_attack": 57,
+        "special_defense": 63,
+        "speed": 40
+      },
+      "types": ["tide", "grove"],
+      "catch_rate": 200,
+      "growth_curve_id": "swift",
+      "learnset": [
+        {"level": 1, "move_id": "brook_bash"},
+        {"level": 4, "move_id": "thorn_lance"},
+        {"level": 8, "move_id": "lull_mist"}
+      ]
+    },
+    {
+      "id": "gustlet",
+      "display_name": "Gustlet",
+      "description": "A cliff-nesting glider that stores mountain winds in the hollow vanes of its tail.",
+      "base_stats": {
+        "hp": 39,
+        "attack": 46,
+        "defense": 37,
+        "special_attack": 58,
+        "special_defense": 44,
+        "speed": 76
+      },
+      "types": ["gale"],
+      "catch_rate": 210,
+      "growth_curve_id": "patient",
+      "learnset": [
+        {"level": 1, "move_id": "updraft"},
+        {"level": 7, "move_id": "stonepulse"}
+      ]
+    }
+  ]
+}
+

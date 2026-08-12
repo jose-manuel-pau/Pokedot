@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "id": "ember",
+      "display_name": "Ember",
+      "color_hex": "#E7653E",
+      "effectiveness": {
+        "grove": 2.0,
+        "tide": 0.5,
+        "stone": 0.5
+      }
+    },
+    {
+      "id": "tide",
+      "display_name": "Tide",
+      "color_hex": "#3E8EDB",
+      "effectiveness": {
+        "ember": 2.0,
+        "grove": 0.5,
+        "stone": 2.0
+      }
+    },
+    {
+      "id": "grove",
+      "display_name": "Grove",
+      "color_hex": "#5AAB61",
+      "effectiveness": {
+        "tide": 2.0,
+        "stone": 2.0,
+        "ember": 0.5,
+        "gale": 0.5
+      }
+    },
+    {
+      "id": "gale",
+      "display_name": "Gale",
+      "color_hex": "#9ADAE0",
+      "effectiveness": {
+        "grove": 2.0,
+        "stone": 0.5
+      }
+    },
+    {
+      "id": "stone",
+      "display_name": "Stone",
+      "color_hex": "#A37A58",
+      "effectiveness": {
+        "ember": 2.0,
+        "gale": 2.0,
+        "tide": 0.5,
+        "grove": 0.5
+      }
+    }
+  ]
+}
+
