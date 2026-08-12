@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pokedot.local/schemas/items.schema.json",
+  "title": "Pokedot Item Content",
+  "type": "object",
+  "required": ["schema_version", "items"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "items": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/item"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "contentId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "item": {
+      "type": "object",
+      "required": [
+        "id", "display_name", "description", "category", "max_stack",
+        "consumable", "battle_usable", "purchase_price", "capture_multiplier",
+        "healing_amount", "healing_fraction", "cured_status_ids"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/contentId"},
+        "display_name": {"type": "string", "minLength": 1},
+        "description": {"type": "string"},
+        "category": {
+          "enum": ["capture_device", "healing", "status_remedy", "battle_consumable", "key_item"]
+        },
+        "max_stack": {"type": "integer", "minimum": 1, "maximum": 999},
+        "consumable": {"type": "boolean"},
+        "battle_usable": {"type": "boolean"},
+        "purchase_price": {"type": "integer", "minimum": 0},
+        "capture_multiplier": {"type": "number", "exclusiveMinimum": 0, "maximum": 10},
+        "healing_amount": {"type": "integer", "minimum": 0},
+        "healing_fraction": {"type": "number", "minimum": 0, "maximum": 1},
+        "cured_status_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/contentId"}
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

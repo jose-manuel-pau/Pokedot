@@ -29,9 +29,18 @@ Statuses and Battle AI adds:
 - Deterministic move, status, and low-HP switch decisions
 - Status and switching domain events for presentation
 
+Capture and Inventory adds:
+
+- Versioned item content with validated capture devices, healing, remedies, and key items
+- Atomic inventory stack and slot transactions
+- Deterministic HP-, status-, device-, and encounter-modified capture probability
+- Explicit trainer-versus-wild battle rules and capture/item commands
+- Automatic captured-creature routing to party or storage
+
 See [Creature Data & Stats](docs/creature-data-and-stats.md) for formulas and extension rules.
 See [Combat Vertical Slice](docs/combat-vertical-slice.md) for the state machine, damage formula, and event contract.
 See [Statuses and Battle AI](docs/statuses-battle-ai.md) for hooks, party switching, and AI policy.
+See [Capture and Inventory](docs/capture-inventory.md) for item contracts, encounter rules, and the capture formula.
 Progress and module completion evidence are tracked in [the delivery roadmap](docs/roadmap.md).
 
 ## Run

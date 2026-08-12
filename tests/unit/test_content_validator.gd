@@ -10,6 +10,7 @@ func run() -> void:
 	_test_invalid_move_rules()
 	_test_invalid_type_reference()
 	_test_invalid_content_id()
+	_test_invalid_item_rules()
 
 
 func _fresh_catalog() -> ContentCatalog:
@@ -70,3 +71,28 @@ func _test_invalid_content_id() -> void:
 	catalog.types_by_id[type_definition.type_id] = type_definition
 	var issues := ContentValidator.new().validate(catalog)
 	assert_has_issue(issues, &"invalid_content_id")
+
+
+func _test_invalid_item_rules() -> void:
+	begin_case("item constraints")
+	var catalog := _fresh_catalog()
+	var device := catalog.get_item(&"basic_capsule")
+	device.capture_multiplier = 0.0
+	device.consumable = false
+	device.battle_usable = false
+	var healing := catalog.get_item(&"field_tonic")
+	healing.healing_amount = 0
+	healing.healing_fraction = 2.0
+	var remedy := catalog.get_item(&"ember_salve")
+	remedy.cured_status_ids = [&"missing_status"]
+	var key_item := catalog.get_item(&"survey_compass")
+	key_item.consumable = true
+	key_item.max_stack = 2
+	var issues := ContentValidator.new().validate(catalog)
+	assert_has_issue(issues, &"invalid_device_multiplier")
+	assert_has_issue(issues, &"reusable_capture_device")
+	assert_has_issue(issues, &"unusable_capture_device")
+	assert_has_issue(issues, &"invalid_healing_fraction")
+	assert_has_issue(issues, &"unknown_item_status_reference")
+	assert_has_issue(issues, &"consumable_key_item")
+	assert_has_issue(issues, &"stackable_key_item")

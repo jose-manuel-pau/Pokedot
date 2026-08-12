@@ -58,6 +58,16 @@ func apply_damage(requested_damage: int) -> int:
 	return applied_damage
 
 
+func restore_hp(requested_healing: int) -> int:
+	var applied_healing := mini(
+		maxi(requested_healing, 0),
+		get_max_hp() - current_hp
+	)
+	current_hp += applied_healing
+	creature.current_hp = current_hp
+	return applied_healing
+
+
 func get_move_slot(move_id: StringName) -> BattleMoveSlot:
 	return move_slots_by_id.get(move_id) as BattleMoveSlot
 

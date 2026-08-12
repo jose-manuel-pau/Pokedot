@@ -7,6 +7,7 @@ func validate(catalog: ContentCatalog) -> Array[ValidationIssue]:
 	var issues: Array[ValidationIssue] = []
 	_validate_types(catalog, issues)
 	_validate_statuses(catalog, issues)
+	_validate_items(catalog, issues)
 	_validate_growth_curves(catalog, issues)
 	_validate_moves(catalog, issues)
 	_validate_species(catalog, issues)
@@ -71,6 +72,67 @@ func _validate_growth_curves(catalog: ContentCatalog, issues: Array[ValidationIs
 			_add_error(issues, &"invalid_curve_scale", path + ".scale", "Must be greater than 0.")
 		if definition.exponent <= 1.0 or definition.exponent > 6.0:
 			_add_error(issues, &"invalid_curve_exponent", path + ".exponent", "Must be above 1 and at most 6.")
+
+
+func _validate_items(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> void:
+	for raw_definition in catalog.items_by_id.values():
+		var definition := raw_definition as ItemDefinition
+		var path := "items.%s" % definition.item_id
+		_validate_content_id(definition.item_id, path + ".id", issues)
+		_validate_display_name(definition.display_name, path, issues)
+		if definition.category not in ItemDefinition.VALID_CATEGORIES:
+			_add_error(issues, &"invalid_item_category", path + ".category", "Unknown item category.")
+		if definition.max_stack < 1 or definition.max_stack > 999:
+			_add_error(issues, &"invalid_max_stack", path + ".max_stack", "Must be from 1 to 999.")
+		if definition.purchase_price < 0:
+			_add_error(issues, &"invalid_purchase_price", path + ".purchase_price", "Cannot be negative.")
+		if definition.is_capture_device():
+			if definition.capture_multiplier <= 0.0 or definition.capture_multiplier > 10.0:
+				_add_error(
+					issues,
+					&"invalid_device_multiplier",
+					path + ".capture_multiplier",
+					"Capture multiplier must be above 0 and at most 10."
+				)
+			if not definition.consumable:
+				_add_error(issues, &"reusable_capture_device", path + ".consumable", "Capture devices must be consumable.")
+			if not definition.battle_usable:
+				_add_error(issues, &"unusable_capture_device", path + ".battle_usable", "Capture devices must be battle usable.")
+		elif not is_equal_approx(definition.capture_multiplier, 1.0):
+			_add_error(
+				issues,
+				&"multiplier_on_non_device",
+				path + ".capture_multiplier",
+				"Only capture devices may modify capture chance."
+			)
+		if definition.healing_amount < 0:
+			_add_error(issues, &"invalid_healing_amount", path + ".healing_amount", "Cannot be negative.")
+		if definition.is_healing_item() \
+			and definition.healing_amount <= 0 \
+			and definition.healing_fraction <= 0.0:
+			_add_error(
+				issues,
+				&"healing_item_without_healing",
+				path,
+				"Healing items need a flat or fractional heal."
+			)
+		if definition.healing_fraction < 0.0 or definition.healing_fraction > 1.0:
+			_add_error(issues, &"invalid_healing_fraction", path + ".healing_fraction", "Must be from 0 to 1.")
+		if definition.is_status_remedy() and definition.cured_status_ids.is_empty():
+			_add_error(issues, &"remedy_without_statuses", path, "A remedy must cure at least one status.")
+		for status_id in definition.cured_status_ids:
+			if not catalog.statuses_by_id.has(status_id):
+				_add_error(
+					issues,
+					&"unknown_item_status_reference",
+					path + ".cured_status_ids",
+					"Status '%s' does not exist." % status_id
+				)
+		if definition.category == ItemDefinition.CATEGORY_KEY_ITEM:
+			if definition.consumable:
+				_add_error(issues, &"consumable_key_item", path + ".consumable", "Key items cannot be consumable.")
+			if definition.max_stack != 1:
+				_add_error(issues, &"stackable_key_item", path + ".max_stack", "Key items must have max stack 1.")
 
 
 func _validate_moves(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> void:
