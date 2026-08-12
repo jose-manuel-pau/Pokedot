@@ -1,0 +1,15 @@
+# Delivery Roadmap
+
+Each module is considered complete only after its automated behavior coverage passes in headless Godot.
+
+| Module | Status | Completion evidence |
+| --- | --- | --- |
+| 1. Creature Data & Stats | Complete — 2026-08-12 | Typed domain model, JSON repository, validator, formulas, sample content; 20 cases / 65 assertions passing |
+| 2. Combat vertical slice | Next | One-versus-one battle, command queue, deterministic RNG, damage and battle states |
+| 3. Statuses and battle AI | Planned | Hook-based effects, enemy decisions, switching |
+| 4. Capture and inventory | Planned | Capture service, devices, items, party insertion |
+| 5. Exploration | Planned | Playable map, encounters, NPCs, battle transitions |
+| 6. Progression and persistence | Planned | XP awards, move learning, party/storage, versioned saves |
+| 7. Original content pipeline | Planned | Five creatures, art briefs, consistent sprite prompts |
+| 8. Production pass | Planned | Balance tools, accessibility, audio/VFX, exports |
+

@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "id": "cinder_jab",
+      "display_name": "Cinder Jab",
+      "type_id": "ember",
+      "category": "physical",
+      "power": 42,
+      "accuracy": 100.0,
+      "max_uses": 25,
+      "priority": 0,
+      "status_effect_id": "scorch",
+      "status_chance": 10.0
+    },
+    {
+      "id": "ember_haze",
+      "display_name": "Ember Haze",
+      "type_id": "ember",
+      "category": "status",
+      "power": 0,
+      "accuracy": 90.0,
+      "max_uses": 15,
+      "priority": 0,
+      "status_effect_id": "scorch",
+      "status_chance": 100.0
+    },
+    {
+      "id": "brook_bash",
+      "display_name": "Brook Bash",
+      "type_id": "tide",
+      "category": "physical",
+      "power": 45,
+      "accuracy": 95.0,
+      "max_uses": 25,
+      "priority": 0,
+      "status_effect_id": "",
+      "status_chance": 0.0
+    },
+    {
+      "id": "lull_mist",
+      "display_name": "Lull Mist",
+      "type_id": "tide",
+      "category": "status",
+      "power": 0,
+      "accuracy": 75.0,
+      "max_uses": 10,
+      "priority": 0,
+      "status_effect_id": "drowsy",
+      "status_chance": 100.0
+    },
+    {
+      "id": "thorn_lance",
+      "display_name": "Thorn Lance",
+      "type_id": "grove",
+      "category": "physical",
+      "power": 48,
+      "accuracy": 95.0,
+      "max_uses": 20,
+      "priority": 0,
+      "status_effect_id": "rooted",
+      "status_chance": 20.0
+    },
+    {
+      "id": "updraft",
+      "display_name": "Updraft",
+      "type_id": "gale",
+      "category": "special",
+      "power": 40,
+      "accuracy": 100.0,
+      "max_uses": 30,
+      "priority": 1,
+      "status_effect_id": "",
+      "status_chance": 0.0
+    },
+    {
+      "id": "stonepulse",
+      "display_name": "Stonepulse",
+      "type_id": "stone",
+      "category": "special",
+      "power": 50,
+      "accuracy": 90.0,
+      "max_uses": 20,
+      "priority": 0,
+      "status_effect_id": "",
+      "status_chance": 0.0
+    }
+  ]
+}
+

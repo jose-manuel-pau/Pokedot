@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "id": "scorch",
+      "display_name": "Scorched",
+      "category": "persistent",
+      "capture_multiplier": 1.2,
+      "max_duration_turns": 0,
+      "stackable": false,
+      "tags": ["damage_over_time", "heat"]
+    },
+    {
+      "id": "drowsy",
+      "display_name": "Drowsy",
+      "category": "persistent",
+      "capture_multiplier": 1.6,
+      "max_duration_turns": 4,
+      "stackable": false,
+      "tags": ["action_denial", "sleep"]
+    },
+    {
+      "id": "rooted",
+      "display_name": "Rooted",
+      "category": "volatile",
+      "capture_multiplier": 1.35,
+      "max_duration_turns": 3,
+      "stackable": false,
+      "tags": ["speed_reduction", "movement_lock"]
+    }
+  ]
+}
+

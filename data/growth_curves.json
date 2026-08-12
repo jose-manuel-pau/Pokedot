@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "id": "swift",
+      "display_name": "Swift",
+      "max_level": 100,
+      "scale": 0.8,
+      "exponent": 3.0
+    },
+    {
+      "id": "standard",
+      "display_name": "Standard",
+      "max_level": 100,
+      "scale": 1.0,
+      "exponent": 3.0
+    },
+    {
+      "id": "patient",
+      "display_name": "Patient",
+      "max_level": 100,
+      "scale": 1.2,
+      "exponent": 3.0
+    }
+  ]
+}
+
