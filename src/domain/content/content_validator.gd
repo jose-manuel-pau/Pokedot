@@ -11,6 +11,7 @@ func validate(catalog: ContentCatalog) -> Array[ValidationIssue]:
 	_validate_growth_curves(catalog, issues)
 	_validate_moves(catalog, issues)
 	_validate_species(catalog, issues)
+	_validate_maps(catalog, issues)
 	return issues
 
 
@@ -185,6 +186,100 @@ func _validate_species(catalog: ContentCatalog, issues: Array[ValidationIssue]) 
 			_add_error(issues, &"unknown_growth_curve", path + ".growth_curve_id", "Growth curve does not exist.")
 		_validate_base_stats(definition.base_stats, path + ".base_stats", issues)
 		_validate_learnset(definition, catalog, path + ".learnset", issues)
+
+
+func _validate_maps(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> void:
+	for raw_definition in catalog.maps_by_id.values():
+		var definition := raw_definition as ExplorationMapDefinition
+		var path := "maps.%s" % definition.map_id
+		_validate_content_id(definition.map_id, path + ".id", issues)
+		_validate_display_name(definition.display_name, path, issues)
+		if definition.tile_size < 8 or definition.tile_size > 128:
+			_add_error(issues, &"invalid_tile_size", path + ".tile_size", "Must be from 8 to 128.")
+		if definition.tile_rows.is_empty():
+			_add_error(issues, &"empty_map", path + ".tile_rows", "At least one row is required.")
+			continue
+		var width := definition.get_width()
+		if width < 3 or definition.get_height() < 3:
+			_add_error(issues, &"map_too_small", path + ".tile_rows", "Map must be at least 3 by 3.")
+		for row_index in definition.tile_rows.size():
+			if definition.tile_rows[row_index].length() != width:
+				_add_error(issues, &"uneven_map_rows", path + ".tile_rows[%d]" % row_index, "Every row needs equal width.")
+		if not definition.is_walkable(definition.spawn_position):
+			_add_error(issues, &"invalid_map_spawn", path + ".spawn", "Spawn must be on a walkable tile.")
+		var zone_codes: Dictionary = {}
+		var zone_ids: Dictionary = {}
+		for zone in definition.encounter_zones:
+			_validate_encounter_zone(zone, catalog, path, issues)
+			if zone_ids.has(zone.zone_id):
+				_add_error(issues, &"duplicate_zone_id", path + ".encounter_zones", "Zone ID is repeated.")
+			if zone_codes.has(zone.tile_code):
+				_add_error(issues, &"duplicate_zone_tile", path + ".encounter_zones", "Zone tile code is repeated.")
+			zone_ids[zone.zone_id] = true
+			zone_codes[zone.tile_code] = true
+		var encountered_zone_codes: Dictionary = {}
+		for row_index in definition.tile_rows.size():
+			var row := definition.tile_rows[row_index]
+			for column in row.length():
+				var tile_code := row.substr(column, 1)
+				if tile_code in [ExplorationMapDefinition.TILE_WALL, ExplorationMapDefinition.TILE_PATH]:
+					continue
+				if not zone_codes.has(tile_code):
+					_add_error(issues, &"unknown_map_tile", path + ".tile_rows[%d]" % row_index, "Tile '%s' has no terrain rule." % tile_code)
+				else:
+					encountered_zone_codes[tile_code] = true
+		for zone_code in zone_codes.keys():
+			if not encountered_zone_codes.has(zone_code):
+				_add_error(issues, &"unused_zone_tile", path + ".encounter_zones", "Zone tile '%s' is not used by the map." % zone_code)
+		var npc_ids: Dictionary = {}
+		var occupied: Dictionary = {}
+		for npc in definition.npcs:
+			_validate_content_id(npc.npc_id, path + ".npcs.id", issues)
+			_validate_display_name(npc.display_name, path + ".npcs.%s" % npc.npc_id, issues)
+			if npc_ids.has(npc.npc_id):
+				_add_error(issues, &"duplicate_npc_id", path + ".npcs", "NPC ID is repeated.")
+			if not definition.is_walkable(npc.grid_position):
+				_add_error(issues, &"invalid_npc_position", path + ".npcs.%s.position" % npc.npc_id, "NPC must be on a walkable tile.")
+			if npc.grid_position == definition.spawn_position:
+				_add_error(issues, &"npc_on_spawn", path + ".npcs.%s.position" % npc.npc_id, "NPC cannot occupy the spawn.")
+			if occupied.has(npc.grid_position):
+				_add_error(issues, &"overlapping_npcs", path + ".npcs", "NPC positions must be unique.")
+			if not _is_cardinal(npc.facing):
+				_add_error(issues, &"invalid_npc_facing", path + ".npcs.%s.facing" % npc.npc_id, "Facing must be cardinal.")
+			if npc.dialogue.is_empty():
+				_add_error(issues, &"npc_without_dialogue", path + ".npcs.%s.dialogue" % npc.npc_id, "NPC needs dialogue.")
+			npc_ids[npc.npc_id] = true
+			occupied[npc.grid_position] = true
+
+
+func _validate_encounter_zone(
+	zone: EncounterZoneDefinition,
+	catalog: ContentCatalog,
+	map_path: String,
+	issues: Array[ValidationIssue]
+) -> void:
+	var path := map_path + ".encounter_zones.%s" % zone.zone_id
+	_validate_content_id(zone.zone_id, path + ".id", issues)
+	_validate_display_name(zone.display_name, path, issues)
+	if zone.tile_code.length() != 1 or zone.tile_code in [ExplorationMapDefinition.TILE_WALL, ExplorationMapDefinition.TILE_PATH]:
+		_add_error(issues, &"invalid_zone_tile", path + ".tile_code", "Use one non-reserved tile character.")
+	if zone.encounter_rate < 0.0 or zone.encounter_rate > 1.0:
+		_add_error(issues, &"invalid_encounter_rate", path + ".encounter_rate", "Must be from 0 to 1.")
+	if zone.cooldown_steps < 0:
+		_add_error(issues, &"invalid_encounter_cooldown", path + ".cooldown_steps", "Cannot be negative.")
+	if zone.entries.is_empty():
+		_add_error(issues, &"empty_encounter_table", path + ".entries", "At least one encounter is required.")
+	for entry in zone.entries:
+		if catalog.get_species(entry.species_id) == null:
+			_add_error(issues, &"unknown_encounter_species", path + ".entries", "Encounter species does not exist.")
+		if entry.min_level < 1 or entry.max_level < entry.min_level or entry.max_level > 200:
+			_add_error(issues, &"invalid_encounter_level", path + ".entries", "Level range is invalid.")
+		if entry.weight <= 0:
+			_add_error(issues, &"invalid_encounter_weight", path + ".entries", "Weight must be positive.")
+
+
+func _is_cardinal(direction: Vector2i) -> bool:
+	return direction in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 
 
 func _validate_base_stats(stats: CreatureStats, path: String, issues: Array[ValidationIssue]) -> void:

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "id": "mosslight_crossing",
+      "display_name": "Mosslight Crossing",
+      "tile_size": 48,
+      "spawn": [2, 8],
+      "tile_rows": [
+        "##################",
+        "#................#",
+        "#..gggg..####....#",
+        "#..gggg..........#",
+        "#.......ffff.....#",
+        "#..####.ffff.....#",
+        "#.........###....#",
+        "#....gggg........#",
+        "#....gggg........#",
+        "#................#",
+        "##################"
+      ],
+      "encounter_zones": [
+        {
+          "id": "sunmeadow_grass",
+          "display_name": "Sunmeadow Grass",
+          "tile_code": "g",
+          "encounter_rate": 0.18,
+          "cooldown_steps": 3,
+          "entries": [
+            {"species_id": "cindermite", "min_level": 3, "max_level": 5, "weight": 45},
+            {"species_id": "reedling", "min_level": 3, "max_level": 5, "weight": 35},
+            {"species_id": "gustlet", "min_level": 4, "max_level": 6, "weight": 20}
+          ]
+        },
+        {
+          "id": "mistfern_patch",
+          "display_name": "Mistfern Patch",
+          "tile_code": "f",
+          "encounter_rate": 0.24,
+          "cooldown_steps": 4,
+          "entries": [
+            {"species_id": "reedling", "min_level": 5, "max_level": 7, "weight": 60},
+            {"species_id": "gustlet", "min_level": 5, "max_level": 8, "weight": 40}
+          ]
+        }
+      ],
+      "npcs": [
+        {
+          "id": "ranger_mira",
+          "display_name": "Ranger Mira",
+          "position": [14, 7],
+          "facing": [-1, 0],
+          "dialogue": [
+            "The bright grass shelters young creatures near the road.",
+            "Mistferns hide stronger wildlife. Keep a capsule ready before stepping in."
+          ]
+        }
+      ]
+    }
+  ]
+}

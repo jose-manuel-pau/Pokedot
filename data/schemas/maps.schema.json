@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pokedot.local/schemas/maps.schema.json",
+  "title": "Pokedot Exploration Map Content",
+  "type": "object",
+  "required": ["schema_version", "items"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "items": {"type": "array", "items": {"$ref": "#/$defs/map"}}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "contentId": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "gridPosition": {
+      "type": "array",
+      "prefixItems": [{"type": "integer"}, {"type": "integer"}],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "encounterEntry": {
+      "type": "object",
+      "required": ["species_id", "min_level", "max_level", "weight"],
+      "properties": {
+        "species_id": {"$ref": "#/$defs/contentId"},
+        "min_level": {"type": "integer", "minimum": 1, "maximum": 200},
+        "max_level": {"type": "integer", "minimum": 1, "maximum": 200},
+        "weight": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "encounterZone": {
+      "type": "object",
+      "required": ["id", "display_name", "tile_code", "encounter_rate", "cooldown_steps", "entries"],
+      "properties": {
+        "id": {"$ref": "#/$defs/contentId"},
+        "display_name": {"type": "string", "minLength": 1},
+        "tile_code": {"type": "string", "minLength": 1, "maxLength": 1},
+        "encounter_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "cooldown_steps": {"type": "integer", "minimum": 0, "maximum": 99},
+        "entries": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/encounterEntry"}}
+      },
+      "additionalProperties": false
+    },
+    "npc": {
+      "type": "object",
+      "required": ["id", "display_name", "position", "facing", "dialogue"],
+      "properties": {
+        "id": {"$ref": "#/$defs/contentId"},
+        "display_name": {"type": "string", "minLength": 1},
+        "position": {"$ref": "#/$defs/gridPosition"},
+        "facing": {"$ref": "#/$defs/gridPosition"},
+        "dialogue": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      },
+      "additionalProperties": false
+    },
+    "map": {
+      "type": "object",
+      "required": ["id", "display_name", "tile_size", "spawn", "tile_rows", "encounter_zones", "npcs"],
+      "properties": {
+        "id": {"$ref": "#/$defs/contentId"},
+        "display_name": {"type": "string", "minLength": 1},
+        "tile_size": {"type": "integer", "minimum": 8, "maximum": 128},
+        "spawn": {"$ref": "#/$defs/gridPosition"},
+        "tile_rows": {"type": "array", "minItems": 3, "items": {"type": "string", "minLength": 3}},
+        "encounter_zones": {"type": "array", "items": {"$ref": "#/$defs/encounterZone"}},
+        "npcs": {"type": "array", "items": {"$ref": "#/$defs/npc"}}
+      },
+      "additionalProperties": false
+    }
+  }
+}

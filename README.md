@@ -37,10 +37,19 @@ Capture and Inventory adds:
 - Explicit trainer-versus-wild battle rules and capture/item commands
 - Automatic captured-creature routing to party or storage
 
+Exploration adds:
+
+- A playable top-down field map with keyboard movement and collision
+- Versioned map, encounter-zone, and NPC dialogue content
+- Seeded weighted encounters with level ranges and cooldowns
+- NPC interaction and observer events
+- A typed handoff that creates a live capturable wild battle
+
 See [Creature Data & Stats](docs/creature-data-and-stats.md) for formulas and extension rules.
 See [Combat Vertical Slice](docs/combat-vertical-slice.md) for the state machine, damage formula, and event contract.
 See [Statuses and Battle AI](docs/statuses-battle-ai.md) for hooks, party switching, and AI policy.
 See [Capture and Inventory](docs/capture-inventory.md) for item contracts, encounter rules, and the capture formula.
+See [Exploration](docs/exploration.md) for controls, map content, encounter selection, and battle transitions.
 Progress and module completion evidence are tracked in [the delivery roadmap](docs/roadmap.md).
 
 ## Run

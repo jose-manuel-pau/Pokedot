@@ -18,6 +18,10 @@ const ITEM_EFFECT_TEST := preload("res://tests/unit/inventory/test_item_effect_s
 const COLLECTION_TEST := preload("res://tests/unit/collection/test_creature_collection_service.gd")
 const CAPTURE_TEST := preload("res://tests/unit/capture/test_capture_service.gd")
 const CAPTURE_INVENTORY_INTEGRATION_TEST := preload("res://tests/unit/battle/test_capture_inventory_integration.gd")
+const EXPLORATION_MAP_TEST := preload("res://tests/unit/exploration/test_exploration_map_definition.gd")
+const WILD_ENCOUNTER_TEST := preload("res://tests/unit/exploration/test_wild_encounter_service.gd")
+const EXPLORATION_SESSION_TEST := preload("res://tests/unit/exploration/test_exploration_session.gd")
+const WILD_BATTLE_FACTORY_TEST := preload("res://tests/unit/exploration/test_wild_battle_factory.gd")
 
 
 func _initialize() -> void:
@@ -43,6 +47,10 @@ func _run_all() -> void:
 		COLLECTION_TEST.new(),
 		CAPTURE_TEST.new(),
 		CAPTURE_INVENTORY_INTEGRATION_TEST.new(),
+		EXPLORATION_MAP_TEST.new(),
+		WILD_ENCOUNTER_TEST.new(),
+		EXPLORATION_SESSION_TEST.new(),
+		WILD_BATTLE_FACTORY_TEST.new(),
 	]
 	var total_cases := 0
 	var total_assertions := 0

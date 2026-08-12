@@ -14,6 +14,7 @@ func load_catalog(base_path: String) -> ContentLoadResult:
 	_load_growth_curves(_read_items(base_path.path_join("growth_curves.json"), result), result)
 	_load_moves(_read_items(base_path.path_join("moves.json"), result), result)
 	_load_species(_read_items(base_path.path_join("species.json"), result), result)
+	_load_maps(_read_items(base_path.path_join("maps.json"), result), result)
 	result.issues.append_array(ContentValidator.new().validate(result.catalog))
 	return result
 
@@ -174,6 +175,104 @@ func _load_species(items: Array, result: ContentLoadResult) -> void:
 		_add_species(definition, "species.items[%d].id" % index, result)
 
 
+func _load_maps(items: Array, result: ContentLoadResult) -> void:
+	for index in items.size():
+		var path := "maps.items[%d]" % index
+		var data := _as_dictionary(items[index], path, result)
+		if data.is_empty():
+			continue
+		var definition := ExplorationMapDefinition.new()
+		definition.map_id = _read_id(data, "id", path + ".id", result)
+		definition.display_name = str(data.get("display_name", ""))
+		definition.tile_size = int(data.get("tile_size", 48))
+		definition.spawn_position = _to_vector2i(data.get("spawn", []), path + ".spawn", result)
+		var raw_rows: Variant = data.get("tile_rows", [])
+		if raw_rows is Array:
+			for raw_row in raw_rows:
+				definition.tile_rows.append(str(raw_row))
+		else:
+			_add_error(result, &"invalid_field_type", path + ".tile_rows", "Expected an array.")
+		var raw_zones: Variant = data.get("encounter_zones", [])
+		if raw_zones is Array:
+			for zone_index in raw_zones.size():
+				var zone_data := _as_dictionary(
+					raw_zones[zone_index],
+					path + ".encounter_zones[%d]" % zone_index,
+					result
+				)
+				if not zone_data.is_empty():
+					definition.encounter_zones.append(_to_encounter_zone(zone_data))
+		else:
+			_add_error(result, &"invalid_field_type", path + ".encounter_zones", "Expected an array.")
+		var raw_npcs: Variant = data.get("npcs", [])
+		if raw_npcs is Array:
+			for npc_index in raw_npcs.size():
+				var npc_data := _as_dictionary(
+					raw_npcs[npc_index],
+					path + ".npcs[%d]" % npc_index,
+					result
+				)
+				if not npc_data.is_empty():
+					definition.npcs.append(_to_npc(npc_data, path, npc_index, result))
+		else:
+			_add_error(result, &"invalid_field_type", path + ".npcs", "Expected an array.")
+		_add_map(definition, path + ".id", result)
+
+
+func _to_encounter_zone(data: Dictionary) -> EncounterZoneDefinition:
+	var zone := EncounterZoneDefinition.new()
+	zone.zone_id = StringName(str(data.get("id", "")))
+	zone.display_name = str(data.get("display_name", ""))
+	zone.tile_code = str(data.get("tile_code", ""))
+	zone.encounter_rate = float(data.get("encounter_rate", 0.0))
+	zone.cooldown_steps = int(data.get("cooldown_steps", 3))
+	var raw_entries: Variant = data.get("entries", [])
+	if raw_entries is Array:
+		for raw_entry in raw_entries:
+			if not raw_entry is Dictionary:
+				continue
+			var entry := EncounterEntryDefinition.new()
+			entry.species_id = StringName(str(raw_entry.get("species_id", "")))
+			entry.min_level = int(raw_entry.get("min_level", 1))
+			entry.max_level = int(raw_entry.get("max_level", 1))
+			entry.weight = int(raw_entry.get("weight", 0))
+			zone.entries.append(entry)
+	return zone
+
+
+func _to_npc(
+	data: Dictionary,
+	map_path: String,
+	index: int,
+	result: ContentLoadResult
+) -> NpcDefinition:
+	var npc := NpcDefinition.new()
+	npc.npc_id = StringName(str(data.get("id", "")))
+	npc.display_name = str(data.get("display_name", ""))
+	npc.grid_position = _to_vector2i(
+		data.get("position", []),
+		map_path + ".npcs[%d].position" % index,
+		result
+	)
+	npc.facing = _to_vector2i(
+		data.get("facing", [0, 1]),
+		map_path + ".npcs[%d].facing" % index,
+		result
+	)
+	var raw_dialogue: Variant = data.get("dialogue", [])
+	if raw_dialogue is Array:
+		for line in raw_dialogue:
+			npc.dialogue.append(str(line))
+	return npc
+
+
+func _to_vector2i(value: Variant, path: String, result: ContentLoadResult) -> Vector2i:
+	if value is Array and value.size() == 2:
+		return Vector2i(int(value[0]), int(value[1]))
+	_add_error(result, &"invalid_grid_position", path, "Expected [x, y].")
+	return Vector2i.ZERO
+
+
 func _as_dictionary(value: Variant, path: String, result: ContentLoadResult) -> Dictionary:
 	if value is Dictionary:
 		if value.is_empty():
@@ -226,6 +325,11 @@ func _add_growth_curve(definition: GrowthCurveDefinition, path: String, result: 
 func _add_item(definition: ItemDefinition, path: String, result: ContentLoadResult) -> void:
 	if not result.catalog.add_item(definition) and not str(definition.item_id).is_empty():
 		_add_error(result, &"duplicate_id", path, "Item ID is already defined.")
+
+
+func _add_map(definition: ExplorationMapDefinition, path: String, result: ContentLoadResult) -> void:
+	if not result.catalog.add_map(definition) and not str(definition.map_id).is_empty():
+		_add_error(result, &"duplicate_id", path, "Map ID is already defined.")
 
 
 func _add_error(result: ContentLoadResult, code: StringName, path: String, message: String) -> void:
