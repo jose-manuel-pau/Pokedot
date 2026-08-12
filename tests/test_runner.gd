@@ -37,6 +37,8 @@ const PREFERENCES_SERVICE_TEST := preload("res://tests/unit/settings/test_player
 const PREFERENCES_REPOSITORY_TEST := preload("res://tests/unit/settings/test_preferences_repository.gd")
 const FEEDBACK_ROUTER_TEST := preload("res://tests/unit/presentation/test_exploration_feedback_router.gd")
 const BATTLE_SCREEN_TEST := preload("res://tests/unit/presentation/test_battle_screen.gd")
+const CREATURE_ROSTER_MENU_TEST := preload("res://tests/unit/presentation/test_creature_roster_menu.gd")
+const EXPLORATION_ROSTER_INTEGRATION_TEST := preload("res://tests/unit/presentation/test_exploration_roster_integration.gd")
 const PRODUCTION_READINESS_TEST := preload("res://tests/unit/production/test_production_readiness_service.gd")
 
 
@@ -82,6 +84,8 @@ func _run_all() -> void:
 		PREFERENCES_REPOSITORY_TEST.new(),
 		FEEDBACK_ROUTER_TEST.new(),
 		BATTLE_SCREEN_TEST.new(),
+		CREATURE_ROSTER_MENU_TEST.new(),
+		EXPLORATION_ROSTER_INTEGRATION_TEST.new(),
 		PRODUCTION_READINESS_TEST.new(),
 	]
 	var total_cases := 0

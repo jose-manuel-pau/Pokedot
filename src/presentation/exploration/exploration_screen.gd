@@ -14,6 +14,7 @@ signal preferences_changed(preferences: PlayerPreferences)
 @onready var speaker_label: Label = $Interface/DialoguePanel/Margin/Content/Speaker
 @onready var dialogue_label: Label = $Interface/DialoguePanel/Margin/Content/Dialogue
 @onready var battle_screen: BattleScreen = $Interface/BattleScreen
+@onready var creature_roster_menu: CreatureRosterMenu = $Interface/CreatureRosterMenu
 @onready var controls_label: Label = $Interface/Controls
 @onready var accessibility_label: Label = $Interface/AccessibilityStatus
 @onready var help_panel: PanelContainer = $Interface/HelpPanel
@@ -25,9 +26,9 @@ var active_battle: BattleManager
 
 var _catalog: ContentCatalog
 var _battle_factory: WildBattleFactory
-var _player_party: Array[CreatureInstance] = []
 var _inventory := Inventory.new()
 var _collection := CreatureCollection.new()
+var _selected_battle_creature_id: String = ""
 var _dialogue_lines: Array[String] = []
 var _dialogue_index: int = 0
 var _preferences_service: PlayerPreferencesService
@@ -64,6 +65,9 @@ func _ready() -> void:
 	dialogue_panel.hide()
 	battle_screen.hide()
 	battle_screen.battle_closed.connect(_on_battle_closed)
+	creature_roster_menu.hide()
+	creature_roster_menu.lead_selected.connect(_on_battle_lead_selected)
+	creature_roster_menu.roster_closed.connect(_on_creature_roster_closed)
 	help_panel.show()
 	set_process_unhandled_input(true)
 	set_process(true)
@@ -90,6 +94,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if battle_screen.visible:
 		return
+	if creature_roster_menu.visible:
+		return
 	if dialogue_panel.visible:
 		if key.keycode in [KEY_E, KEY_ENTER, KEY_ESCAPE, KEY_SPACE]:
 			_advance_dialogue()
@@ -105,6 +111,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			_move(Vector2i.RIGHT)
 		KEY_E, KEY_SPACE, KEY_ENTER:
 			_interact()
+		KEY_P:
+			open_creature_roster()
 
 
 func _draw() -> void:
@@ -208,7 +216,7 @@ func _advance_dialogue() -> void:
 func _begin_battle_transition(request: WildEncounterRequest) -> void:
 	var transition := _battle_factory.create(
 		request,
-		_player_party,
+		_get_next_battle_party(),
 		_inventory,
 		_collection
 	)
@@ -226,11 +234,16 @@ func _begin_battle_transition(request: WildEncounterRequest) -> void:
 
 
 func _on_battle_closed(outcome: StringName) -> void:
-	_restore_demo_party()
+	_restore_owned_creatures()
 	active_battle = null
 	session.resume_after_battle()
-	status_label.text = "%s Encounter cooldown: %d steps." % [
+	var selected := get_selected_battle_creature()
+	var lead_name := "None"
+	if selected != null:
+		lead_name = _catalog.get_species(selected.species_id).display_name
+	status_label.text = "%s Next lead: %s. Encounter cooldown: %d steps." % [
 		_battle_outcome_message(outcome),
+		lead_name,
 		session.state.encounter_cooldown_steps,
 	]
 	queue_redraw()
@@ -246,20 +259,76 @@ func _create_demo_player() -> void:
 		_catalog.get_growth_curve(species.growth_curve_id),
 		starter.level
 	)
-	starter.current_hp = 999999
 	starter.learned_move_ids = species.available_moves_at_level(starter.level)
-	_player_party.append(starter)
+	starter.current_hp = StatCalculator.new().calculate_for_instance(
+		species,
+		starter
+	).hp
 	_collection.party.append(starter)
+	_selected_battle_creature_id = starter.instance_id
 	var inventory_service := InventoryService.new(_catalog)
 	inventory_service.add(_inventory, &"basic_capsule", 5)
 	inventory_service.add(_inventory, &"field_tonic", 3)
 
 
-func _restore_demo_party() -> void:
+func _restore_owned_creatures() -> void:
 	# The vertical slice has no healing center yet, so field encounters reset the
-	# starter between battles and remain continuously playtestable.
-	for creature in _player_party:
-		creature.current_hp = 999999
+	# complete owned roster between battles and remain continuously playtestable.
+	for creature in _collection.get_all_creatures():
+		var species := _catalog.get_species(creature.species_id)
+		creature.current_hp = StatCalculator.new().calculate_for_instance(
+			species,
+			creature
+		).hp
+
+
+func open_creature_roster() -> void:
+	if session == null \
+		or session.state.phase != ExplorationConstants.PHASE_ACTIVE \
+		or battle_screen.visible \
+		or dialogue_panel.visible \
+		or help_panel.visible:
+		return
+	creature_roster_menu.open_roster(
+		_catalog,
+		_collection,
+		_selected_battle_creature_id,
+		_preferences_service.preferences
+	)
+
+
+func get_selected_battle_creature() -> CreatureInstance:
+	var selected := _collection.find_instance(_selected_battle_creature_id)
+	if selected != null:
+		return selected
+	if not _collection.party.is_empty():
+		return _collection.party[0]
+	return null
+
+
+func _get_next_battle_party() -> Array[CreatureInstance]:
+	var selected := get_selected_battle_creature()
+	var next_party: Array[CreatureInstance] = []
+	if selected != null:
+		next_party.append(selected)
+	return next_party
+
+
+func _on_battle_lead_selected(instance_id: String) -> void:
+	var selected := _collection.find_instance(instance_id)
+	if selected == null:
+		return
+	_selected_battle_creature_id = instance_id
+	var species := _catalog.get_species(selected.species_id)
+	status_label.text = "%s will fight in the next wild encounter." % species.display_name
+
+
+func _on_creature_roster_closed() -> void:
+	var selected := get_selected_battle_creature()
+	if selected == null:
+		return
+	var species := _catalog.get_species(selected.species_id)
+	status_label.text = "Explore freely. Next battle lead: %s." % species.display_name
 
 
 func _battle_outcome_message(outcome: StringName) -> String:
@@ -290,7 +359,7 @@ func _on_exploration_event(event: ExplorationEvent) -> void:
 func _handle_preference_shortcut(keycode: Key) -> bool:
 	match keycode:
 		KEY_F1:
-			if battle_screen.visible:
+			if battle_screen.visible or creature_roster_menu.visible:
 				return true
 			help_panel.visible = not help_panel.visible
 			return true
@@ -335,6 +404,8 @@ func _apply_preferences() -> void:
 	]
 	if battle_screen != null:
 		battle_screen.set_preferences(preferences)
+	if creature_roster_menu != null:
+		creature_roster_menu.set_preferences(preferences)
 	queue_redraw()
 
 

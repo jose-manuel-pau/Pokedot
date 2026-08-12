@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource path="res://src/presentation/exploration/exploration_screen.gd" type="Script" id="1_screen"]
 [ext_resource path="res://src/presentation/audio/procedural_audio_feedback.gd" type="Script" id="2_audio"]
 [ext_resource path="res://src/presentation/battle/battle_screen.tscn" type="PackedScene" id="3_battle"]
+[ext_resource path="res://src/presentation/collection/creature_roster_menu.tscn" type="PackedScene" id="4_roster"]
 
 [node name="ExplorationScreen" type="Node2D"]
 script = ExtResource("1_screen")
@@ -37,7 +38,7 @@ offset_right = 1072.0
 offset_bottom = 694.0
 theme_override_colors/font_color = Color(0.63, 0.74, 0.78, 1)
 theme_override_font_sizes/font_size = 14
-text = "Move: WASD / Arrows  ·  Interact: E / Space / Enter  ·  F1 Help  ·  M Mute"
+text = "Move: WASD / Arrows  ·  Interact: E / Space / Enter  ·  P Creatures  ·  F1 Help  ·  M Mute"
 horizontal_alignment = 1
 
 [node name="AccessibilityStatus" type="Label" parent="Interface"]
@@ -78,6 +79,8 @@ autowrap_mode = 2
 
 [node name="BattleScreen" parent="Interface" instance=ExtResource("3_battle")]
 
+[node name="CreatureRosterMenu" parent="Interface" instance=ExtResource("4_roster")]
+
 [node name="HelpPanel" type="PanelContainer" parent="Interface"]
 offset_left = 292.0
 offset_top = 108.0
@@ -98,6 +101,6 @@ horizontal_scroll_mode = 0
 custom_minimum_size = Vector2(600, 0)
 theme_override_colors/font_color = Color(0.9, 0.95, 0.96, 1)
 theme_override_font_sizes/font_size = 17
-text = "POKEDOT PLAYTEST\n\nExplore Mosslight Crossing and look for creatures in bright grass and mistferns. Face Ranger Mira and interact to read her field advice. Wild encounters open a playable one-versus-one battle with original code-drawn creature graphics.\n\nFIELD\nMOVE        WASD or Arrow Keys\nINTERACT    E, Space, or Enter\n\nBATTLE\nMOVES       1–4 or click\nCAPTURE     C\nTONIC       I\nRUN         R or Escape\n\nHELP F1  ·  CONTRAST F2  ·  TEXT F3  ·  MOTION F4  ·  MUTE M\n\nAccessibility choices save automatically.\n\nPress Enter, Space, or Escape to begin."
+text = "POKEDOT PLAYTEST\n\nExplore Mosslight Crossing and look for creatures in bright grass and mistferns. Face Ranger Mira and interact to read her field advice. Wild encounters open a playable one-versus-one battle with original code-drawn creature graphics.\n\nFIELD\nMOVE        WASD or Arrow Keys\nINTERACT    E, Space, or Enter\nCREATURES   P — view every capture and choose the next fighter\n\nBATTLE\nMOVES       1–4 or click\nCAPTURE     C\nTONIC       I\nRUN         R or Escape\n\nHELP F1  ·  CONTRAST F2  ·  TEXT F3  ·  MOTION F4  ·  MUTE M\n\nAccessibility choices save automatically.\n\nPress Enter, Space, or Escape to begin."
 vertical_alignment = 1
 autowrap_mode = 2
