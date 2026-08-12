@@ -6,6 +6,8 @@ config_version=5
 [application]
 
 config/name="Pokedot"
+config/version="0.8.0"
+config/icon="res://assets/branding/pokedot_icon.svg"
 run/main_scene="res://src/main.tscn"
 
 [display]

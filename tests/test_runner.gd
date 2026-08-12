@@ -32,6 +32,11 @@ const SAVE_REPOSITORY_TEST := preload("res://tests/unit/persistence/test_save_ga
 const ROSTER_SERVICE_TEST := preload("res://tests/unit/collection/test_creature_roster_service.gd")
 const CONTENT_PIPELINE_TEST := preload("res://tests/unit/content/test_content_pipeline_service.gd")
 const PROMPT_MANIFEST_TEST := preload("res://tests/unit/content/test_prompt_manifest_repository.gd")
+const BALANCE_ANALYZER_TEST := preload("res://tests/unit/production/test_balance_analyzer.gd")
+const PREFERENCES_SERVICE_TEST := preload("res://tests/unit/settings/test_player_preferences_service.gd")
+const PREFERENCES_REPOSITORY_TEST := preload("res://tests/unit/settings/test_preferences_repository.gd")
+const FEEDBACK_ROUTER_TEST := preload("res://tests/unit/presentation/test_exploration_feedback_router.gd")
+const PRODUCTION_READINESS_TEST := preload("res://tests/unit/production/test_production_readiness_service.gd")
 
 
 func _initialize() -> void:
@@ -71,6 +76,11 @@ func _run_all() -> void:
 		ROSTER_SERVICE_TEST.new(),
 		CONTENT_PIPELINE_TEST.new(),
 		PROMPT_MANIFEST_TEST.new(),
+		BALANCE_ANALYZER_TEST.new(),
+		PREFERENCES_SERVICE_TEST.new(),
+		PREFERENCES_REPOSITORY_TEST.new(),
+		FEEDBACK_ROUTER_TEST.new(),
+		PRODUCTION_READINESS_TEST.new(),
 	]
 	var total_cases := 0
 	var total_assertions := 0
