@@ -11,14 +11,17 @@ const MAX_VARIANCE := 1.0
 
 var _type_service: TypeEffectivenessService
 var _random: BattleRandomSource
+var _status_service: StatusEffectService
 
 
 func _init(
 	type_service: TypeEffectivenessService,
-	random_source: BattleRandomSource
+	random_source: BattleRandomSource,
+	status_service: StatusEffectService = null
 ) -> void:
 	_type_service = type_service
 	_random = random_source
+	_status_service = status_service
 
 
 func resolve(
@@ -64,5 +67,11 @@ func resolve(
 		result.damage = 0
 	else:
 		result.damage = maxi(floori(modified_damage), 1)
+		if _status_service != null:
+			result.damage = _status_service.modify_outgoing_damage(
+				attacker,
+				move,
+				result.damage
+			)
 	return result
 

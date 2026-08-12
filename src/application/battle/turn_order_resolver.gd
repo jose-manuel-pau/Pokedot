@@ -4,10 +4,15 @@ extends RefCounted
 ## shuffle for exact ties. Randomness is never called inside the sort comparator.
 
 var _random: BattleRandomSource
+var _status_service: StatusEffectService
 
 
-func _init(random_source: BattleRandomSource) -> void:
+func _init(
+	random_source: BattleRandomSource,
+	status_service: StatusEffectService = null
+) -> void:
 	_random = random_source
+	_status_service = status_service
 
 
 func resolve(
@@ -19,10 +24,13 @@ func resolve(
 	for command in commands:
 		var participant := participants_by_side.get(command.actor_side) as BattleParticipant
 		if participant != null:
+			var speed := participant.get_speed()
+			if _status_service != null:
+				speed = _status_service.get_effective_speed(participant)
 			entries.append(TurnOrderEntry.create(
 				command,
 				command.get_priority(catalog),
-				participant.get_speed()
+				speed
 			))
 	entries.sort_custom(Callable(self, "_comes_before"))
 	_shuffle_exact_ties(entries)

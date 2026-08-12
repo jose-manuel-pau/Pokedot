@@ -1,8 +1,8 @@
 class_name BattleManager
 extends RefCounted
-## One-versus-one battle state machine. It validates commands, resolves turn
-## order, applies deterministic move results, evaluates outcomes, and publishes
-## domain events without depending on a scene or UI.
+## Party-capable battle state machine. The one-versus-one API remains the
+## simplest entry point. It validates commands, resolves deterministic turns,
+## applies status hooks, evaluates party outcomes, and publishes domain events.
 
 signal phase_changed(previous_phase: StringName, current_phase: StringName)
 signal event_emitted(event: BattleEvent)
@@ -12,8 +12,10 @@ var outcome: StringName = BattleConstants.OUTCOME_NONE
 var turn_number: int = 0
 var last_error: StringName = &""
 var participants_by_side: Dictionary = {}
+var parties_by_side: Dictionary = {}
 var pending_commands_by_side: Dictionary = {}
 var event_history: Array[BattleEvent] = []
+var status_effect_service: StatusEffectService
 
 var _catalog: ContentCatalog
 var _stat_calculator := StatCalculator.new()
@@ -28,53 +30,62 @@ func _init(
 ) -> void:
 	_catalog = catalog
 	_random = random_source if random_source != null else SeededBattleRandomSource.new(0)
+	status_effect_service = StatusEffectService.new(_catalog)
 	_damage_calculator = DamageCalculator.new(
 		TypeEffectivenessService.new(_catalog),
-		_random
+		_random,
+		status_effect_service
 	)
-	_turn_order_resolver = TurnOrderResolver.new(_random)
+	_turn_order_resolver = TurnOrderResolver.new(_random, status_effect_service)
 
 
 func start_battle(
 	player_creature: CreatureInstance,
 	opponent_creature: CreatureInstance
 ) -> bool:
+	var player_party: Array[CreatureInstance] = []
+	var opponent_party: Array[CreatureInstance] = []
+	if player_creature != null:
+		player_party.append(player_creature)
+	if opponent_creature != null:
+		opponent_party.append(opponent_creature)
+	return start_party_battle(player_party, opponent_party)
+
+
+func start_party_battle(
+	player_creatures: Array[CreatureInstance],
+	opponent_creatures: Array[CreatureInstance]
+) -> bool:
 	last_error = &""
 	if phase != BattleConstants.PHASE_NOT_STARTED:
 		return _reject(&"battle_already_started")
-	if player_creature == null or opponent_creature == null:
+	if player_creatures.is_empty() or opponent_creatures.is_empty():
 		return _reject(&"missing_creature")
-	var player_species := _catalog.get_species(player_creature.species_id)
-	var opponent_species := _catalog.get_species(opponent_creature.species_id)
-	if player_species == null or opponent_species == null:
-		return _reject(&"unknown_species")
+	if player_creatures.size() > BattleParty.MAX_MEMBERS \
+		or opponent_creatures.size() > BattleParty.MAX_MEMBERS:
+		return _reject(&"party_too_large")
 
-	var player := BattleParticipant.from_instance(
-		BattleConstants.SIDE_PLAYER,
-		player_species,
-		player_creature,
-		_catalog,
-		_stat_calculator
-	)
-	var opponent := BattleParticipant.from_instance(
-		BattleConstants.SIDE_OPPONENT,
-		opponent_species,
-		opponent_creature,
-		_catalog,
-		_stat_calculator
-	)
-	if player.is_defeated() or opponent.is_defeated():
+	var player_party := _create_party(BattleConstants.SIDE_PLAYER, player_creatures)
+	if player_party == null:
+		return false
+	var opponent_party := _create_party(BattleConstants.SIDE_OPPONENT, opponent_creatures)
+	if opponent_party == null:
+		return false
+	if player_party.get_active().is_defeated() \
+		or opponent_party.get_active().is_defeated():
 		return _reject(&"creature_already_defeated")
-	if player.move_slots_by_id.is_empty() or opponent.move_slots_by_id.is_empty():
-		return _reject(&"creature_has_no_moves")
 
-	participants_by_side[BattleConstants.SIDE_PLAYER] = player
-	participants_by_side[BattleConstants.SIDE_OPPONENT] = opponent
+	parties_by_side[BattleConstants.SIDE_PLAYER] = player_party
+	parties_by_side[BattleConstants.SIDE_OPPONENT] = opponent_party
+	participants_by_side[BattleConstants.SIDE_PLAYER] = player_party.get_active()
+	participants_by_side[BattleConstants.SIDE_OPPONENT] = opponent_party.get_active()
 	turn_number = 1
 	_change_phase(BattleConstants.PHASE_AWAITING_COMMANDS)
 	_emit_event(BattleConstants.EVENT_BATTLE_STARTED, {
-		"player_species_id": player_species.species_id,
-		"opponent_species_id": opponent_species.species_id,
+		"player_species_id": player_party.get_active().species.species_id,
+		"opponent_species_id": opponent_party.get_active().species.species_id,
+		"player_party_size": player_party.members.size(),
+		"opponent_party_size": opponent_party.members.size(),
 	})
 	_emit_event(BattleConstants.EVENT_TURN_STARTED)
 	return true
@@ -98,6 +109,10 @@ func submit_command(command: BattleCommand) -> bool:
 	var validation_error := command.validate(participant, _catalog)
 	if not str(validation_error).is_empty():
 		return _reject_command(command, validation_error)
+	if command is SwitchCreatureCommand:
+		validation_error = _validate_switch_command(command as SwitchCreatureCommand)
+		if not str(validation_error).is_empty():
+			return _reject_command(command, validation_error)
 
 	pending_commands_by_side[command.actor_side] = command
 	_emit_event(BattleConstants.EVENT_COMMAND_SUBMITTED, {
@@ -139,6 +154,8 @@ func resolve_turn() -> bool:
 		_resolve_command(command)
 
 	pending_commands_by_side.clear()
+	_process_end_turn_statuses()
+	_resolve_forced_switches()
 	_evaluate_outcome()
 	if phase == BattleConstants.PHASE_FINISHED:
 		return true
@@ -153,6 +170,22 @@ func get_participant(side: StringName) -> BattleParticipant:
 	return participants_by_side.get(side) as BattleParticipant
 
 
+func get_party(side: StringName) -> BattleParty:
+	return parties_by_side.get(side) as BattleParty
+
+
+func submit_ai_command(
+	ai: BattleAiController,
+	side: StringName = BattleConstants.SIDE_OPPONENT
+) -> bool:
+	if ai == null:
+		return _reject(&"missing_ai")
+	var command := ai.choose_command(self, side)
+	if command == null:
+		return _reject(&"ai_no_command")
+	return submit_command(command)
+
+
 func events_of_type(event_type: StringName) -> Array[BattleEvent]:
 	var matches: Array[BattleEvent] = []
 	for event in event_history:
@@ -162,7 +195,17 @@ func events_of_type(event_type: StringName) -> Array[BattleEvent]:
 
 
 func _resolve_command(command: BattleCommand) -> void:
+	if command is SwitchCreatureCommand:
+		_resolve_switch(command as SwitchCreatureCommand, false)
+		return
 	if command is UseMoveCommand:
+		var actor := get_participant(command.actor_side)
+		if not status_effect_service.can_act(actor):
+			_emit_event(BattleConstants.EVENT_STATUS_BLOCKED_ACTION, {
+				"side": command.actor_side,
+				"status_id": status_effect_service.first_action_blocker(actor),
+			})
+			return
 		_resolve_use_move(command as UseMoveCommand)
 		return
 	_emit_event(BattleConstants.EVENT_COMMAND_SKIPPED, {
@@ -202,6 +245,7 @@ func _resolve_use_move(command: UseMoveCommand) -> void:
 			"move_id": move.move_id,
 			"status_effect_id": move.status_effect_id,
 		})
+		_try_apply_move_status(defender, move)
 		return
 
 	var applied_damage := defender.apply_damage(damage_result.damage)
@@ -215,15 +259,111 @@ func _resolve_use_move(command: UseMoveCommand) -> void:
 		"type_multiplier": damage_result.type_multiplier,
 	})
 	if defender.is_defeated():
-		_emit_event(BattleConstants.EVENT_CREATURE_DEFEATED, {
-			"side": defender.side,
-			"species_id": defender.species.species_id,
+		_emit_defeat(defender)
+	else:
+		_try_apply_move_status(defender, move)
+
+
+func _try_apply_move_status(
+	target: BattleParticipant,
+	move: MoveDefinition
+) -> void:
+	if str(move.status_effect_id).is_empty() or move.status_chance <= 0.0:
+		return
+	var applied_by_chance := move.status_chance >= 100.0 \
+		or _random.next_float() * 100.0 < move.status_chance
+	if not applied_by_chance:
+		_emit_event(BattleConstants.EVENT_STATUS_APPLICATION_FAILED, {
+			"side": target.side,
+			"status_id": move.status_effect_id,
+			"reason": &"chance_failed",
+		})
+		return
+	var result := status_effect_service.apply_status(
+		target,
+		move.status_effect_id,
+		turn_number
+	)
+	if result == &"applied" or result == &"stacked":
+		_emit_event(BattleConstants.EVENT_STATUS_APPLIED, {
+			"side": target.side,
+			"status_id": move.status_effect_id,
+			"result": result,
+		})
+	else:
+		_emit_event(BattleConstants.EVENT_STATUS_APPLICATION_FAILED, {
+			"side": target.side,
+			"status_id": move.status_effect_id,
+			"reason": result,
 		})
 
 
+func _process_end_turn_statuses() -> void:
+	for side in [BattleConstants.SIDE_PLAYER, BattleConstants.SIDE_OPPONENT]:
+		var participant := get_participant(side)
+		if participant == null or participant.is_defeated():
+			continue
+		for result in status_effect_service.process_end_turn(participant, turn_number):
+			if result.damage > 0:
+				_emit_event(BattleConstants.EVENT_STATUS_DAMAGE, {
+					"side": side,
+					"status_id": result.status_id,
+					"damage": result.damage,
+					"target_hp": participant.current_hp,
+				})
+			if result.removed:
+				_emit_event(BattleConstants.EVENT_STATUS_REMOVED, {
+					"side": side,
+					"status_id": result.status_id,
+					"reason": &"duration_expired",
+				})
+		if participant.is_defeated():
+			_emit_defeat(participant)
+
+
+func _resolve_switch(command: SwitchCreatureCommand, forced: bool) -> bool:
+	var party := get_party(command.actor_side)
+	if party == null or not party.can_switch_to(command.target_instance_id):
+		return false
+	var outgoing := party.get_active()
+	for status_id in status_effect_service.clear_volatile_statuses(outgoing):
+		_emit_event(BattleConstants.EVENT_STATUS_REMOVED, {
+			"side": command.actor_side,
+			"status_id": status_id,
+			"reason": &"switched_out",
+		})
+	if not party.switch_to(command.target_instance_id):
+		return false
+	var incoming := party.get_active()
+	participants_by_side[command.actor_side] = incoming
+	_emit_event(BattleConstants.EVENT_CREATURE_SWITCHED, {
+		"side": command.actor_side,
+		"outgoing_instance_id": outgoing.creature.instance_id,
+		"incoming_instance_id": incoming.creature.instance_id,
+		"incoming_species_id": incoming.species.species_id,
+		"forced": forced,
+	})
+	return true
+
+
+func _resolve_forced_switches() -> void:
+	for side in [BattleConstants.SIDE_PLAYER, BattleConstants.SIDE_OPPONENT]:
+		var party := get_party(side)
+		if party == null or not party.get_active().is_defeated():
+			continue
+		var replacement := party.first_available_bench()
+		if replacement != null:
+			_resolve_switch(
+				SwitchCreatureCommand.new(side, replacement.creature.instance_id),
+				true
+			)
+
+
 func _evaluate_outcome() -> void:
-	var player_defeated := get_participant(BattleConstants.SIDE_PLAYER).is_defeated()
-	var opponent_defeated := get_participant(BattleConstants.SIDE_OPPONENT).is_defeated()
+	var player_party := get_party(BattleConstants.SIDE_PLAYER)
+	var opponent_party := get_party(BattleConstants.SIDE_OPPONENT)
+	var player_defeated := player_party == null or not player_party.has_usable_members()
+	var opponent_defeated := opponent_party == null or not opponent_party.has_usable_members()
 	if not player_defeated and not opponent_defeated:
 		return
 	if player_defeated and opponent_defeated:
@@ -234,6 +374,67 @@ func _evaluate_outcome() -> void:
 		outcome = BattleConstants.OUTCOME_OPPONENT_VICTORY
 	_change_phase(BattleConstants.PHASE_FINISHED)
 	_emit_event(BattleConstants.EVENT_BATTLE_FINISHED, {"outcome": outcome})
+
+
+func _validate_switch_command(command: SwitchCreatureCommand) -> StringName:
+	var party := get_party(command.actor_side)
+	if party == null:
+		return &"missing_party"
+	if party.get_active().creature.instance_id == command.target_instance_id:
+		return &"target_already_active"
+	var target := party.get_member(command.target_instance_id)
+	if target == null:
+		return &"unknown_switch_target"
+	if target.is_defeated():
+		return &"switch_target_defeated"
+	if not status_effect_service.can_switch(party.get_active()):
+		return &"switch_blocked_by_status"
+	return &""
+
+
+func _create_party(
+	side: StringName,
+	creatures: Array[CreatureInstance]
+) -> BattleParty:
+	var party := BattleParty.new()
+	party.side = side
+	var seen_instance_ids: Dictionary = {}
+	for index in creatures.size():
+		var creature := creatures[index]
+		if creature == null:
+			_reject(&"missing_creature")
+			return null
+		var species := _catalog.get_species(creature.species_id)
+		if species == null:
+			_reject(&"unknown_species")
+			return null
+		if creature.instance_id.is_empty():
+			creature.instance_id = "%s_%d" % [side, index]
+		if seen_instance_ids.has(creature.instance_id):
+			_reject(&"duplicate_instance_id")
+			return null
+		seen_instance_ids[creature.instance_id] = true
+		var participant := BattleParticipant.from_instance(
+			side,
+			species,
+			creature,
+			_catalog,
+			_stat_calculator
+		)
+		status_effect_service.restore_persistent_statuses(participant)
+		if not participant.is_defeated() and participant.move_slots_by_id.is_empty():
+			_reject(&"creature_has_no_moves")
+			return null
+		party.members.append(participant)
+	return party
+
+
+func _emit_defeat(participant: BattleParticipant) -> void:
+	_emit_event(BattleConstants.EVENT_CREATURE_DEFEATED, {
+		"side": participant.side,
+		"species_id": participant.species.species_id,
+		"instance_id": participant.creature.instance_id,
+	})
 
 
 func _change_phase(next_phase: StringName) -> void:
