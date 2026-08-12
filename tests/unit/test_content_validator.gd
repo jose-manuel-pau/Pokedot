@@ -11,6 +11,7 @@ func run() -> void:
 	_test_invalid_type_reference()
 	_test_invalid_content_id()
 	_test_invalid_item_rules()
+	_test_invalid_map_rules()
 
 
 func _fresh_catalog() -> ContentCatalog:
@@ -96,3 +97,29 @@ func _test_invalid_item_rules() -> void:
 	assert_has_issue(issues, &"unknown_item_status_reference")
 	assert_has_issue(issues, &"consumable_key_item")
 	assert_has_issue(issues, &"stackable_key_item")
+
+
+func _test_invalid_map_rules() -> void:
+	begin_case("exploration map constraints")
+	var catalog := _fresh_catalog()
+	var map := catalog.get_map(&"mosslight_crossing")
+	map.spawn_position = Vector2i(0, 0)
+	map.tile_rows[1] = "#?...............#"
+	var zone := map.encounter_zones[0]
+	zone.encounter_rate = 2.0
+	zone.entries[0].species_id = &"missing_species"
+	zone.entries[0].min_level = 9
+	zone.entries[0].max_level = 4
+	zone.entries[0].weight = 0
+	var npc := map.npcs[0]
+	npc.facing = Vector2i(1, 1)
+	npc.dialogue.clear()
+	var issues := ContentValidator.new().validate(catalog)
+	assert_has_issue(issues, &"invalid_map_spawn")
+	assert_has_issue(issues, &"unknown_map_tile")
+	assert_has_issue(issues, &"invalid_encounter_rate")
+	assert_has_issue(issues, &"unknown_encounter_species")
+	assert_has_issue(issues, &"invalid_encounter_level")
+	assert_has_issue(issues, &"invalid_encounter_weight")
+	assert_has_issue(issues, &"invalid_npc_facing")
+	assert_has_issue(issues, &"npc_without_dialogue")

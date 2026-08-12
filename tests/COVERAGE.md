@@ -37,4 +37,12 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Encounter rules | Trainer capture rejection, wild failure continuation, device consumption, successful terminal state |
 | Battle items | Command priority, healing/remedy events, stock consumption, target and item validation |
 | Capture events | Attempt evidence, collection destination, terminal outcome, queued counterattack suppression |
+| Exploration content | Typed maps, tile grids, encounter tables, NPC dialogue, schema and cross-reference validation |
+| Map queries | Dimensions, boundary behavior, terrain collision, zone lookup, and NPC lookup |
+| Exploration movement | Cardinal validation, facing, blocked terrain/NPCs, successful steps, and state mutation |
+| NPC interaction | Facing-based lookup, dialogue copy, empty interaction rejection, and observer event |
+| Wild encounters | Trigger boundary, weighted first/last entries, inclusive levels, invalid tables, seeded reproducibility |
+| Encounter state | Active/transition phases, movement lock during transition, resume, and cooldown roll suppression |
+| Battle handoff | Request validation, wild instance identity/XP/moves, capturable battle initialization, error forwarding |
+| Playable scene | Project bootstrap, keyboard adapter, code-drawn map, dialogue panel, and battle-transition preview |
 

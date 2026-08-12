@@ -29,6 +29,7 @@ func _test_valid_catalog_loads() -> void:
 	assert_equal(result.catalog.statuses_by_id.size(), 3)
 	assert_equal(result.catalog.growth_curves_by_id.size(), 3)
 	assert_equal(result.catalog.items_by_id.size(), 9)
+	assert_equal(result.catalog.maps_by_id.size(), 1)
 
 
 func _test_typed_species_data() -> void:
@@ -62,4 +63,12 @@ func _test_cross_references_are_resolved() -> void:
 	assert_true(remedy.is_status_remedy())
 	for status_id in remedy.cured_status_ids:
 		assert_not_null(catalog.get_status(status_id))
+	var map := catalog.get_map(&"mosslight_crossing")
+	assert_not_null(map)
+	assert_equal(map.spawn_position, Vector2i(2, 8))
+	assert_equal(map.encounter_zones.size(), 2)
+	assert_equal(map.npcs.size(), 1)
+	for zone in map.encounter_zones:
+		for entry in zone.entries:
+			assert_not_null(catalog.get_species(entry.species_id))
 
