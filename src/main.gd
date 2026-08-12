@@ -13,13 +13,14 @@ func _ready() -> void:
 		return
 
 	print(
-		"Content ready: %d species, %d moves, %d types, %d statuses, %d growth curves"
+		"Content ready: %d species, %d moves, %d types, %d statuses, %d growth curves, %d items"
 		% [
 			result.catalog.species_by_id.size(),
 			result.catalog.moves_by_id.size(),
 			result.catalog.types_by_id.size(),
 			result.catalog.statuses_by_id.size(),
 			result.catalog.growth_curves_by_id.size(),
+			result.catalog.items_by_id.size(),
 		]
 	)
 

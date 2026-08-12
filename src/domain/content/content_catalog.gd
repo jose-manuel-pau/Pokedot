@@ -7,6 +7,7 @@ var moves_by_id: Dictionary = {}
 var types_by_id: Dictionary = {}
 var statuses_by_id: Dictionary = {}
 var growth_curves_by_id: Dictionary = {}
+var items_by_id: Dictionary = {}
 
 
 func add_species(definition: CreatureSpeciesDefinition) -> bool:
@@ -29,6 +30,10 @@ func add_growth_curve(definition: GrowthCurveDefinition) -> bool:
 	return _add_unique(growth_curves_by_id, definition.curve_id, definition)
 
 
+func add_item(definition: ItemDefinition) -> bool:
+	return _add_unique(items_by_id, definition.item_id, definition)
+
+
 func get_species(species_id: StringName) -> CreatureSpeciesDefinition:
 	return species_by_id.get(species_id) as CreatureSpeciesDefinition
 
@@ -47,6 +52,10 @@ func get_status(status_id: StringName) -> StatusConditionDefinition:
 
 func get_growth_curve(curve_id: StringName) -> GrowthCurveDefinition:
 	return growth_curves_by_id.get(curve_id) as GrowthCurveDefinition
+
+
+func get_item(item_id: StringName) -> ItemDefinition:
+	return items_by_id.get(item_id) as ItemDefinition
 
 
 func _add_unique(target: Dictionary, content_id: StringName, definition: Resource) -> bool:

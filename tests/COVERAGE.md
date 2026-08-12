@@ -1,4 +1,4 @@
-# Creature Data & Stats Coverage
+# Automated Behavior Coverage
 
 Coverage is requirements- and branch-oriented. A future CI pipeline may add engine-level line instrumentation, but completion of this module requires all behavior below to pass headlessly.
 
@@ -29,4 +29,12 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Switching | Priority, target validation, incoming damage, persistent retention, volatile cleanup, forced replacement |
 | Battle AI | Expected-damage scoring, status utility, depleted moves, low-HP switch, movement lock, no-action result |
 | AI determinism | Equal-score commands and integration submission produce reproducible selections |
+| Item content | Typed item lookup, category rules, stack limits, key-item invariants, status cross-references |
+| Inventory transactions | Add/remove, zero cleanup, invalid amounts, insufficient stock, atomic stack and slot limits |
+| Item effects | Flat and fractional healing, max-HP cap, defeated/full rejection, remedy persistence sync |
+| Creature collection | Party insertion, storage routing, missing data and duplicate instance rejection |
+| Capture probability | HP, status, device and encounter multipliers, min/max clamps, deterministic success and critical rolls |
+| Encounter rules | Trainer capture rejection, wild failure continuation, device consumption, successful terminal state |
+| Battle items | Command priority, healing/remedy events, stock consumption, target and item validation |
+| Capture events | Attempt evidence, collection destination, terminal outcome, queued counterattack suppression |
 

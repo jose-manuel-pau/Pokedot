@@ -16,12 +16,20 @@ var parties_by_side: Dictionary = {}
 var pending_commands_by_side: Dictionary = {}
 var event_history: Array[BattleEvent] = []
 var status_effect_service: StatusEffectService
+var inventories_by_side: Dictionary = {}
+var is_wild_encounter: bool = false
 
 var _catalog: ContentCatalog
 var _stat_calculator := StatCalculator.new()
 var _random: BattleRandomSource
 var _damage_calculator: DamageCalculator
 var _turn_order_resolver: TurnOrderResolver
+var _inventory_service: InventoryService
+var _item_effect_service: ItemEffectService
+var _capture_service: CaptureService
+var _collection_service := CreatureCollectionService.new()
+var _capture_collection: CreatureCollection
+var _encounter_capture_multiplier: float = 1.0
 
 
 func _init(
@@ -37,6 +45,9 @@ func _init(
 		status_effect_service
 	)
 	_turn_order_resolver = TurnOrderResolver.new(_random, status_effect_service)
+	_inventory_service = InventoryService.new(_catalog)
+	_item_effect_service = ItemEffectService.new(_catalog, status_effect_service)
+	_capture_service = CaptureService.new(_catalog, _random)
 
 
 func start_battle(
@@ -91,6 +102,40 @@ func start_party_battle(
 	return true
 
 
+func start_wild_battle(
+	player_creatures: Array[CreatureInstance],
+	wild_creature: CreatureInstance,
+	player_inventory: Inventory,
+	collection: CreatureCollection,
+	encounter_multiplier: float = 1.0
+) -> bool:
+	last_error = &""
+	if player_inventory == null:
+		return _reject(&"missing_inventory")
+	if collection == null:
+		return _reject(&"missing_collection")
+	if wild_creature == null:
+		return _reject(&"missing_creature")
+	var wild_party: Array[CreatureInstance] = [wild_creature]
+	if not start_party_battle(player_creatures, wild_party):
+		return false
+	is_wild_encounter = true
+	inventories_by_side[BattleConstants.SIDE_PLAYER] = player_inventory
+	_capture_collection = collection
+	_encounter_capture_multiplier = maxf(encounter_multiplier, 0.0)
+	return true
+
+
+func assign_inventory(side: StringName, inventory: Inventory) -> bool:
+	last_error = &""
+	if not BattleConstants.is_valid_side(side):
+		return _reject(&"unknown_side")
+	if inventory == null:
+		return _reject(&"missing_inventory")
+	inventories_by_side[side] = inventory
+	return true
+
+
 func submit_command(command: BattleCommand) -> bool:
 	last_error = &""
 	if command == null:
@@ -111,6 +156,14 @@ func submit_command(command: BattleCommand) -> bool:
 		return _reject_command(command, validation_error)
 	if command is SwitchCreatureCommand:
 		validation_error = _validate_switch_command(command as SwitchCreatureCommand)
+		if not str(validation_error).is_empty():
+			return _reject_command(command, validation_error)
+	elif command is UseItemCommand:
+		validation_error = _validate_item_command(command as UseItemCommand)
+		if not str(validation_error).is_empty():
+			return _reject_command(command, validation_error)
+	elif command is CaptureCommand:
+		validation_error = _validate_capture_command(command as CaptureCommand)
 		if not str(validation_error).is_empty():
 			return _reject_command(command, validation_error)
 
@@ -152,8 +205,12 @@ func resolve_turn() -> bool:
 			})
 			continue
 		_resolve_command(command)
+		if phase == BattleConstants.PHASE_FINISHED:
+			break
 
 	pending_commands_by_side.clear()
+	if phase == BattleConstants.PHASE_FINISHED:
+		return true
 	_process_end_turn_statuses()
 	_resolve_forced_switches()
 	_evaluate_outcome()
@@ -208,10 +265,101 @@ func _resolve_command(command: BattleCommand) -> void:
 			return
 		_resolve_use_move(command as UseMoveCommand)
 		return
+	if command is UseItemCommand:
+		_resolve_use_item(command as UseItemCommand)
+		return
+	if command is CaptureCommand:
+		_resolve_capture(command as CaptureCommand)
+		return
 	_emit_event(BattleConstants.EVENT_COMMAND_SKIPPED, {
 		"side": command.actor_side,
 		"reason": &"unsupported_command",
 	})
+
+
+func _resolve_use_item(command: UseItemCommand) -> void:
+	var inventory := inventories_by_side.get(command.actor_side) as Inventory
+	var party := get_party(command.actor_side)
+	var target := party.get_member(command.target_instance_id) if party != null else null
+	var effect_error := _item_effect_service.validate(command.item_id, target)
+	if not str(effect_error).is_empty():
+		_emit_event(BattleConstants.EVENT_COMMAND_SKIPPED, {
+			"side": command.actor_side,
+			"reason": effect_error,
+		})
+		return
+	var item := _catalog.get_item(command.item_id)
+	if item.consumable:
+		var transaction := _inventory_service.remove(inventory, command.item_id)
+		if not transaction.success:
+			_emit_event(BattleConstants.EVENT_COMMAND_SKIPPED, {
+				"side": command.actor_side,
+				"reason": transaction.reason,
+			})
+			return
+	var effect := _item_effect_service.apply(command.item_id, target)
+	_emit_event(BattleConstants.EVENT_ITEM_USED, {
+		"side": command.actor_side,
+		"item_id": command.item_id,
+		"target_instance_id": command.target_instance_id,
+		"healing_applied": effect.healing_applied,
+		"removed_status_ids": effect.removed_status_ids,
+		"quantity_after": inventory.get_quantity(command.item_id),
+	})
+	for status_id in effect.removed_status_ids:
+		_emit_event(BattleConstants.EVENT_STATUS_REMOVED, {
+			"side": target.side,
+			"status_id": status_id,
+			"reason": &"item_used",
+		})
+
+
+func _resolve_capture(command: CaptureCommand) -> void:
+	var inventory := inventories_by_side.get(command.actor_side) as Inventory
+	var transaction := _inventory_service.remove(inventory, command.device_item_id)
+	if not transaction.success:
+		_emit_event(BattleConstants.EVENT_COMMAND_SKIPPED, {
+			"side": command.actor_side,
+			"reason": transaction.reason,
+		})
+		return
+	var target := get_participant(BattleConstants.SIDE_OPPONENT)
+	var result := _capture_service.attempt(
+		target,
+		_catalog.get_item(command.device_item_id),
+		_encounter_capture_multiplier
+	)
+	_emit_event(BattleConstants.EVENT_CAPTURE_ATTEMPTED, {
+		"side": command.actor_side,
+		"device_item_id": command.device_item_id,
+		"target_instance_id": target.creature.instance_id,
+		"chance": result.chance,
+		"success_roll": result.success_roll,
+		"critical": result.critical,
+		"success": result.success,
+		"quantity_after": transaction.quantity_after,
+	})
+	if not result.success:
+		return
+	var addition := _collection_service.add_captured(
+		_capture_collection,
+		target.creature
+	)
+	if not addition.success:
+		_emit_event(BattleConstants.EVENT_COMMAND_SKIPPED, {
+			"side": command.actor_side,
+			"reason": addition.reason,
+		})
+		return
+	outcome = BattleConstants.OUTCOME_OPPONENT_CAPTURED
+	_emit_event(BattleConstants.EVENT_CREATURE_CAPTURED, {
+		"species_id": target.species.species_id,
+		"instance_id": target.creature.instance_id,
+		"destination": addition.destination,
+		"critical": result.critical,
+	})
+	_change_phase(BattleConstants.PHASE_FINISHED)
+	_emit_event(BattleConstants.EVENT_BATTLE_FINISHED, {"outcome": outcome})
 
 
 func _resolve_use_move(command: UseMoveCommand) -> void:
@@ -389,6 +537,46 @@ func _validate_switch_command(command: SwitchCreatureCommand) -> StringName:
 		return &"switch_target_defeated"
 	if not status_effect_service.can_switch(party.get_active()):
 		return &"switch_blocked_by_status"
+	return &""
+
+
+func _validate_item_command(command: UseItemCommand) -> StringName:
+	var item := _catalog.get_item(command.item_id)
+	if item == null:
+		return &"unknown_item"
+	if not item.battle_usable:
+		return &"item_not_battle_usable"
+	if item.is_capture_device():
+		return &"capture_device_requires_capture_command"
+	var inventory := inventories_by_side.get(command.actor_side) as Inventory
+	if inventory == null:
+		return &"missing_inventory"
+	if not inventory.has(command.item_id):
+		return &"insufficient_quantity"
+	var party := get_party(command.actor_side)
+	var target := party.get_member(command.target_instance_id) if party != null else null
+	if target == null:
+		return &"unknown_item_target"
+	return _item_effect_service.validate(command.item_id, target)
+
+
+func _validate_capture_command(command: CaptureCommand) -> StringName:
+	if command.actor_side != BattleConstants.SIDE_PLAYER:
+		return &"capture_player_only"
+	if not is_wild_encounter:
+		return &"capture_not_allowed"
+	var inventory := inventories_by_side.get(command.actor_side) as Inventory
+	if inventory == null:
+		return &"missing_inventory"
+	if not inventory.has(command.device_item_id):
+		return &"insufficient_quantity"
+	if _capture_collection == null:
+		return &"missing_collection"
+	var target := get_participant(BattleConstants.SIDE_OPPONENT)
+	if target == null or target.is_defeated():
+		return &"invalid_capture_target"
+	if _capture_collection.contains_instance(target.creature.instance_id):
+		return &"duplicate_instance_id"
 	return &""
 
 

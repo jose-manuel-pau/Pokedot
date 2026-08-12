@@ -28,6 +28,7 @@ func _test_valid_catalog_loads() -> void:
 	assert_equal(result.catalog.types_by_id.size(), 5)
 	assert_equal(result.catalog.statuses_by_id.size(), 3)
 	assert_equal(result.catalog.growth_curves_by_id.size(), 3)
+	assert_equal(result.catalog.items_by_id.size(), 9)
 
 
 func _test_typed_species_data() -> void:
@@ -56,4 +57,9 @@ func _test_cross_references_are_resolved() -> void:
 	assert_not_null(catalog.get_growth_curve(species.growth_curve_id))
 	for learnset_entry in species.learnset:
 		assert_not_null(catalog.get_move(learnset_entry.move_id))
+	var remedy := catalog.get_item(&"clarity_herb")
+	assert_not_null(remedy)
+	assert_true(remedy.is_status_remedy())
+	for status_id in remedy.cured_status_ids:
+		assert_not_null(catalog.get_status(status_id))
 

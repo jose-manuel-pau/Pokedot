@@ -13,6 +13,11 @@ const STATUS_SERVICE_TEST := preload("res://tests/unit/battle/test_status_effect
 const STATUS_INTEGRATION_TEST := preload("res://tests/unit/battle/test_status_battle_integration.gd")
 const PARTY_SWITCHING_TEST := preload("res://tests/unit/battle/test_party_switching.gd")
 const BATTLE_AI_TEST := preload("res://tests/unit/battle/test_battle_ai_controller.gd")
+const INVENTORY_TEST := preload("res://tests/unit/inventory/test_inventory_service.gd")
+const ITEM_EFFECT_TEST := preload("res://tests/unit/inventory/test_item_effect_service.gd")
+const COLLECTION_TEST := preload("res://tests/unit/collection/test_creature_collection_service.gd")
+const CAPTURE_TEST := preload("res://tests/unit/capture/test_capture_service.gd")
+const CAPTURE_INVENTORY_INTEGRATION_TEST := preload("res://tests/unit/battle/test_capture_inventory_integration.gd")
 
 
 func _initialize() -> void:
@@ -33,6 +38,11 @@ func _run_all() -> void:
 		STATUS_INTEGRATION_TEST.new(),
 		PARTY_SWITCHING_TEST.new(),
 		BATTLE_AI_TEST.new(),
+		INVENTORY_TEST.new(),
+		ITEM_EFFECT_TEST.new(),
+		COLLECTION_TEST.new(),
+		CAPTURE_TEST.new(),
+		CAPTURE_INVENTORY_INTEGRATION_TEST.new(),
 	]
 	var total_cases := 0
 	var total_assertions := 0

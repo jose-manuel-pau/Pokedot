@@ -10,6 +10,7 @@ func load_catalog(base_path: String) -> ContentLoadResult:
 	var result := ContentLoadResult.new()
 	_load_types(_read_items(base_path.path_join("types.json"), result), result)
 	_load_statuses(_read_items(base_path.path_join("statuses.json"), result), result)
+	_load_items(_read_items(base_path.path_join("items.json"), result), result)
 	_load_growth_curves(_read_items(base_path.path_join("growth_curves.json"), result), result)
 	_load_moves(_read_items(base_path.path_join("moves.json"), result), result)
 	_load_species(_read_items(base_path.path_join("species.json"), result), result)
@@ -102,6 +103,27 @@ func _load_growth_curves(items: Array, result: ContentLoadResult) -> void:
 		definition.scale = float(data.get("scale", 1.0))
 		definition.exponent = float(data.get("exponent", 3.0))
 		_add_growth_curve(definition, "growth_curves.items[%d].id" % index, result)
+
+
+func _load_items(items: Array, result: ContentLoadResult) -> void:
+	for index in items.size():
+		var data := _as_dictionary(items[index], "items.items[%d]" % index, result)
+		if data.is_empty():
+			continue
+		var definition := ItemDefinition.new()
+		definition.item_id = _read_id(data, "id", "items.items[%d].id" % index, result)
+		definition.display_name = str(data.get("display_name", ""))
+		definition.description = str(data.get("description", ""))
+		definition.category = str(data.get("category", ItemDefinition.CATEGORY_BATTLE_CONSUMABLE))
+		definition.max_stack = int(data.get("max_stack", 99))
+		definition.consumable = bool(data.get("consumable", true))
+		definition.battle_usable = bool(data.get("battle_usable", true))
+		definition.purchase_price = int(data.get("purchase_price", 0))
+		definition.capture_multiplier = float(data.get("capture_multiplier", 1.0))
+		definition.healing_amount = int(data.get("healing_amount", 0))
+		definition.healing_fraction = float(data.get("healing_fraction", 0.0))
+		definition.cured_status_ids = _to_string_name_array(data.get("cured_status_ids", []))
+		_add_item(definition, "items.items[%d].id" % index, result)
 
 
 func _load_moves(items: Array, result: ContentLoadResult) -> void:
@@ -199,6 +221,11 @@ func _add_status(definition: StatusConditionDefinition, path: String, result: Co
 func _add_growth_curve(definition: GrowthCurveDefinition, path: String, result: ContentLoadResult) -> void:
 	if not result.catalog.add_growth_curve(definition) and not str(definition.curve_id).is_empty():
 		_add_error(result, &"duplicate_id", path, "Growth curve ID is already defined.")
+
+
+func _add_item(definition: ItemDefinition, path: String, result: ContentLoadResult) -> void:
+	if not result.catalog.add_item(definition) and not str(definition.item_id).is_empty():
+		_add_error(result, &"duplicate_id", path, "Item ID is already defined.")
 
 
 func _add_error(result: ContentLoadResult, code: StringName, path: String, message: String) -> void:
