@@ -40,6 +40,7 @@ func _test_typed_species_data() -> void:
 	assert_equal(species.base_stats.attack, 64)
 	assert_equal(species.element_types, [&"ember", &"stone"])
 	assert_equal(species.growth_curve_id, &"standard")
+	assert_equal(species.experience_yield, 62)
 
 
 func _test_learnset_query() -> void:

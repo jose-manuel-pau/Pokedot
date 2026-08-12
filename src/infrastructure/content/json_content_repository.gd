@@ -162,6 +162,7 @@ func _load_species(items: Array, result: ContentLoadResult) -> void:
 			_add_error(result, &"invalid_field_type", "species.items[%d].base_stats" % index, "Expected an object.")
 		definition.element_types = _to_string_name_array(data.get("types", []))
 		definition.catch_rate = int(data.get("catch_rate", 0))
+		definition.experience_yield = int(data.get("experience_yield", 0))
 		definition.growth_curve_id = StringName(str(data.get("growth_curve_id", "")))
 		var raw_learnset: Variant = data.get("learnset", [])
 		if raw_learnset is Array:

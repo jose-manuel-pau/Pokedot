@@ -22,6 +22,14 @@ const EXPLORATION_MAP_TEST := preload("res://tests/unit/exploration/test_explora
 const WILD_ENCOUNTER_TEST := preload("res://tests/unit/exploration/test_wild_encounter_service.gd")
 const EXPLORATION_SESSION_TEST := preload("res://tests/unit/exploration/test_exploration_session.gd")
 const WILD_BATTLE_FACTORY_TEST := preload("res://tests/unit/exploration/test_wild_battle_factory.gd")
+const PROGRESSION_TEST := preload("res://tests/unit/progression/test_progression_service.gd")
+const XP_REWARD_TEST := preload("res://tests/unit/progression/test_experience_reward_calculator.gd")
+const BATTLE_REWARD_TEST := preload("res://tests/unit/progression/test_battle_reward_service.gd")
+const STATE_SERIALIZER_TEST := preload("res://tests/unit/persistence/test_game_state_serializer.gd")
+const STATE_VALIDATOR_TEST := preload("res://tests/unit/persistence/test_game_state_validator.gd")
+const SAVE_MIGRATOR_TEST := preload("res://tests/unit/persistence/test_save_game_migrator.gd")
+const SAVE_REPOSITORY_TEST := preload("res://tests/unit/persistence/test_save_game_repository.gd")
+const ROSTER_SERVICE_TEST := preload("res://tests/unit/collection/test_creature_roster_service.gd")
 
 
 func _initialize() -> void:
@@ -51,6 +59,14 @@ func _run_all() -> void:
 		WILD_ENCOUNTER_TEST.new(),
 		EXPLORATION_SESSION_TEST.new(),
 		WILD_BATTLE_FACTORY_TEST.new(),
+		PROGRESSION_TEST.new(),
+		XP_REWARD_TEST.new(),
+		BATTLE_REWARD_TEST.new(),
+		STATE_SERIALIZER_TEST.new(),
+		STATE_VALIDATOR_TEST.new(),
+		SAVE_MIGRATOR_TEST.new(),
+		SAVE_REPOSITORY_TEST.new(),
+		ROSTER_SERVICE_TEST.new(),
 	]
 	var total_cases := 0
 	var total_assertions := 0

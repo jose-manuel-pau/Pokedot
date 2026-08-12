@@ -45,4 +45,14 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Encounter state | Active/transition phases, movement lock during transition, resume, and cooldown roll suppression |
 | Battle handoff | Request validation, wild instance identity/XP/moves, capturable battle initialization, error forwarding |
 | Playable scene | Project bootstrap, keyboard adapter, code-drawn map, dialogue panel, and battle-transition preview |
+| XP rewards | Species yields, wild formula, trainer premium, invalid inputs, minimum reward |
+| Creature growth | XP normalization, no-level award, multi-level jump, max-level clamp, six-stat recalculation |
+| Growth HP | Conscious maximum-HP increase, existing-damage preservation, defeated creature remains at zero |
+| Move learning | Automatic open-slot learning, full-set pending choices, replacement, decline, invalid choices |
+| Battle rewards | Victory-only rule, entry participation, manual switch sharing, deterministic remainder, one-time claim |
+| Save serialization | JSON-compatible full aggregate round-trip and reference independence |
+| Save validation | Profile, exploration, inventory, party/storage identity, XP/level, HP, build, moves, statuses |
+| Save migration | Current deep copy, version-zero upgrade, invalid root and future-version rejection |
+| Save repository | Write/load, overwrite, sorted slots, invalid-state rejection, corrupt/missing file, backup recovery |
+| Party/storage roster | Transfer, six-member limit, final-member guard, lead reordering, atomic invalid requests |
 

@@ -18,6 +18,8 @@ var event_history: Array[BattleEvent] = []
 var status_effect_service: StatusEffectService
 var inventories_by_side: Dictionary = {}
 var is_wild_encounter: bool = false
+var participating_instance_ids_by_side: Dictionary = {}
+var progression_rewards_claimed: bool = false
 
 var _catalog: ContentCatalog
 var _stat_calculator := StatCalculator.new()
@@ -90,6 +92,10 @@ func start_party_battle(
 	parties_by_side[BattleConstants.SIDE_OPPONENT] = opponent_party
 	participants_by_side[BattleConstants.SIDE_PLAYER] = player_party.get_active()
 	participants_by_side[BattleConstants.SIDE_OPPONENT] = opponent_party.get_active()
+	participating_instance_ids_by_side[BattleConstants.SIDE_PLAYER] = []
+	participating_instance_ids_by_side[BattleConstants.SIDE_OPPONENT] = []
+	_record_participation(player_party.get_active())
+	_record_participation(opponent_party.get_active())
 	turn_number = 1
 	_change_phase(BattleConstants.PHASE_AWAITING_COMMANDS)
 	_emit_event(BattleConstants.EVENT_BATTLE_STARTED, {
@@ -229,6 +235,13 @@ func get_participant(side: StringName) -> BattleParticipant:
 
 func get_party(side: StringName) -> BattleParty:
 	return parties_by_side.get(side) as BattleParty
+
+
+func get_participating_instance_ids(side: StringName) -> Array[String]:
+	var ids: Array[String] = []
+	for raw_id in participating_instance_ids_by_side.get(side, []):
+		ids.append(str(raw_id))
+	return ids
 
 
 func submit_ai_command(
@@ -484,6 +497,7 @@ func _resolve_switch(command: SwitchCreatureCommand, forced: bool) -> bool:
 		return false
 	var incoming := party.get_active()
 	participants_by_side[command.actor_side] = incoming
+	_record_participation(incoming)
 	_emit_event(BattleConstants.EVENT_CREATURE_SWITCHED, {
 		"side": command.actor_side,
 		"outgoing_instance_id": outgoing.creature.instance_id,
@@ -623,6 +637,16 @@ func _emit_defeat(participant: BattleParticipant) -> void:
 		"species_id": participant.species.species_id,
 		"instance_id": participant.creature.instance_id,
 	})
+
+
+func _record_participation(participant: BattleParticipant) -> void:
+	if participant == null:
+		return
+	var ids: Array = participating_instance_ids_by_side.get(participant.side, [])
+	var instance_id := participant.creature.instance_id
+	if not ids.has(instance_id):
+		ids.append(instance_id)
+	participating_instance_ids_by_side[participant.side] = ids
 
 
 func _change_phase(next_phase: StringName) -> void:
