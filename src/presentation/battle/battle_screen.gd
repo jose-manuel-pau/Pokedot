@@ -114,7 +114,7 @@ func choose_item() -> bool:
 	var player := battle_manager.get_participant(BattleConstants.SIDE_PLAYER)
 	return _resolve_player_command(UseItemCommand.new(
 		BattleConstants.SIDE_PLAYER,
-		&"field_tonic",
+		&"potion",
 		player.creature.instance_id
 	))
 
@@ -238,12 +238,12 @@ func _refresh() -> void:
 	_rebuild_move_buttons(player)
 	var accepts_commands := battle_manager.phase == BattleConstants.PHASE_AWAITING_COMMANDS
 	var capsule_count := _inventory.get_quantity(&"basic_capsule") if _inventory != null else 0
-	var tonic_count := _inventory.get_quantity(&"field_tonic") if _inventory != null else 0
+	var potion_count := _inventory.get_quantity(&"potion") if _inventory != null else 0
 	capture_button.text = "[C] CAPSULE  x%d" % capsule_count
-	item_button.text = "[I] TONIC  x%d" % tonic_count
+	item_button.text = "[I] POTION  x%d" % potion_count
 	capture_button.disabled = not accepts_commands or capsule_count <= 0
 	item_button.disabled = not accepts_commands \
-		or tonic_count <= 0 \
+		or potion_count <= 0 \
 		or player.current_hp >= player.get_max_hp() \
 		or player.is_defeated()
 	run_button.disabled = not accepts_commands

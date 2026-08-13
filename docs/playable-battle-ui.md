@@ -6,11 +6,11 @@ The graphical battle screen is a presentation adapter over the existing battle s
 
 1. A field encounter creates a live wild `BattleManager` through `WildBattleFactory`.
 2. `ExplorationScreen` passes that manager, the content catalog, and player inventory to `BattleScreen`.
-3. The player selects a move, Basic Capsule, Field Tonic, or Run by mouse or keyboard.
+3. The player selects a move, Basic Capsule, Potion, or Run by mouse or keyboard.
 4. `BattleScreen` submits the matching command, asks `BattleAiController` for the wild command, and resolves the turn.
 5. Domain events update the combat log, HP bars, statuses, move uses, arena impact cue, and result panel.
 6. A player victory awards cumulative XP once, updates any crossed levels, and refreshes the XP bar and result feedback.
-7. Continue closes the battle, restores the demo starter for ongoing playtesting, applies encounter cooldown, and resumes the field state machine.
+7. Continue closes the battle with the creature's remaining HP intact, applies encounter cooldown, and resumes the field state machine.
 
 ## Controls
 
@@ -18,11 +18,11 @@ The graphical battle screen is a presentation adapter over the existing battle s
 | --- | --- | --- |
 | Use a move | 1–4 | Move button |
 | Throw Basic Capsule | C | Capsule button |
-| Use Field Tonic | I | Tonic button |
+| Use Potion | I | Potion button |
 | Retreat | R or Escape | Run button |
 | Close result | Enter, Space, or Escape | Continue button |
 
-The Tonic action is disabled at full HP. Capsule and Tonic actions display and consume their live inventory quantities. Move buttons display elemental type and current/maximum uses.
+The Potion action is disabled at full HP. Capsule and Potion actions display and consume their live inventory quantities. Move buttons display elemental type and current/maximum uses. The same Potion stack is available from the map object menu.
 
 The player HUD also displays a blue current-level XP bar and exact cumulative total. A victory lists the earned XP and any level increase in both the log and result panel before returning to exploration.
 
@@ -39,4 +39,5 @@ Headless coverage instantiates the real scenes and verifies:
 - move selection submits both commands, resolves damage, advances the turn, and redraws HP/log state;
 - victory awards the defeated creature's XP once, crosses the configured level threshold, and redraws the new level and XP bar;
 - Run finishes a wild battle through the domain state machine and exposes the result panel;
+- battle damage remains on the creature after closing the result instead of being automatically refilled;
 - a field encounter opens the graphical screen, and battle growth persists into the captured-creature roster after exploration resumes.

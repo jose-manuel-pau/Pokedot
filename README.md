@@ -21,7 +21,7 @@ The Combat Vertical Slice adds:
 - Decoupled battle events and signals consumed by presentation and tests
 - Deterministic battle replay behavior
 - A playable graphical wild-battle screen with original code-drawn creatures
-- Mouse and keyboard controls for moves, capture capsules, tonics, and retreat
+- Mouse and keyboard controls for moves, capture capsules, Potions, and retreat
 - Live HP, status, move-use, turn, combat-log, and outcome feedback
 
 Statuses and Battle AI adds:
@@ -90,6 +90,14 @@ The Battle Experience UI adds:
 - XP percentages on roster cards and exact progress in the selected creature details
 - One shared read-only progress projection for consistent battle and roster values
 
+The Object Menu and Persistent HP module adds:
+
+- A map-accessible object list opened with B
+- Potion, Mega Potion, and Ultra Potion tiers restoring 20, 50, and 100 HP
+- Creature targeting across the complete captured collection
+- Atomic field use that consumes stock only after a valid healing target is chosen
+- Persistent post-battle damage instead of automatic field-map healing
+
 See [Creature Data & Stats](docs/creature-data-and-stats.md) for formulas and extension rules.
 See [Combat Vertical Slice](docs/combat-vertical-slice.md) for the state machine, damage formula, and event contract.
 See [Statuses and Battle AI](docs/statuses-battle-ai.md) for hooks, party switching, and AI policy.
@@ -101,6 +109,7 @@ See [Production Pass and Playtest Guide](docs/production-pass.md) to launch the 
 See [Playable Battle UI](docs/playable-battle-ui.md) for controls, presentation architecture, and encounter integration.
 See [Captured Creature Roster](docs/captured-creature-roster.md) for collection-menu controls and next-battle selection behavior.
 See [Progression and Persistence](docs/progression-persistence.md#live-battle-and-roster-presentation) for live reward and XP-bar behavior.
+See [Object Menu and Persistent HP](docs/object-menu-potions.md) for potion tiers, targeting, and post-battle HP rules.
 Progress and module completion evidence are tracked in [the delivery roadmap](docs/roadmap.md).
 
 ## Run

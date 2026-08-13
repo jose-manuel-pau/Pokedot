@@ -46,10 +46,13 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Encounter state | Active/transition phases, movement lock during transition, resume, and cooldown roll suppression |
 | Battle handoff | Request validation, wild instance identity/XP/moves, capturable battle initialization, error forwarding |
 | Playable scene | Project bootstrap, keyboard adapter, code-drawn map, dialogue panel, and live graphical battle |
-| Battle presentation | Original creature silhouettes, all-species viewport/HUD clearance at default and maximum text size, combatant HUDs, move/capsule/tonic/run actions, logs and outcomes |
+| Battle presentation | Original creature silhouettes, all-species viewport/HUD clearance at default and maximum text size, combatant HUDs, move/capsule/Potion/run actions, logs and outcomes |
 | Encounter UI bridge | Wild handoff opens command-ready battle, retreat closes it, and exploration resumes |
 | Captured roster menu | Party/storage cards, detail view, live capture refresh, selection, close signal and invalid ID rejection |
 | Next-fighter handoff | P-key access, field-input blocking, stored-creature selection, 1v1 participant identity and retained lead |
+| Field potion service | 20/50/100 HP tiers, maximum cap, stock consumption, failed-use atomicity, full/fainted/unknown rejection |
+| Object menu | Potion-first ordering, quantities, potency, complete-collection targeting, HP feedback, input and state guards |
+| Persistent field HP | Exact battle damage survives map return and is restored only through shared restorative inventory |
 | XP rewards | Species yields, wild formula, trainer premium, invalid inputs, minimum reward |
 | Creature growth | XP normalization, no-level award, multi-level jump, max-level clamp, six-stat recalculation |
 | Growth HP | Conscious maximum-HP increase, existing-damage preservation, defeated creature remains at zero |

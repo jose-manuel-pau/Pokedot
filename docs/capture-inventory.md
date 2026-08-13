@@ -4,7 +4,7 @@ This module adds data-driven item definitions, capacity-safe inventory transacti
 
 ## Item content and inventory
 
-`data/items.json` contains stable item IDs and presentation data alongside mechanical fields. The initial catalog contains three capture devices, three healing items, two remedies, and one key item. `ContentValidator` verifies item categories, stack limits, prices, effect values, key-item invariants, and status references.
+`data/items.json` contains stable item IDs and presentation data alongside mechanical fields. The catalog contains three capture devices, six healing items, two remedies, and one key item. Potion, Mega Potion, and Ultra Potion are the player-facing field tiers, restoring 20, 50, and 100 HP respectively. `ContentValidator` verifies item categories, stack limits, prices, effect values, key-item invariants, and status references.
 
 `Inventory` stores quantities only. `InventoryService` is the mutation boundary and returns an `InventoryTransactionResult` for every add or remove. Transactions reject unknown items, non-positive amounts, insufficient stock, full slot capacity, and stack overflow without partially modifying the bag.
 
@@ -14,6 +14,7 @@ Restorative effects are separated from stock ownership:
 - `BattleParticipant.restore_hp()` synchronizes the battle projection and its `CreatureInstance`.
 - `StatusEffectService.remove_status()` synchronizes persistent status state.
 - `BattleManager` consumes a configured item only after a valid effect is accepted.
+- `FieldItemUseService` provides the equivalent atomic inventory/effect boundary for the exploration object menu.
 
 ## Capture formula
 

@@ -15,6 +15,7 @@ signal preferences_changed(preferences: PlayerPreferences)
 @onready var dialogue_label: Label = $Interface/DialoguePanel/Margin/Content/Dialogue
 @onready var battle_screen: BattleScreen = $Interface/BattleScreen
 @onready var creature_roster_menu: CreatureRosterMenu = $Interface/CreatureRosterMenu
+@onready var object_menu: ObjectMenu = $Interface/ObjectMenu
 @onready var controls_label: Label = $Interface/Controls
 @onready var accessibility_label: Label = $Interface/AccessibilityStatus
 @onready var help_panel: PanelContainer = $Interface/HelpPanel
@@ -36,6 +37,7 @@ var _feedback_router := ExplorationFeedbackRouter.new()
 var _active_feedback: FeedbackCue
 var _feedback_remaining: float = 0.0
 var _feedback_total: float = 0.0
+var _last_object_message: String = ""
 
 
 func initialize(
@@ -68,6 +70,9 @@ func _ready() -> void:
 	creature_roster_menu.hide()
 	creature_roster_menu.lead_selected.connect(_on_battle_lead_selected)
 	creature_roster_menu.roster_closed.connect(_on_creature_roster_closed)
+	object_menu.hide()
+	object_menu.object_used.connect(_on_object_used)
+	object_menu.menu_closed.connect(_on_object_menu_closed)
 	help_panel.show()
 	set_process_unhandled_input(true)
 	set_process(true)
@@ -96,6 +101,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if creature_roster_menu.visible:
 		return
+	if object_menu.visible:
+		return
 	if dialogue_panel.visible:
 		if key.keycode in [KEY_E, KEY_ENTER, KEY_ESCAPE, KEY_SPACE]:
 			_advance_dialogue()
@@ -113,6 +120,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			_interact()
 		KEY_P:
 			open_creature_roster()
+		KEY_B:
+			open_object_menu()
 
 
 func _draw() -> void:
@@ -234,7 +243,6 @@ func _begin_battle_transition(request: WildEncounterRequest) -> void:
 
 
 func _on_battle_closed(outcome: StringName) -> void:
-	_restore_owned_creatures()
 	active_battle = null
 	session.resume_after_battle()
 	var selected := get_selected_battle_creature()
@@ -268,29 +276,39 @@ func _create_demo_player() -> void:
 	_selected_battle_creature_id = starter.instance_id
 	var inventory_service := InventoryService.new(_catalog)
 	inventory_service.add(_inventory, &"basic_capsule", 5)
-	inventory_service.add(_inventory, &"field_tonic", 3)
-
-
-func _restore_owned_creatures() -> void:
-	# The vertical slice has no healing center yet, so field encounters reset the
-	# complete owned roster between battles and remain continuously playtestable.
-	for creature in _collection.get_all_creatures():
-		var species := _catalog.get_species(creature.species_id)
-		creature.current_hp = StatCalculator.new().calculate_for_instance(
-			species,
-			creature
-		).hp
+	inventory_service.add(_inventory, &"potion", 5)
+	inventory_service.add(_inventory, &"mega_potion", 3)
+	inventory_service.add(_inventory, &"ultra_potion", 1)
 
 
 func open_creature_roster() -> void:
 	if session == null \
 		or session.state.phase != ExplorationConstants.PHASE_ACTIVE \
 		or battle_screen.visible \
+		or object_menu.visible \
 		or dialogue_panel.visible \
 		or help_panel.visible:
 		return
 	creature_roster_menu.open_roster(
 		_catalog,
+		_collection,
+		_selected_battle_creature_id,
+		_preferences_service.preferences
+	)
+
+
+func open_object_menu() -> void:
+	if session == null \
+		or session.state.phase != ExplorationConstants.PHASE_ACTIVE \
+		or battle_screen.visible \
+		or creature_roster_menu.visible \
+		or dialogue_panel.visible \
+		or help_panel.visible:
+		return
+	_last_object_message = ""
+	object_menu.open_menu(
+		_catalog,
+		_inventory,
 		_collection,
 		_selected_battle_creature_id,
 		_preferences_service.preferences
@@ -331,6 +349,27 @@ func _on_creature_roster_closed() -> void:
 	status_label.text = "Explore freely. Next battle lead: %s." % species.display_name
 
 
+func _on_object_used(
+	item_id: StringName,
+	instance_id: String,
+	healing_applied: int
+) -> void:
+	var item := _catalog.get_item(item_id)
+	var creature := _collection.find_instance(instance_id)
+	var species := _catalog.get_species(creature.species_id) if creature != null else null
+	_last_object_message = "%s restored %d HP to %s." % [
+		item.display_name if item != null else str(item_id),
+		healing_applied,
+		species.display_name if species != null else instance_id,
+	]
+
+
+func _on_object_menu_closed() -> void:
+	status_label.text = _last_object_message \
+		if not _last_object_message.is_empty() \
+		else "Objects closed. Battle damage remains until you use a restorative."
+
+
 func _battle_outcome_message(outcome: StringName) -> String:
 	match outcome:
 		BattleConstants.OUTCOME_PLAYER_VICTORY:
@@ -340,7 +379,7 @@ func _battle_outcome_message(outcome: StringName) -> String:
 		BattleConstants.OUTCOME_PLAYER_ESCAPED:
 			return "Retreat successful. Returned to the field."
 		BattleConstants.OUTCOME_OPPONENT_VICTORY:
-			return "Your companion recovered. Returned to the field."
+			return "Your companion fainted. Choose another healthy fighter."
 	return "Battle ended. Returned to the field."
 
 
@@ -359,7 +398,7 @@ func _on_exploration_event(event: ExplorationEvent) -> void:
 func _handle_preference_shortcut(keycode: Key) -> bool:
 	match keycode:
 		KEY_F1:
-			if battle_screen.visible or creature_roster_menu.visible:
+			if battle_screen.visible or creature_roster_menu.visible or object_menu.visible:
 				return true
 			help_panel.visible = not help_panel.visible
 			return true
@@ -406,6 +445,8 @@ func _apply_preferences() -> void:
 		battle_screen.set_preferences(preferences)
 	if creature_roster_menu != null:
 		creature_roster_menu.set_preferences(preferences)
+	if object_menu != null:
+		object_menu.set_preferences(preferences)
 	queue_redraw()
 
 

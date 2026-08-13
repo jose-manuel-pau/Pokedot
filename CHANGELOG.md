@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-08-13
+
+- Added a field object menu with Potion, Mega Potion, and Ultra Potion creature targeting.
+- Preserved creature HP after battles so restorative inventory now matters between encounters.
+
 ## 2026-08-12
 
 - Added cumulative battle XP rewards, visible XP bars, and automatic level-ups.
