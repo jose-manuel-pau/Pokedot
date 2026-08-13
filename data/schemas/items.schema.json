@@ -29,7 +29,7 @@
         "display_name": {"type": "string", "minLength": 1},
         "description": {"type": "string"},
         "category": {
-          "enum": ["capture_device", "healing", "status_remedy", "battle_consumable", "key_item"]
+          "enum": ["capture_device", "healing", "revival", "status_remedy", "battle_consumable", "key_item"]
         },
         "max_stack": {"type": "integer", "minimum": 1, "maximum": 999},
         "consumable": {"type": "boolean"},

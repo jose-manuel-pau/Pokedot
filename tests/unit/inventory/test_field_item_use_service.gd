@@ -13,6 +13,7 @@ func _init() -> void:
 func run() -> void:
 	_test_three_potion_tiers_restore_increasing_hp()
 	_test_healing_caps_at_maximum_hp()
+	_test_elixir_revives_and_consumes_one_item()
 	_test_rejections_preserve_inventory_and_hp()
 
 
@@ -64,6 +65,25 @@ func _test_healing_caps_at_maximum_hp() -> void:
 	assert_equal(result.healing_applied, 7)
 	assert_equal(creature.current_hp, maximum)
 	assert_equal(inventory.get_quantity(&"ultra_potion"), 0)
+
+
+func _test_elixir_revives_and_consumes_one_item() -> void:
+	begin_case("atomic field revival")
+	var creature := _creature(0)
+	var maximum := StatCalculator.new().calculate_for_instance(
+		catalog.get_species(creature.species_id),
+		creature
+	).hp
+	var inventory := _inventory(&"elixir", 2)
+	var result := service.use_on_creature(inventory, &"elixir", creature)
+	assert_true(result.success)
+	assert_equal(result.healing_applied, ceili(maximum * 0.5))
+	assert_equal(creature.current_hp, ceili(maximum * 0.5))
+	assert_equal(inventory.get_quantity(&"elixir"), 1)
+	result = service.use_on_creature(inventory, &"elixir", creature)
+	assert_false(result.success)
+	assert_equal(result.reason, &"target_not_defeated")
+	assert_equal(inventory.get_quantity(&"elixir"), 1)
 
 
 func _test_rejections_preserve_inventory_and_hp() -> void:

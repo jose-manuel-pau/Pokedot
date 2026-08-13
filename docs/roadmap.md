@@ -17,4 +17,5 @@ Each module is considered complete only after its automated behavior coverage pa
 | 10. Captured creature roster | Complete — 2026-08-12 | Explorer collection menu, party/storage aggregation, live capture refresh, selected-instance battle handoff and input guards; cumulative 191 cases / 1,046 assertions passing |
 | 11. Battle experience presentation | Complete — 2026-08-12 | Victory reward application, cumulative current-level XP projection, battle/roster bars, immediate level-up feedback and cross-screen persistence; cumulative 196 cases / 1,097 assertions passing |
 | 12. Object menu and persistent HP | Complete — 2026-08-13 | Ordered bag UI, three potion tiers, captured-creature targeting, atomic field consumption, battle-to-map HP persistence, battle Potion action and 150% text containment; cumulative 206 cases / 1,189 assertions passing |
+| 13. Elixir revival and object navigation | Complete — 2026-08-13 | Data-driven 50% revival, fainted/conscious validation, atomic field consumption, explicit Up/Down focus traversal, disabled-action skipping and 100%/150% visual checks; cumulative 211 cases / 1,236 assertions passing |
 

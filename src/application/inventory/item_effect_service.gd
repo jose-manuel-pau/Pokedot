@@ -19,6 +19,8 @@ func apply(item_id: StringName, target: BattleParticipant) -> ItemUseResult:
 	var item := _catalog.get_item(item_id)
 	if item.is_healing_item():
 		return _apply_healing(item, target)
+	if item.is_revival_item():
+		return _apply_revival(item, target)
 	return _apply_remedy(item, target)
 
 
@@ -36,6 +38,8 @@ func validate(item_id: StringName, target: BattleParticipant) -> StringName:
 		if target.current_hp >= target.get_max_hp():
 			return &"target_at_full_hp"
 		return &""
+	if item.is_revival_item():
+		return &"" if target.is_defeated() else &"target_not_defeated"
 	if item.is_status_remedy():
 		for status_id in item.cured_status_ids:
 			if target.has_status(status_id):
@@ -48,12 +52,25 @@ func _apply_healing(
 	item: ItemDefinition,
 	target: BattleParticipant
 ) -> ItemUseResult:
+	var result := ItemUseResult.accepted()
+	result.healing_applied = target.restore_hp(_restoration_amount(item, target))
+	return result
+
+
+func _apply_revival(
+	item: ItemDefinition,
+	target: BattleParticipant
+) -> ItemUseResult:
+	var result := ItemUseResult.accepted()
+	result.healing_applied = target.restore_hp(_restoration_amount(item, target))
+	return result
+
+
+func _restoration_amount(item: ItemDefinition, target: BattleParticipant) -> int:
 	var requested := item.healing_amount
 	if item.healing_fraction > 0.0:
 		requested += ceili(target.get_max_hp() * item.healing_fraction)
-	var result := ItemUseResult.accepted()
-	result.healing_applied = target.restore_hp(requested)
-	return result
+	return requested
 
 
 func _apply_remedy(

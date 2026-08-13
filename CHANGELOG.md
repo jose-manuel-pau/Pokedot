@@ -2,6 +2,7 @@
 
 ## 2026-08-13
 
+- Added Elixir revival for fainted creatures and explicit Up/Down object-menu navigation.
 - Added a field object menu with Potion, Mega Potion, and Ultra Potion creature targeting.
 - Preserved creature HP after battles so restorative inventory now matters between encounters.
 

@@ -279,6 +279,7 @@ func _create_demo_player() -> void:
 	inventory_service.add(_inventory, &"potion", 5)
 	inventory_service.add(_inventory, &"mega_potion", 3)
 	inventory_service.add(_inventory, &"ultra_potion", 1)
+	inventory_service.add(_inventory, &"elixir", 2)
 
 
 func open_creature_roster() -> void:
@@ -357,10 +358,16 @@ func _on_object_used(
 	var item := _catalog.get_item(item_id)
 	var creature := _collection.find_instance(instance_id)
 	var species := _catalog.get_species(creature.species_id) if creature != null else null
-	_last_object_message = "%s restored %d HP to %s." % [
-		item.display_name if item != null else str(item_id),
+	var item_name := item.display_name if item != null else str(item_id)
+	var creature_name := species.display_name if species != null else instance_id
+	_last_object_message = "%s revived %s with %d HP." % [
+		item_name,
+		creature_name,
 		healing_applied,
-		species.display_name if species != null else instance_id,
+	] if item != null and item.is_revival_item() else "%s restored %d HP to %s." % [
+		item_name,
+		healing_applied,
+		creature_name,
 	]
 
 

@@ -94,8 +94,10 @@ The Object Menu and Persistent HP module adds:
 
 - A map-accessible object list opened with B
 - Potion, Mega Potion, and Ultra Potion tiers restoring 20, 50, and 100 HP
+- Elixir revival for fainted creatures at 50% maximum HP
 - Creature targeting across the complete captured collection
-- Atomic field use that consumes stock only after a valid healing target is chosen
+- Explicit Up/Down navigation through objects, creatures, Use, and Close
+- Atomic field use that consumes stock only after a valid restorative target is chosen
 - Persistent post-battle damage instead of automatic field-map healing
 
 See [Creature Data & Stats](docs/creature-data-and-stats.md) for formulas and extension rules.

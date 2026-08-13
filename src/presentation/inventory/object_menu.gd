@@ -6,10 +6,11 @@ extends Control
 signal object_used(item_id: StringName, instance_id: String, healing_applied: int)
 signal menu_closed
 
-const POTION_PRIORITY: Array[StringName] = [
+const RESTORATIVE_PRIORITY: Array[StringName] = [
 	&"potion",
 	&"mega_potion",
 	&"ultra_potion",
+	&"elixir",
 ]
 
 @onready var count_label: Label = $Shade/Panel/Margin/Content/Header/Count
@@ -41,6 +42,8 @@ var _target_buttons: Array[Button] = []
 func _ready() -> void:
 	use_button.pressed.connect(use_selected_item)
 	close_button.pressed.connect(close_menu)
+	use_button.gui_input.connect(_on_focusable_gui_input.bind(use_button))
+	close_button.gui_input.connect(_on_focusable_gui_input.bind(close_button))
 	hide()
 	set_process_unhandled_input(true)
 
@@ -58,7 +61,7 @@ func open_menu(
 	_preferences = preferences
 	_field_items = FieldItemUseService.new(_catalog)
 	_selected_target_id = preferred_target_id
-	feedback_label.text = "Choose an object and a conscious creature."
+	feedback_label.text = "Choose an object and a creature target."
 	_rebuild_item_buttons()
 	_rebuild_target_buttons()
 	_apply_preferences()
@@ -113,7 +116,11 @@ func use_selected_item() -> bool:
 	var target_display_name := _display_name(target)
 	_rebuild_item_buttons()
 	_rebuild_target_buttons()
-	feedback_label.text = "%s restored %d HP to %s." % [
+	feedback_label.text = "%s revived %s with %d HP." % [
+		used_name,
+		target_display_name,
+		result.healing_applied,
+	] if item.is_revival_item() else "%s restored %d HP to %s." % [
 		used_name,
 		result.healing_applied,
 		target_display_name,
@@ -196,6 +203,7 @@ func _rebuild_item_buttons() -> void:
 			_inventory.get_quantity(item_id),
 		]
 		button.pressed.connect(choose_item.bind(item_id))
+		button.gui_input.connect(_on_focusable_gui_input.bind(button))
 		item_list.add_child(button)
 		_item_buttons.append(button)
 	_refresh_item_buttons()
@@ -206,7 +214,7 @@ func _ordered_owned_item_ids() -> Array[StringName]:
 	var result: Array[StringName] = []
 	if _inventory == null:
 		return result
-	for item_id in POTION_PRIORITY:
+	for item_id in RESTORATIVE_PRIORITY:
 		if _inventory.has(item_id):
 			result.append(item_id)
 	var remaining: Array[StringName] = []
@@ -244,6 +252,7 @@ func _rebuild_target_buttons() -> void:
 			maximum,
 		]
 		button.pressed.connect(choose_target.bind(creature.instance_id))
+		button.gui_input.connect(_on_focusable_gui_input.bind(button))
 		target_grid.add_child(button)
 		_target_buttons.append(button)
 	_refresh_target_buttons()
@@ -277,8 +286,14 @@ func _refresh_details() -> void:
 		return
 	item_name.text = item.display_name
 	item_description.text = item.description
-	potency_label.text = "RESTORES %d HP" % item.healing_amount \
-		if item.is_healing_item() else "NOT USABLE FROM THIS MENU"
+	if item.is_revival_item():
+		potency_label.text = "REVIVES WITH %d%% MAX HP" % int(round(
+			item.healing_fraction * 100.0
+		))
+	elif item.is_healing_item():
+		potency_label.text = "RESTORES %d HP" % item.healing_amount
+	else:
+		potency_label.text = "NOT USABLE FROM THIS MENU"
 	if target == null:
 		target_name.text = "NO CREATURE TARGET"
 		health_bar.value = 0.0
@@ -291,10 +306,59 @@ func _refresh_details() -> void:
 	health_bar.value = float(current) / float(maxi(maximum, 1)) * 100.0
 	health_label.text = "HP  %d / %d" % [current, maximum]
 	use_button.text = "USE %s" % item.display_name.to_upper()
-	use_button.disabled = not item.is_healing_item() \
-		or _inventory.get_quantity(item.item_id) <= 0 \
-		or current <= 0 \
-		or current >= maximum
+	var valid_target := item.is_healing_item() and current > 0 and current < maximum
+	valid_target = valid_target or (item.is_revival_item() and current <= 0)
+	use_button.disabled = _inventory.get_quantity(item.item_id) <= 0 \
+		or not valid_target
+
+
+func _on_focusable_gui_input(event: InputEvent, source: Control) -> void:
+	if event is InputEventKey and (event as InputEventKey).echo:
+		return
+	var direction := 0
+	if event.is_action_pressed("ui_up"):
+		direction = -1
+	elif event.is_action_pressed("ui_down"):
+		direction = 1
+	if direction == 0:
+		return
+	_move_vertical_focus(source, direction)
+	source.accept_event()
+
+
+func _move_vertical_focus(source: Control, direction: int) -> bool:
+	var controls := _vertical_focus_order()
+	if controls.is_empty():
+		return false
+	var start_index := controls.find(source)
+	if start_index < 0:
+		start_index = 0 if direction < 0 else -1
+	for offset in range(1, controls.size() + 1):
+		var index := posmod(start_index + offset * direction, controls.size())
+		var candidate := controls[index]
+		if _can_receive_focus(candidate):
+			candidate.grab_focus()
+			return true
+	return false
+
+
+func _vertical_focus_order() -> Array[Control]:
+	var controls: Array[Control] = []
+	for button in _item_buttons:
+		controls.append(button)
+	for button in _target_buttons:
+		controls.append(button)
+	controls.append(use_button)
+	controls.append(close_button)
+	return controls
+
+
+func _can_receive_focus(control: Control) -> bool:
+	if control == null or not control.is_visible_in_tree():
+		return false
+	if control.focus_mode == Control.FOCUS_NONE:
+		return false
+	return not (control is BaseButton and (control as BaseButton).disabled)
 
 
 func _maximum_hp(creature: CreatureInstance) -> int:

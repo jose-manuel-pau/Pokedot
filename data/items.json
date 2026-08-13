@@ -44,6 +44,20 @@
       "cured_status_ids": []
     },
     {
+      "id": "elixir",
+      "display_name": "Elixir",
+      "description": "A luminous restorative that revives one fainted creature with half of its maximum HP.",
+      "category": "revival",
+      "max_stack": 25,
+      "consumable": true,
+      "battle_usable": true,
+      "purchase_price": 1200,
+      "capture_multiplier": 1.0,
+      "healing_amount": 0,
+      "healing_fraction": 0.5,
+      "cured_status_ids": []
+    },
+    {
       "id": "basic_capsule",
       "display_name": "Basic Capsule",
       "description": "A standard containment capsule for weakened wild creatures.",

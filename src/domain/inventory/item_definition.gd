@@ -5,12 +5,14 @@ extends Resource
 
 const CATEGORY_CAPTURE_DEVICE := "capture_device"
 const CATEGORY_HEALING := "healing"
+const CATEGORY_REVIVAL := "revival"
 const CATEGORY_STATUS_REMEDY := "status_remedy"
 const CATEGORY_BATTLE_CONSUMABLE := "battle_consumable"
 const CATEGORY_KEY_ITEM := "key_item"
 const VALID_CATEGORIES: Array[String] = [
 	CATEGORY_CAPTURE_DEVICE,
 	CATEGORY_HEALING,
+	CATEGORY_REVIVAL,
 	CATEGORY_STATUS_REMEDY,
 	CATEGORY_BATTLE_CONSUMABLE,
 	CATEGORY_KEY_ITEM,
@@ -22,6 +24,7 @@ const VALID_CATEGORIES: Array[String] = [
 @export_enum(
 	"capture_device",
 	"healing",
+	"revival",
 	"status_remedy",
 	"battle_consumable",
 	"key_item"
@@ -42,6 +45,10 @@ func is_capture_device() -> bool:
 
 func is_healing_item() -> bool:
 	return category == CATEGORY_HEALING
+
+
+func is_revival_item() -> bool:
+	return category == CATEGORY_REVIVAL
 
 
 func is_status_remedy() -> bool:

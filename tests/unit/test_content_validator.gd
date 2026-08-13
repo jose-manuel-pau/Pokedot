@@ -88,6 +88,10 @@ func _test_invalid_item_rules() -> void:
 	var healing := catalog.get_item(&"field_tonic")
 	healing.healing_amount = 0
 	healing.healing_fraction = 2.0
+	var revival := catalog.get_item(&"elixir")
+	revival.healing_fraction = 0.0
+	revival.consumable = false
+	revival.battle_usable = false
 	var remedy := catalog.get_item(&"ember_salve")
 	remedy.cured_status_ids = [&"missing_status"]
 	var key_item := catalog.get_item(&"survey_compass")
@@ -98,6 +102,9 @@ func _test_invalid_item_rules() -> void:
 	assert_has_issue(issues, &"reusable_capture_device")
 	assert_has_issue(issues, &"unusable_capture_device")
 	assert_has_issue(issues, &"invalid_healing_fraction")
+	assert_has_issue(issues, &"revival_item_without_restoration")
+	assert_has_issue(issues, &"reusable_revival_item")
+	assert_has_issue(issues, &"unusable_revival_item")
 	assert_has_issue(issues, &"unknown_item_status_reference")
 	assert_has_issue(issues, &"consumable_key_item")
 	assert_has_issue(issues, &"stackable_key_item")

@@ -12,6 +12,7 @@ func _init() -> void:
 
 func run() -> void:
 	_test_battle_damage_persists_and_field_potion_restores_hp()
+	_test_elixir_revives_a_fainted_exploration_creature()
 	_test_object_menu_input_and_state_guards()
 
 
@@ -67,6 +68,28 @@ func _test_battle_damage_persists_and_field_potion_restores_hp() -> void:
 	assert_true(screen.object_menu.feedback_label.text.contains("restored 17 HP"))
 	screen.object_menu.close_menu()
 	assert_true(screen.status_label.text.contains("Potion restored 17 HP"))
+	screen.free()
+
+
+func _test_elixir_revives_a_fainted_exploration_creature() -> void:
+	begin_case("exploration Elixir revival loop")
+	var screen := _screen()
+	var starter := screen.get_selected_battle_creature()
+	var maximum := StatCalculator.new().calculate_for_instance(
+		catalog.get_species(starter.species_id),
+		starter
+	).hp
+	starter.current_hp = 0
+	screen.open_object_menu()
+	assert_true(screen.object_menu.choose_item(&"elixir"))
+	assert_true(screen.object_menu.choose_target(starter.instance_id))
+	assert_equal(screen._inventory.get_quantity(&"elixir"), 2)
+	assert_true(screen.object_menu.use_selected_item())
+	assert_equal(starter.current_hp, ceili(maximum * 0.5))
+	assert_equal(screen._inventory.get_quantity(&"elixir"), 1)
+	assert_true(screen.object_menu.feedback_label.text.contains("revived"))
+	screen.object_menu.close_menu()
+	assert_true(screen.status_label.text.contains("Elixir revived"))
 	screen.free()
 
 
