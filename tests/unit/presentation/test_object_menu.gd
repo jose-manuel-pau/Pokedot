@@ -13,6 +13,8 @@ func _init() -> void:
 func run() -> void:
 	_test_potions_are_first_and_details_show_potency()
 	_test_using_potion_updates_hp_stock_and_feedback()
+	_test_elixir_revives_a_fainted_creature()
+	_test_up_and_down_navigation_reaches_use_and_close()
 	_test_unusable_and_full_hp_choices_preserve_stock()
 	_test_maximum_text_scale_keeps_actions_on_screen()
 	_test_close_hides_menu_and_emits_signal()
@@ -41,6 +43,7 @@ func _fixture() -> Dictionary:
 	inventory_service.add(inventory, &"ultra_potion", 1)
 	inventory_service.add(inventory, &"potion", 2)
 	inventory_service.add(inventory, &"mega_potion", 1)
+	inventory_service.add(inventory, &"elixir", 2)
 	var collection := CreatureCollection.new()
 	var cindermite := _creature("object-cinder", &"cindermite", 12, 30)
 	var reedling := _creature("object-reed", &"reedling", 10, 10)
@@ -70,9 +73,9 @@ func _test_potions_are_first_and_details_show_potency() -> void:
 	var menu := fixture["menu"] as ObjectMenu
 	assert_true(menu.visible)
 	assert_equal(menu.get_item_ids(), [
-		&"potion", &"mega_potion", &"ultra_potion", &"basic_capsule",
+		&"potion", &"mega_potion", &"ultra_potion", &"elixir", &"basic_capsule",
 	])
-	assert_equal(menu.count_label.text, "4 OBJECT TYPES")
+	assert_equal(menu.count_label.text, "5 OBJECT TYPES")
 	assert_equal(menu.get_selected_item_id(), &"potion")
 	assert_equal(menu.get_selected_target_id(), "object-reed")
 	assert_true(menu.get_item_button(&"potion").text.contains("x2"))
@@ -81,6 +84,8 @@ func _test_potions_are_first_and_details_show_potency() -> void:
 	assert_equal(menu.potency_label.text, "RESTORES 50 HP")
 	assert_true(menu.choose_item(&"ultra_potion"))
 	assert_equal(menu.potency_label.text, "RESTORES 100 HP")
+	assert_true(menu.choose_item(&"elixir"))
+	assert_equal(menu.potency_label.text, "REVIVES WITH 50% MAX HP")
 	assert_false(menu.choose_item(&"missing"))
 	menu.free()
 
@@ -104,6 +109,58 @@ func _test_using_potion_updates_hp_stock_and_feedback() -> void:
 	assert_true(menu.feedback_label.text.contains("restored 20 HP"))
 	assert_true(menu.health_label.text.contains(str(creature.current_hp)))
 	assert_true(menu.get_item_button(&"potion").text.contains("x1"))
+	menu.free()
+
+
+func _test_elixir_revives_a_fainted_creature() -> void:
+	begin_case("object menu Elixir revival")
+	var fixture := _fixture()
+	var menu := fixture["menu"] as ObjectMenu
+	var inventory := fixture["inventory"] as Inventory
+	var creature := fixture["cindermite"] as CreatureInstance
+	var maximum := StatCalculator.new().calculate_for_instance(
+		catalog.get_species(creature.species_id),
+		creature
+	).hp
+	creature.current_hp = 0
+	assert_true(menu.choose_item(&"elixir"))
+	assert_true(menu.choose_target(creature.instance_id))
+	assert_false(menu.use_button.disabled)
+	assert_true(menu.use_selected_item())
+	assert_equal(creature.current_hp, ceili(maximum * 0.5))
+	assert_equal(inventory.get_quantity(&"elixir"), 1)
+	assert_true(menu.feedback_label.text.contains("revived"))
+	assert_true(menu.feedback_label.text.contains(str(creature.current_hp)))
+	menu.free()
+
+
+func _test_up_and_down_navigation_reaches_use_and_close() -> void:
+	begin_case("vertical focus reaches object actions")
+	var fixture := _fixture()
+	var menu := fixture["menu"] as ObjectMenu
+	var creature := fixture["reedling"] as CreatureInstance
+	assert_true(menu.choose_item(&"potion"))
+	assert_true(menu.choose_target(creature.instance_id))
+	assert_false(menu.use_button.disabled)
+	var target_button := menu.get_target_button(creature.instance_id)
+	target_button.grab_focus()
+	var down := InputEventKey.new()
+	down.keycode = KEY_DOWN
+	down.pressed = true
+	menu._on_focusable_gui_input(down, target_button)
+	assert_true(menu.use_button.has_focus(), "Down from the final target must reach Use.")
+	menu._on_focusable_gui_input(down, menu.use_button)
+	assert_true(menu.close_button.has_focus(), "Down from Use must reach Close.")
+	var up := InputEventKey.new()
+	up.keycode = KEY_UP
+	up.pressed = true
+	menu._on_focusable_gui_input(up, menu.close_button)
+	assert_true(menu.use_button.has_focus(), "Up from Close must return to Use.")
+	assert_true(menu.choose_item(&"basic_capsule"))
+	assert_true(menu.use_button.disabled)
+	target_button.grab_focus()
+	menu._on_focusable_gui_input(down, target_button)
+	assert_true(menu.close_button.has_focus(), "Disabled Use must be skipped.")
 	menu.free()
 
 

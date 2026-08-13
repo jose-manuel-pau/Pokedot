@@ -127,8 +127,22 @@ func _validate_items(catalog: ContentCatalog, issues: Array[ValidationIssue]) ->
 				path,
 				"Healing items need a flat or fractional heal."
 			)
+		if definition.is_revival_item() \
+			and definition.healing_amount <= 0 \
+			and definition.healing_fraction <= 0.0:
+			_add_error(
+				issues,
+				&"revival_item_without_restoration",
+				path,
+				"Revival items need a flat or fractional restoration."
+			)
 		if definition.healing_fraction < 0.0 or definition.healing_fraction > 1.0:
 			_add_error(issues, &"invalid_healing_fraction", path + ".healing_fraction", "Must be from 0 to 1.")
+		if definition.is_revival_item():
+			if not definition.consumable:
+				_add_error(issues, &"reusable_revival_item", path + ".consumable", "Revival items must be consumable.")
+			if not definition.battle_usable:
+				_add_error(issues, &"unusable_revival_item", path + ".battle_usable", "Revival items must be battle usable.")
 		if definition.is_status_remedy() and definition.cured_status_ids.is_empty():
 			_add_error(issues, &"remedy_without_statuses", path, "A remedy must cure at least one status.")
 		for status_id in definition.cured_status_ids:

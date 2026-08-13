@@ -28,7 +28,7 @@ func use_on_creature(
 	var item := _catalog.get_item(item_id)
 	if item == null:
 		return ItemUseResult.rejected(&"unknown_item")
-	if not item.is_healing_item():
+	if not item.is_healing_item() and not item.is_revival_item():
 		return ItemUseResult.rejected(&"unsupported_field_item")
 	if creature == null:
 		return ItemUseResult.rejected(&"missing_item_target")

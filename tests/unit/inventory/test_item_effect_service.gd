@@ -16,6 +16,7 @@ func run() -> void:
 	_test_flat_healing_and_cap()
 	_test_fractional_healing_rounds_up()
 	_test_healing_rejections()
+	_test_elixir_revives_only_defeated_targets()
 	_test_remedy_removes_matching_statuses_only()
 	_test_item_definition_rejections()
 
@@ -61,6 +62,22 @@ func _test_healing_rejections() -> void:
 	var defeated := _participant(0)
 	assert_equal(service.apply(&"field_tonic", defeated).reason, &"target_defeated")
 	assert_equal(defeated.current_hp, 0)
+
+
+func _test_elixir_revives_only_defeated_targets() -> void:
+	begin_case("Elixir revival")
+	var defeated := _participant(0)
+	var expected_hp := ceili(defeated.get_max_hp() * 0.5)
+	var result := service.apply(&"elixir", defeated)
+	assert_true(result.success)
+	assert_equal(result.healing_applied, expected_hp)
+	assert_equal(defeated.current_hp, expected_hp)
+	assert_equal(defeated.creature.current_hp, expected_hp)
+	var conscious := _participant(1)
+	result = service.apply(&"elixir", conscious)
+	assert_false(result.success)
+	assert_equal(result.reason, &"target_not_defeated")
+	assert_equal(conscious.current_hp, 1)
 
 
 func _test_remedy_removes_matching_statuses_only() -> void:

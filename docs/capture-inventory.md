@@ -4,13 +4,13 @@ This module adds data-driven item definitions, capacity-safe inventory transacti
 
 ## Item content and inventory
 
-`data/items.json` contains stable item IDs and presentation data alongside mechanical fields. The catalog contains three capture devices, six healing items, two remedies, and one key item. Potion, Mega Potion, and Ultra Potion are the player-facing field tiers, restoring 20, 50, and 100 HP respectively. `ContentValidator` verifies item categories, stack limits, prices, effect values, key-item invariants, and status references.
+`data/items.json` contains stable item IDs and presentation data alongside mechanical fields. The catalog contains three capture devices, six healing items, one revival item, two remedies, and one key item. Potion, Mega Potion, and Ultra Potion are the player-facing field tiers, restoring 20, 50, and 100 HP respectively. Elixir revives a fainted creature with 50% of its maximum HP. `ContentValidator` verifies item categories, stack limits, prices, effect values, revival invariants, key-item invariants, and status references.
 
 `Inventory` stores quantities only. `InventoryService` is the mutation boundary and returns an `InventoryTransactionResult` for every add or remove. Transactions reject unknown items, non-positive amounts, insufficient stock, full slot capacity, and stack overflow without partially modifying the bag.
 
 Restorative effects are separated from stock ownership:
 
-- `ItemEffectService` applies healing or removes configured statuses.
+- `ItemEffectService` applies healing, revives fainted targets, or removes configured statuses.
 - `BattleParticipant.restore_hp()` synchronizes the battle projection and its `CreatureInstance`.
 - `StatusEffectService.remove_status()` synchronizes persistent status state.
 - `BattleManager` consumes a configured item only after a valid effect is accepted.
@@ -63,7 +63,7 @@ New command priorities are ordered between switching and ordinary moves:
 
 `CaptureCommand` is player-only, requires a wild encounter and an owned capture device, and always consumes the device for a valid attempt. A failed capture lets the rest of the turn resolve. A successful capture emits `capture_attempted`, `creature_captured`, and `battle_finished`, then stops queued actions and end-turn status ticks. Its terminal outcome is `opponent_captured`.
 
-`UseItemCommand` targets any member of the actor's battle party. It rejects missing stock, invalid targets, full-HP healing, defeated healing targets, remedies with no matching status, capture devices, and non-battle items before command submission. Successful use emits `item_used`; remedies additionally emit `status_removed` for presentation.
+`UseItemCommand` targets any member of the actor's battle party. It rejects missing stock, invalid targets, full-HP healing, defeated healing targets, revival of conscious targets, remedies with no matching status, capture devices, and non-battle items before command submission. Successful use emits `item_used`; remedies additionally emit `status_removed` for presentation.
 
 ## Creature collection
 
@@ -76,7 +76,7 @@ New command priorities are ordered between switching and ordinary moves:
 
 ## Extension points
 
-- Add item effects through an effect strategy registry when categories grow beyond healing and remedies.
+- Add item effects through an effect strategy registry when categories grow beyond healing, revival, and remedies.
 - Supply biome, species, story, or difficulty rules through the encounter multiplier.
 - Add device-specific conditional rules before the final multiplier is passed to `CaptureService`.
 - Persist `Inventory` and `CreatureCollection` through a future save repository without changing battle rules.

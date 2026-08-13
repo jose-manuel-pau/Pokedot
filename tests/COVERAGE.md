@@ -31,7 +31,7 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | AI determinism | Equal-score commands and integration submission produce reproducible selections |
 | Item content | Typed item lookup, category rules, stack limits, key-item invariants, status cross-references |
 | Inventory transactions | Add/remove, zero cleanup, invalid amounts, insufficient stock, atomic stack and slot limits |
-| Item effects | Flat and fractional healing, max-HP cap, defeated/full rejection, remedy persistence sync |
+| Item effects | Flat and fractional healing, max-HP cap, defeated/full rejection, fainted-only 50% revival, remedy persistence sync |
 | Creature collection | Party insertion, storage routing, missing data and duplicate instance rejection |
 | Complete collection queries | Stable party/storage aggregation, instance lookup, and location lookup |
 | Capture probability | HP, status, device and encounter multipliers, min/max clamps, deterministic success and critical rolls |
@@ -50,8 +50,8 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Encounter UI bridge | Wild handoff opens command-ready battle, retreat closes it, and exploration resumes |
 | Captured roster menu | Party/storage cards, detail view, live capture refresh, selection, close signal and invalid ID rejection |
 | Next-fighter handoff | P-key access, field-input blocking, stored-creature selection, 1v1 participant identity and retained lead |
-| Field potion service | 20/50/100 HP tiers, maximum cap, stock consumption, failed-use atomicity, full/fainted/unknown rejection |
-| Object menu | Potion-first ordering, quantities, potency, complete-collection targeting, HP feedback, input and state guards |
+| Field restorative service | 20/50/100 HP tiers, maximum cap, 50% Elixir revival, stock consumption, failed-use atomicity, conscious/fainted/unknown rejection |
+| Object menu | Restorative-first ordering, quantities, potency, complete-collection targeting, HP/revival feedback, Up/Down action focus, disabled-action skipping, input and state guards |
 | Persistent field HP | Exact battle damage survives map return and is restored only through shared restorative inventory |
 | XP rewards | Species yields, wild formula, trainer premium, invalid inputs, minimum reward |
 | Creature growth | XP normalization, no-level award, multi-level jump, max-level clamp, six-stat recalculation |
