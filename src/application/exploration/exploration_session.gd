@@ -12,6 +12,7 @@ var last_error: StringName = &""
 
 var _catalog: ContentCatalog
 var _encounter_service: WildEncounterService
+var _treasure_chest_service: TreasureChestService
 var _encounter_sequence: int = 0
 
 
@@ -23,6 +24,7 @@ func _init(
 	var source := random_source if random_source != null \
 		else SeededExplorationRandomSource.new(0)
 	_encounter_service = WildEncounterService.new(source)
+	_treasure_chest_service = TreasureChestService.new(_catalog, source)
 
 
 func start(map_id: StringName) -> bool:
@@ -65,6 +67,10 @@ func attempt_move(direction: Vector2i) -> MovementResult:
 		result.reason = &"npc_blocked"
 		_emit_movement(result)
 		return result
+	if map.get_treasure_chest_at(target) != null:
+		result.reason = &"treasure_chest_blocked"
+		_emit_movement(result)
+		return result
 
 	state.player_position = target
 	state.step_count += 1
@@ -98,25 +104,68 @@ func attempt_move(direction: Vector2i) -> MovementResult:
 	return result
 
 
-func interact() -> InteractionResult:
+func interact(inventory: Inventory = null) -> InteractionResult:
 	last_error = &""
 	var result := InteractionResult.new()
 	if state.phase != ExplorationConstants.PHASE_ACTIVE:
 		result.reason = &"exploration_not_active"
 		last_error = result.reason
 		return result
-	var npc := get_current_map().get_npc_at(state.player_position + state.facing)
+	var interaction_position := state.player_position + state.facing
+	var chest := get_current_map().get_treasure_chest_at(interaction_position)
+	if chest != null:
+		return _interact_with_treasure_chest(chest, inventory)
+	var npc := get_current_map().get_npc_at(interaction_position)
 	if npc == null:
 		result.reason = &"nothing_to_interact"
 		last_error = result.reason
 		return result
 	result.success = true
+	result.interaction_type = ExplorationConstants.INTERACTION_NPC
 	result.npc_id = npc.npc_id
 	result.speaker_name = npc.display_name
 	result.dialogue.assign(npc.dialogue)
 	_emit_event(ExplorationConstants.EVENT_NPC_INTERACTED, {
 		"npc_id": npc.npc_id,
 		"position": npc.grid_position,
+	})
+	return result
+
+
+func _interact_with_treasure_chest(
+	chest: TreasureChestDefinition,
+	inventory: Inventory
+) -> InteractionResult:
+	var result := InteractionResult.new()
+	result.interaction_type = ExplorationConstants.INTERACTION_TREASURE_CHEST
+	result.chest_id = chest.chest_id
+	if state.is_chest_open(chest.chest_id):
+		result.reason = &"treasure_chest_already_open"
+		last_error = result.reason
+		return result
+	var opened := _treasure_chest_service.open(
+		chest,
+		inventory,
+		state.get_pending_chest_reward(chest.chest_id)
+	)
+	result.item_id = opened.item_id
+	if not opened.success:
+		if not opened.item_id.is_empty():
+			state.pending_chest_reward_by_id[chest.chest_id] = opened.item_id
+		result.reason = opened.reason
+		last_error = result.reason
+		return result
+	result.success = true
+	result.quantity = opened.quantity
+	result.quantity_after = opened.quantity_after
+	state.pending_chest_reward_by_id.erase(chest.chest_id)
+	state.opened_chest_ids.append(chest.chest_id)
+	_emit_event(ExplorationConstants.EVENT_TREASURE_CHEST_OPENED, {
+		"chest_id": chest.chest_id,
+		"position": chest.grid_position,
+		"item_id": opened.item_id,
+		"quantity": opened.quantity,
+		"quantity_after": opened.quantity_after,
 	})
 	return result
 

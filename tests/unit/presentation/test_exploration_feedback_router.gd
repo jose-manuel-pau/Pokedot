@@ -21,6 +21,7 @@ func _test_semantic_event_cues() -> void:
 	begin_case("semantic feedback cues")
 	assert_equal(router.route(_event(ExplorationConstants.EVENT_MAP_STARTED)).cue_id, &"map_ready")
 	assert_equal(router.route(_event(ExplorationConstants.EVENT_NPC_INTERACTED)).cue_id, &"interaction")
+	assert_equal(router.route(_event(ExplorationConstants.EVENT_TREASURE_CHEST_OPENED)).cue_id, &"treasure")
 	var encounter := router.route(_event(ExplorationConstants.EVENT_WILD_ENCOUNTER))
 	assert_equal(encounter.cue_id, &"encounter")
 	assert_true(encounter.visual_duration > 0.0)

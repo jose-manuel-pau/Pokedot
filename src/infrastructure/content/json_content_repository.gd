@@ -219,6 +219,20 @@ func _load_maps(items: Array, result: ContentLoadResult) -> void:
 					definition.npcs.append(_to_npc(npc_data, path, npc_index, result))
 		else:
 			_add_error(result, &"invalid_field_type", path + ".npcs", "Expected an array.")
+		var raw_chests: Variant = data.get("treasure_chests", [])
+		if raw_chests is Array:
+			for chest_index in raw_chests.size():
+				var chest_data := _as_dictionary(
+					raw_chests[chest_index],
+					path + ".treasure_chests[%d]" % chest_index,
+					result
+				)
+				if not chest_data.is_empty():
+					definition.treasure_chests.append(
+						_to_treasure_chest(chest_data, path, chest_index, result)
+					)
+		else:
+			_add_error(result, &"invalid_field_type", path + ".treasure_chests", "Expected an array.")
 		_add_map(definition, path + ".id", result)
 
 
@@ -333,6 +347,25 @@ func _to_npc(
 		for line in raw_dialogue:
 			npc.dialogue.append(str(line))
 	return npc
+
+
+func _to_treasure_chest(
+	data: Dictionary,
+	map_path: String,
+	index: int,
+	result: ContentLoadResult
+) -> TreasureChestDefinition:
+	var chest := TreasureChestDefinition.new()
+	chest.chest_id = StringName(str(data.get("id", "")))
+	chest.display_name = str(data.get("display_name", ""))
+	chest.grid_position = _to_vector2i(
+		data.get("position", []),
+		map_path + ".treasure_chests[%d].position" % index,
+		result
+	)
+	chest.reward_item_ids = _to_string_name_array(data.get("reward_item_ids", []))
+	chest.reward_quantity = int(data.get("reward_quantity", 1))
+	return chest
 
 
 func _to_vector2i(value: Variant, path: String, result: ContentLoadResult) -> Vector2i:
