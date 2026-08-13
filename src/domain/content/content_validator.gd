@@ -362,6 +362,32 @@ func _validate_maps(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> 
 				_add_error(issues, &"npc_without_dialogue", path + ".npcs.%s.dialogue" % npc.npc_id, "NPC needs dialogue.")
 			npc_ids[npc.npc_id] = true
 			occupied[npc.grid_position] = true
+		var chest_ids: Dictionary = {}
+		for chest in definition.treasure_chests:
+			var chest_path := path + ".treasure_chests.%s" % chest.chest_id
+			_validate_content_id(chest.chest_id, chest_path + ".id", issues)
+			_validate_display_name(chest.display_name, chest_path, issues)
+			if chest_ids.has(chest.chest_id):
+				_add_error(issues, &"duplicate_treasure_chest_id", path + ".treasure_chests", "Treasure chest ID is repeated.")
+			if not definition.is_walkable(chest.grid_position):
+				_add_error(issues, &"invalid_treasure_chest_position", chest_path + ".position", "Treasure chests must be on walkable tiles.")
+			if chest.grid_position == definition.spawn_position:
+				_add_error(issues, &"treasure_chest_on_spawn", chest_path + ".position", "Treasure chests cannot occupy the spawn.")
+			if occupied.has(chest.grid_position):
+				_add_error(issues, &"overlapping_map_interactable", chest_path + ".position", "Map interactables cannot share a position.")
+			if chest.reward_item_ids.is_empty():
+				_add_error(issues, &"empty_chest_reward_pool", chest_path + ".reward_item_ids", "Treasure chests need at least one reward item.")
+			if chest.reward_quantity < 1 or chest.reward_quantity > 99:
+				_add_error(issues, &"invalid_chest_reward_quantity", chest_path + ".reward_quantity", "Must be from 1 to 99.")
+			var reward_ids: Dictionary = {}
+			for reward_item_id in chest.reward_item_ids:
+				if catalog.get_item(reward_item_id) == null:
+					_add_error(issues, &"unknown_chest_reward", chest_path + ".reward_item_ids", "Reward item '%s' does not exist." % reward_item_id)
+				if reward_ids.has(reward_item_id):
+					_add_error(issues, &"duplicate_chest_reward", chest_path + ".reward_item_ids", "Reward item '%s' is repeated." % reward_item_id)
+				reward_ids[reward_item_id] = true
+			chest_ids[chest.chest_id] = true
+			occupied[chest.grid_position] = true
 
 
 func _validate_encounter_zone(

@@ -59,7 +59,7 @@ func initialize(
 		status_label.text = "Exploration failed: %s" % session.last_error
 		return
 	title_label.text = session.get_current_map().display_name
-	status_label.text = "Explore the grass and mistferns. Talk to Ranger Mira."
+	status_label.text = "Explore the wilds, talk to Ranger Mira, and search for treasure chests."
 	queue_redraw()
 
 
@@ -136,6 +136,8 @@ func _draw() -> void:
 	for y in map.get_height():
 		for x in map.get_width():
 			_draw_tile(map, Vector2i(x, y))
+	for chest in map.treasure_chests:
+		_draw_treasure_chest(map, chest)
 	for npc in map.npcs:
 		_draw_npc(map, npc)
 	_draw_player(map)
@@ -166,6 +168,31 @@ func _draw_npc(map: ExplorationMapDefinition, npc: NpcDefinition) -> void:
 	draw_circle(center + Vector2(0, -8), 9, Color("fff0a6") if _is_high_contrast() else Color("f4c986"))
 	draw_rect(Rect2(center + Vector2(-11, 1), Vector2(22, 20)), Color("ff684f") if _is_high_contrast() else Color("dd765d"))
 	draw_circle(center + Vector2(npc.facing) * 13, 3, Color("fff2c4"))
+
+
+func _draw_treasure_chest(
+	map: ExplorationMapDefinition,
+	chest: TreasureChestDefinition
+) -> void:
+	var center := MAP_ORIGIN + (Vector2(chest.grid_position) + Vector2(0.5, 0.5)) \
+		* map.tile_size
+	var opened := session.state.is_chest_open(chest.chest_id)
+	var outline := Color.WHITE if _is_high_contrast() else Color("2a1d18")
+	var wood := Color("a67745") if opened else Color("c78338")
+	var metal := Color("d8cbb3") if opened else Color("ffd65a")
+	if opened:
+		draw_rect(Rect2(center + Vector2(-16, -16), Vector2(32, 9)), wood, true)
+		draw_rect(Rect2(center + Vector2(-16, -16), Vector2(32, 9)), outline, false, 2.0)
+		draw_rect(Rect2(center + Vector2(-17, -5), Vector2(34, 21)), Color("382d27"), true)
+	else:
+		draw_rect(Rect2(center + Vector2(-17, -14), Vector2(34, 13)), wood.lightened(0.08), true)
+		draw_rect(Rect2(center + Vector2(-17, -14), Vector2(34, 13)), outline, false, 2.0)
+		draw_circle(center + Vector2(13, -17), 3.0, metal)
+	draw_rect(Rect2(center + Vector2(-17, -5), Vector2(34, 21)), wood, true)
+	draw_rect(Rect2(center + Vector2(-17, -5), Vector2(34, 21)), outline, false, 2.0)
+	draw_rect(Rect2(center + Vector2(-3, -5), Vector2(6, 21)), metal, true)
+	if not opened:
+		draw_rect(Rect2(center + Vector2(-4, 0), Vector2(8, 8)), outline, false, 2.0)
 
 
 func _draw_player(map: ExplorationMapDefinition) -> void:
@@ -203,9 +230,24 @@ func _move(direction: Vector2i) -> void:
 
 
 func _interact() -> void:
-	var result := session.interact()
+	var result := session.interact(_inventory)
 	if not result.success:
-		status_label.text = "There is nothing to interact with here."
+		match result.reason:
+			&"treasure_chest_already_open":
+				status_label.text = "This treasure chest is empty."
+			&"inventory_full", &"stack_limit_exceeded":
+				status_label.text = "The reward stays inside because your inventory cannot hold it."
+			_:
+				status_label.text = "There is nothing to interact with here."
+		return
+	if result.interaction_type == ExplorationConstants.INTERACTION_TREASURE_CHEST:
+		var item := _catalog.get_item(result.item_id)
+		status_label.text = "Treasure found: %s x%d! Inventory now holds %d." % [
+			item.display_name if item != null else str(result.item_id),
+			result.quantity,
+			result.quantity_after,
+		]
+		queue_redraw()
 		return
 	_dialogue_lines.assign(result.dialogue)
 	_dialogue_index = 0

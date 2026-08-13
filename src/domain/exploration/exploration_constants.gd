@@ -8,8 +8,12 @@ const PHASE_BATTLE_TRANSITION: StringName = &"battle_transition"
 const EVENT_MAP_STARTED: StringName = &"map_started"
 const EVENT_MOVEMENT_RESOLVED: StringName = &"movement_resolved"
 const EVENT_NPC_INTERACTED: StringName = &"npc_interacted"
+const EVENT_TREASURE_CHEST_OPENED: StringName = &"treasure_chest_opened"
 const EVENT_WILD_ENCOUNTER: StringName = &"wild_encounter"
 const EVENT_EXPLORATION_RESUMED: StringName = &"exploration_resumed"
+
+const INTERACTION_NPC: StringName = &"npc"
+const INTERACTION_TREASURE_CHEST: StringName = &"treasure_chest"
 
 
 static func is_cardinal(direction: Vector2i) -> bool:

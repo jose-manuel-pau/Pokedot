@@ -125,6 +125,15 @@ func _test_invalid_map_rules() -> void:
 	var npc := map.npcs[0]
 	npc.facing = Vector2i(1, 1)
 	npc.dialogue.clear()
+	var first_chest := map.treasure_chests[0]
+	first_chest.grid_position = map.spawn_position
+	first_chest.reward_item_ids.clear()
+	first_chest.reward_quantity = 0
+	var second_chest := map.treasure_chests[1]
+	second_chest.chest_id = first_chest.chest_id
+	second_chest.grid_position = map.spawn_position
+	second_chest.reward_item_ids = [&"missing_item", &"missing_item"]
+	map.treasure_chests[2].grid_position = Vector2i(0, 0)
 	var issues := ContentValidator.new().validate(catalog)
 	assert_has_issue(issues, &"invalid_map_spawn")
 	assert_has_issue(issues, &"unknown_map_tile")
@@ -134,6 +143,14 @@ func _test_invalid_map_rules() -> void:
 	assert_has_issue(issues, &"invalid_encounter_weight")
 	assert_has_issue(issues, &"invalid_npc_facing")
 	assert_has_issue(issues, &"npc_without_dialogue")
+	assert_has_issue(issues, &"treasure_chest_on_spawn")
+	assert_has_issue(issues, &"empty_chest_reward_pool")
+	assert_has_issue(issues, &"invalid_chest_reward_quantity")
+	assert_has_issue(issues, &"duplicate_treasure_chest_id")
+	assert_has_issue(issues, &"overlapping_map_interactable")
+	assert_has_issue(issues, &"unknown_chest_reward")
+	assert_has_issue(issues, &"duplicate_chest_reward")
+	assert_has_issue(issues, &"invalid_treasure_chest_position")
 
 
 func _test_invalid_art_direction_rules() -> void:

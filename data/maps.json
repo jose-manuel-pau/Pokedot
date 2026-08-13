@@ -59,6 +59,29 @@
             "Mistferns hide stronger wildlife. Keep a capsule ready before stepping in."
           ]
         }
+      ],
+      "treasure_chests": [
+        {
+          "id": "trailhead_cache",
+          "display_name": "Trailhead Cache",
+          "position": [4, 9],
+          "reward_item_ids": ["potion", "mega_potion", "ultra_potion", "elixir"],
+          "reward_quantity": 1
+        },
+        {
+          "id": "northgrove_cache",
+          "display_name": "Northgrove Cache",
+          "position": [7, 1],
+          "reward_item_ids": ["potion", "mega_potion", "ultra_potion", "elixir"],
+          "reward_quantity": 1
+        },
+        {
+          "id": "mistfern_cache",
+          "display_name": "Mistfern Cache",
+          "position": [13, 5],
+          "reward_item_ids": ["potion", "mega_potion", "ultra_potion", "elixir"],
+          "reward_quantity": 1
+        }
       ]
     }
   ]

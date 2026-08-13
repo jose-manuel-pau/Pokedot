@@ -13,6 +13,7 @@ const TILE_PATH := "."
 @export var tile_rows: Array[String] = []
 @export var encounter_zones: Array[EncounterZoneDefinition] = []
 @export var npcs: Array[NpcDefinition] = []
+@export var treasure_chests: Array[TreasureChestDefinition] = []
 
 
 func get_width() -> int:
@@ -50,4 +51,11 @@ func get_npc_at(cell: Vector2i) -> NpcDefinition:
 	for npc in npcs:
 		if npc.grid_position == cell:
 			return npc
+	return null
+
+
+func get_treasure_chest_at(cell: Vector2i) -> TreasureChestDefinition:
+	for chest in treasure_chests:
+		if chest.grid_position == cell:
+			return chest
 	return null

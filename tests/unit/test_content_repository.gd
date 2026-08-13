@@ -79,9 +79,14 @@ func _test_cross_references_are_resolved() -> void:
 	assert_equal(map.spawn_position, Vector2i(2, 8))
 	assert_equal(map.encounter_zones.size(), 2)
 	assert_equal(map.npcs.size(), 1)
+	assert_equal(map.treasure_chests.size(), 3)
 	for zone in map.encounter_zones:
 		for entry in zone.entries:
 			assert_not_null(catalog.get_species(entry.species_id))
+	for chest in map.treasure_chests:
+		assert_true(map.is_walkable(chest.grid_position))
+		for reward_item_id in chest.reward_item_ids:
+			assert_not_null(catalog.get_item(reward_item_id))
 	for raw_concept in catalog.creature_concepts_by_id.values():
 		var concept := raw_concept as CreatureConceptDefinition
 		assert_not_null(catalog.get_species(concept.species_id))
