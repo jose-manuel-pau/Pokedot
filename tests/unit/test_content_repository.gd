@@ -29,7 +29,7 @@ func _test_valid_catalog_loads() -> void:
 	assert_equal(result.catalog.types_by_id.size(), 5)
 	assert_equal(result.catalog.statuses_by_id.size(), 3)
 	assert_equal(result.catalog.growth_curves_by_id.size(), 3)
-	assert_equal(result.catalog.items_by_id.size(), 9)
+	assert_equal(result.catalog.items_by_id.size(), 12)
 	assert_equal(result.catalog.maps_by_id.size(), 1)
 	assert_equal(result.catalog.art_directions_by_id.size(), 1)
 	assert_equal(result.catalog.creature_concepts_by_id.size(), 5)
@@ -67,6 +67,9 @@ func _test_cross_references_are_resolved() -> void:
 	assert_true(remedy.is_status_remedy())
 	for status_id in remedy.cured_status_ids:
 		assert_not_null(catalog.get_status(status_id))
+	assert_equal(catalog.get_item(&"potion").healing_amount, 20)
+	assert_equal(catalog.get_item(&"mega_potion").healing_amount, 50)
+	assert_equal(catalog.get_item(&"ultra_potion").healing_amount, 100)
 	var map := catalog.get_map(&"mosslight_crossing")
 	assert_not_null(map)
 	assert_equal(map.spawn_position, Vector2i(2, 8))

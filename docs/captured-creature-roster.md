@@ -10,7 +10,7 @@ Click a creature card, or focus it with the keyboard and press Enter. The select
 
 The exact selected instance—not merely its species—is used as the player participant in the next wild one-versus-one battle. A stored creature may be selected without changing party/storage organization. After the battle, the selection remains active until the player chooses another creature.
 
-New captures use the same live `CreatureCollection`; reopening the menu immediately includes them. The prototype restores every owned creature between field encounters because a healing-center gameplay loop has not yet been added.
+New captures use the same live `CreatureCollection`; reopening the menu immediately includes them. Current HP also remains live: battle damage persists on the map and can be restored from the **B** object menu. Fully fainted creatures require a future revival or healing-center system, so select another healthy next fighter when one is available.
 
 ## Architecture
 

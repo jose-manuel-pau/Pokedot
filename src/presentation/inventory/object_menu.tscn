@@ -1,0 +1,239 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource path="res://src/presentation/inventory/object_menu.gd" type="Script" id="1_menu"]
+
+[sub_resource type="StyleBoxFlat" id="Style_panel"]
+bg_color = Color(0.025, 0.055, 0.07, 0.99)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.31, 0.82, 0.73, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="Style_items"]
+bg_color = Color(0.02, 0.035, 0.045, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.22, 0.39, 0.43, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="Style_use"]
+bg_color = Color(0.035, 0.095, 0.105, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.75, 0.64, 0.25, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="Style_hp_bg"]
+bg_color = Color(0.04, 0.09, 0.11, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="Style_hp_fill"]
+bg_color = Color(0.4, 0.84, 0.49, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="ObjectMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 0
+script = ExtResource("1_menu")
+
+[node name="Shade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.005, 0.015, 0.02, 0.91)
+
+[node name="Panel" type="PanelContainer" parent="Shade"]
+layout_mode = 0
+offset_left = 94.0
+offset_top = 30.0
+offset_right = 1186.0
+offset_bottom = 690.0
+theme_override_styles/panel = SubResource("Style_panel")
+
+[node name="Margin" type="MarginContainer" parent="Shade/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 26
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 26
+theme_override_constants/margin_bottom = 20
+
+[node name="Content" type="VBoxContainer" parent="Shade/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Header" type="HBoxContainer" parent="Shade/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Shade/Panel/Margin/Content/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.98, 0.84, 0.35, 1)
+theme_override_font_sizes/font_size = 28
+text = "OBJECTS"
+
+[node name="Count" type="Label" parent="Shade/Panel/Margin/Content/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.52, 0.88, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "0 OBJECT TYPES"
+vertical_alignment = 1
+
+[node name="Close" type="Button" parent="Shade/Panel/Margin/Content/Header"]
+custom_minimum_size = Vector2(170, 42)
+layout_mode = 2
+text = "CLOSE  [B / ESC]"
+
+[node name="Body" type="HBoxContainer" parent="Shade/Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 500)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="Items" type="PanelContainer" parent="Shade/Panel/Margin/Content/Body"]
+custom_minimum_size = Vector2(420, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("Style_items")
+
+[node name="ItemMargin" type="MarginContainer" parent="Shade/Panel/Margin/Content/Body/Items"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="ItemContent" type="VBoxContainer" parent="Shade/Panel/Margin/Content/Body/Items/ItemMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Label" type="Label" parent="Shade/Panel/Margin/Content/Body/Items/ItemMargin/ItemContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.52, 0.88, 0.8, 1)
+theme_override_font_sizes/font_size = 15
+text = "BAG CONTENTS"
+
+[node name="Scroll" type="ScrollContainer" parent="Shade/Panel/Margin/Content/Body/Items/ItemMargin/ItemContent"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ItemList" type="VBoxContainer" parent="Shade/Panel/Margin/Content/Body/Items/ItemMargin/ItemContent/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 7
+
+[node name="UsePanel" type="PanelContainer" parent="Shade/Panel/Margin/Content/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("Style_use")
+
+[node name="UseMargin" type="MarginContainer" parent="Shade/Panel/Margin/Content/Body/UsePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="UseContent" type="VBoxContainer" parent="Shade/Panel/Margin/Content/Body/UsePanel/UseMargin"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="ItemName" type="Label" parent="Shade/Panel/Margin/Content/Body/UsePanel/UseMargin/UseContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.84, 0.35, 1)
+theme_override_font_sizes/font_size = 27
+text = "Potion"
+
+[node name="Description" type="Label" parent="Shade/Panel/Margin/Content/Body/UsePanel/UseMargin/UseContent"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Object description"
+autowrap_mode = 2
+
+[node name="Potency" type="Label" parent="Shade/Panel/Margin/Content/Body/UsePanel/UseMargin/UseContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.52, 0.86, 0.98, 1)
+theme_override_font_sizes/font_size = 15
+text = "RESTORES 20 HP"
+
+[node name="TargetPrompt" type="Label" parent="Shade/Panel/Margin/Content/Body/UsePanel/UseMargin/UseContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.52, 0.88, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "CHOOSE A CREATURE"
+
+[node name="TargetScroll" type="ScrollContainer" parent="Shade/Panel/Margin/Content/Body/UsePanel/UseMargin/UseContent"]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="TargetGrid" type="GridContainer" parent="Shade/Panel/Margin/Content/Body/UsePanel/UseMargin/UseContent/TargetScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 7
+columns = 2
+
+[node name="TargetName" type="Label" parent="Shade/Panel/Margin/Content/Body/UsePanel/UseMargin/UseContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98, 0.84, 0.35, 1)
+theme_override_font_sizes/font_size = 18
+text = "TARGET"
+
+[node name="Health" type="ProgressBar" parent="Shade/Panel/Margin/Content/Body/UsePanel/UseMargin/UseContent"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+theme_override_styles/background = SubResource("Style_hp_bg")
+theme_override_styles/fill = SubResource("Style_hp_fill")
+value = 100.0
+show_percentage = false
+
+[node name="HealthText" type="Label" parent="Shade/Panel/Margin/Content/Body/UsePanel/UseMargin/UseContent"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "HP"
+horizontal_alignment = 2
+
+[node name="Feedback" type="Label" parent="Shade/Panel/Margin/Content/Body/UsePanel/UseMargin/UseContent"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.52, 0.88, 0.8, 1)
+theme_override_font_sizes/font_size = 15
+text = "Choose an object and a conscious creature."
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Use" type="Button" parent="Shade/Panel/Margin/Content/Body/UsePanel/UseMargin/UseContent"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "USE POTION"

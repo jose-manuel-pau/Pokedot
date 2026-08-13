@@ -24,7 +24,7 @@ func _battle_fixture(sequence: Array[float] = []) -> Dictionary:
 	var inventory := Inventory.new()
 	var inventory_service := InventoryService.new(catalog)
 	inventory_service.add(inventory, &"basic_capsule", 5)
-	inventory_service.add(inventory, &"field_tonic", 2)
+	inventory_service.add(inventory, &"potion", 2)
 	var player := BattleTestFactory.create_creature(
 		&"cindermite", 10, [&"cinder_jab", &"stonepulse"]
 	)
@@ -62,6 +62,8 @@ func _test_scene_presents_live_combatants_and_actions() -> void:
 	assert_equal(screen.opponent_name.text, "Reedling   Lv. 8")
 	assert_equal(screen.get_move_button_count(), 2)
 	assert_true(screen.capture_button.text.contains("x5"))
+	assert_true(screen.item_button.text.contains("POTION"))
+	assert_true(screen.item_button.text.contains("x2"))
 	assert_true(screen.battle_log.text.contains("wild Reedling appeared"))
 	screen.free()
 

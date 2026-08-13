@@ -15,6 +15,7 @@ const PARTY_SWITCHING_TEST := preload("res://tests/unit/battle/test_party_switch
 const BATTLE_AI_TEST := preload("res://tests/unit/battle/test_battle_ai_controller.gd")
 const INVENTORY_TEST := preload("res://tests/unit/inventory/test_inventory_service.gd")
 const ITEM_EFFECT_TEST := preload("res://tests/unit/inventory/test_item_effect_service.gd")
+const FIELD_ITEM_USE_TEST := preload("res://tests/unit/inventory/test_field_item_use_service.gd")
 const COLLECTION_TEST := preload("res://tests/unit/collection/test_creature_collection_service.gd")
 const CAPTURE_TEST := preload("res://tests/unit/capture/test_capture_service.gd")
 const CAPTURE_INVENTORY_INTEGRATION_TEST := preload("res://tests/unit/battle/test_capture_inventory_integration.gd")
@@ -40,6 +41,8 @@ const FEEDBACK_ROUTER_TEST := preload("res://tests/unit/presentation/test_explor
 const BATTLE_SCREEN_TEST := preload("res://tests/unit/presentation/test_battle_screen.gd")
 const CREATURE_ROSTER_MENU_TEST := preload("res://tests/unit/presentation/test_creature_roster_menu.gd")
 const EXPLORATION_ROSTER_INTEGRATION_TEST := preload("res://tests/unit/presentation/test_exploration_roster_integration.gd")
+const OBJECT_MENU_TEST := preload("res://tests/unit/presentation/test_object_menu.gd")
+const EXPLORATION_OBJECT_MENU_INTEGRATION_TEST := preload("res://tests/unit/presentation/test_exploration_object_menu_integration.gd")
 const PRODUCTION_READINESS_TEST := preload("res://tests/unit/production/test_production_readiness_service.gd")
 
 
@@ -63,6 +66,7 @@ func _run_all() -> void:
 		BATTLE_AI_TEST.new(),
 		INVENTORY_TEST.new(),
 		ITEM_EFFECT_TEST.new(),
+		FIELD_ITEM_USE_TEST.new(),
 		COLLECTION_TEST.new(),
 		CAPTURE_TEST.new(),
 		CAPTURE_INVENTORY_INTEGRATION_TEST.new(),
@@ -88,6 +92,8 @@ func _run_all() -> void:
 		BATTLE_SCREEN_TEST.new(),
 		CREATURE_ROSTER_MENU_TEST.new(),
 		EXPLORATION_ROSTER_INTEGRATION_TEST.new(),
+		OBJECT_MENU_TEST.new(),
+		EXPLORATION_OBJECT_MENU_INTEGRATION_TEST.new(),
 		PRODUCTION_READINESS_TEST.new(),
 	]
 	var total_cases := 0

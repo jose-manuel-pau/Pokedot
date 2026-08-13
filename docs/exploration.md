@@ -19,11 +19,14 @@ Controls:
 | Open captured creatures | P |
 | Choose the next fighter | Click/focus a creature card and press Enter |
 | Close captured creatures | P or Escape |
+| Open field objects | B |
+| Choose object/target | Click/focus a card and press Enter |
+| Close field objects | B or Escape |
 | Battle moves | 1–4 or click |
-| Capture / item / run | C / I / R (Escape also runs) |
+| Capture / Potion / run | C / I / R (Escape also runs) |
 | Return after battle | Enter, Space, Escape, or click Continue |
 
-Walk through bright grass or mistferns to trigger wild encounters. Stand next to Ranger Mira, face her, and interact to read her dialogue. Walls and NPC tiles block movement.
+Walk through bright grass or mistferns to trigger wild encounters. Stand next to Ranger Mira, face her, and interact to read her dialogue. Walls and NPC tiles block movement. Battle damage persists after returning to the field; press **B** to use restorative objects between encounters.
 
 ## Architecture
 

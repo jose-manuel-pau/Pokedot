@@ -300,7 +300,7 @@ text = "[C] CAPSULE"
 [node name="Item" type="Button" parent="CommandPanel/Margin/Content/ActionRow"]
 custom_minimum_size = Vector2(184, 38)
 layout_mode = 2
-text = "[I] TONIC"
+text = "[I] POTION"
 
 [node name="Run" type="Button" parent="CommandPanel/Margin/Content/ActionRow"]
 custom_minimum_size = Vector2(184, 38)
