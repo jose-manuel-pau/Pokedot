@@ -5,6 +5,8 @@ extends Resource
 
 const TILE_WALL := "#"
 const TILE_PATH := "."
+const TILE_FENCE_HORIZONTAL := "-"
+const TILE_FENCE_VERTICAL := "|"
 
 @export var map_id: StringName
 @export var display_name: String
@@ -37,7 +39,20 @@ func get_tile_code(cell: Vector2i) -> String:
 
 
 func is_walkable(cell: Vector2i) -> bool:
-	return is_in_bounds(cell) and get_tile_code(cell) != TILE_WALL
+	return is_in_bounds(cell) and not is_blocking_tile_code(get_tile_code(cell))
+
+
+static func is_blocking_tile_code(tile_code: String) -> bool:
+	return tile_code in [TILE_WALL, TILE_FENCE_HORIZONTAL, TILE_FENCE_VERTICAL]
+
+
+static func is_reserved_tile_code(tile_code: String) -> bool:
+	return tile_code in [
+		TILE_WALL,
+		TILE_PATH,
+		TILE_FENCE_HORIZONTAL,
+		TILE_FENCE_VERTICAL,
+	]
 
 
 func get_zone_for_cell(cell: Vector2i) -> EncounterZoneDefinition:

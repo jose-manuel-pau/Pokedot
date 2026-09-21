@@ -44,7 +44,8 @@ Exploration adds:
 
 - Two playable top-down field maps with keyboard movement and collision
 - Versioned map, encounter-zone, NPC dialogue, treasure-chest, and map-exit content
-- Smooth bidirectional fades between Mosslight Crossing and Dewstone Vale
+- Open boundary trails with smooth bidirectional fades between Mosslight Crossing and Dewstone Vale
+- Data-driven horizontal and vertical fences that visibly deny passage
 - Transition input locking with preserved roster, HP, inventory, selected fighter, and opened chests
 - Seeded weighted encounters with level ranges and cooldowns
 - NPC interaction and observer events

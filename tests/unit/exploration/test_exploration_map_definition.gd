@@ -33,13 +33,23 @@ func _test_collision_boundaries() -> void:
 	assert_true(map.is_walkable(Vector2i(3, 2)))
 	assert_false(map.is_walkable(Vector2i(0, 0)))
 	assert_false(map.is_walkable(Vector2i(9, 2)))
+	assert_equal(map.get_tile_code(Vector2i(10, 1)), ExplorationMapDefinition.TILE_FENCE_HORIZONTAL)
+	assert_false(map.is_walkable(Vector2i(10, 1)))
+	assert_equal(map.get_tile_code(Vector2i(8, 3)), ExplorationMapDefinition.TILE_FENCE_VERTICAL)
+	assert_false(map.is_walkable(Vector2i(8, 3)))
 	assert_false(map.is_walkable(Vector2i(18, 5)))
 
 
 func _test_zone_lookup() -> void:
 	begin_case("encounter zone lookup")
-	assert_equal(map.get_zone_for_cell(Vector2i(3, 2)).zone_id, &"sunmeadow_grass")
-	assert_equal(map.get_zone_for_cell(Vector2i(8, 4)).zone_id, &"mistfern_patch")
+	var grass_zone := map.get_zone_for_cell(Vector2i(3, 2))
+	assert_not_null(grass_zone)
+	if grass_zone != null:
+		assert_equal(grass_zone.zone_id, &"sunmeadow_grass")
+	var fern_zone := map.get_zone_for_cell(Vector2i(9, 4))
+	assert_not_null(fern_zone)
+	if fern_zone != null:
+		assert_equal(fern_zone.zone_id, &"mistfern_patch")
 	assert_equal(map.get_zone_for_cell(Vector2i(1, 1)), null)
 
 
@@ -67,25 +77,42 @@ func _test_treasure_chest_lookup() -> void:
 
 
 func _test_map_exit_lookup() -> void:
-	begin_case("map exit placement")
-	var map_exit := map.get_map_exit_at(Vector2i(16, 9))
+	begin_case("open boundary exit placement")
+	var map_exit := map.get_map_exit_at(Vector2i(17, 9))
 	assert_not_null(map_exit)
+	if map_exit == null:
+		return
 	assert_equal(map_exit.exit_id, &"eastward_trail")
 	assert_equal(map_exit.destination_map_id, &"dewstone_vale")
-	assert_equal(map_exit.destination_position, Vector2i(2, 9))
+	assert_equal(map_exit.destination_position, Vector2i(1, 9))
 	assert_equal(map_exit.destination_facing, Vector2i.RIGHT)
-	assert_equal(map.get_map_exit_at(Vector2i(15, 9)), null)
+	assert_true(map.is_walkable(Vector2i(17, 9)))
+	assert_equal(map.get_map_exit_at(Vector2i(16, 9)), null)
 
 
 func _test_second_map_layout() -> void:
 	begin_case("second map layout")
 	var second_map := BattleTestFactory.create_catalog().get_map(&"dewstone_vale")
 	assert_not_null(second_map)
+	if second_map == null:
+		return
 	assert_equal(second_map.get_width(), 18)
 	assert_equal(second_map.get_height(), 11)
 	assert_true(second_map.is_walkable(second_map.spawn_position))
-	assert_equal(second_map.get_zone_for_cell(Vector2i(5, 1)).zone_id, &"dewgrass_run")
-	assert_equal(second_map.get_zone_for_cell(Vector2i(3, 4)).zone_id, &"silverfern_hollow")
+	var grass_zone := second_map.get_zone_for_cell(Vector2i(5, 1))
+	assert_not_null(grass_zone)
+	if grass_zone != null:
+		assert_equal(grass_zone.zone_id, &"dewgrass_run")
+	var fern_zone := second_map.get_zone_for_cell(Vector2i(3, 4))
+	assert_not_null(fern_zone)
+	if fern_zone != null:
+		assert_equal(fern_zone.zone_id, &"silverfern_hollow")
 	assert_equal(second_map.treasure_chests.size(), 3)
 	assert_equal(second_map.npcs.size(), 1)
-	assert_equal(second_map.get_map_exit_at(Vector2i(1, 9)).destination_map_id, &"mosslight_crossing")
+	assert_false(second_map.is_walkable(Vector2i(10, 1)))
+	assert_false(second_map.is_walkable(Vector2i(9, 2)))
+	var map_exit := second_map.get_map_exit_at(Vector2i(0, 9))
+	assert_not_null(map_exit)
+	if map_exit != null:
+		assert_equal(map_exit.destination_map_id, &"mosslight_crossing")
+	assert_true(second_map.is_walkable(Vector2i(0, 9)))

@@ -155,8 +155,6 @@ func _draw() -> void:
 	for y in map.get_height():
 		for x in map.get_width():
 			_draw_tile(map, Vector2i(x, y))
-	for map_exit in map.map_exits:
-		_draw_map_exit(map, map_exit)
 	for chest in map.treasure_chests:
 		_draw_treasure_chest(map, chest)
 	for npc in map.npcs:
@@ -191,20 +189,74 @@ func _draw_tile(map: ExplorationMapDefinition, cell: Vector2i) -> void:
 		var base := rect.position + Vector2(9, tile_size - 8)
 		for offset in [0.0, 12.0, 24.0]:
 			draw_line(base + Vector2(offset, 0), base + Vector2(offset + 3, -10), Color("d6e681"), 2.0)
+	elif code in [
+		ExplorationMapDefinition.TILE_FENCE_HORIZONTAL,
+		ExplorationMapDefinition.TILE_FENCE_VERTICAL,
+	]:
+		_draw_fence(rect, code)
 
 
-func _draw_map_exit(map: ExplorationMapDefinition, map_exit: MapExitDefinition) -> void:
-	var center := MAP_ORIGIN + (Vector2(map_exit.grid_position) + Vector2(0.5, 0.5)) \
-		* map.tile_size
-	var glow := Color("8ff4ff") if _is_high_contrast() else Color("8ac9d5")
-	var shadow := Color("073341") if _is_high_contrast() else Color("365b64")
-	draw_arc(center + Vector2(0, 4), 15.0, PI, TAU, 20, shadow, 8.0)
-	draw_arc(center + Vector2(0, 4), 15.0, PI, TAU, 20, glow, 3.0)
-	draw_line(center + Vector2(-15, 4), center + Vector2(-15, 19), shadow, 8.0)
-	draw_line(center + Vector2(15, 4), center + Vector2(15, 19), shadow, 8.0)
-	draw_line(center + Vector2(-15, 4), center + Vector2(-15, 19), glow, 3.0)
-	draw_line(center + Vector2(15, 4), center + Vector2(15, 19), glow, 3.0)
-	draw_circle(center + Vector2(0, 13), 4.0, glow)
+func _draw_fence(rect: Rect2, tile_code: String) -> void:
+	var wood := Color("ffe27a") if _is_high_contrast() else Color("986b43")
+	var shadow := Color("30190f") if _is_high_contrast() else Color("493225")
+	if tile_code == ExplorationMapDefinition.TILE_FENCE_HORIZONTAL:
+		for x_ratio in [1.0 / 6.0, 0.5, 5.0 / 6.0]:
+			var x_offset: float = rect.size.x * x_ratio
+			draw_line(
+				rect.position + Vector2(x_offset, rect.size.y * 0.19),
+				rect.position + Vector2(x_offset, rect.size.y * 0.83),
+				shadow,
+				7.0
+			)
+			draw_line(
+				rect.position + Vector2(x_offset, rect.size.y * 0.19),
+				rect.position + Vector2(x_offset, rect.size.y * 0.83),
+				wood,
+				4.0
+			)
+		for y_ratio in [0.375, 0.646]:
+			var y_offset: float = rect.size.y * y_ratio
+			draw_line(
+				rect.position + Vector2(0, y_offset),
+				rect.position + Vector2(rect.size.x, y_offset),
+				shadow,
+				8.0
+			)
+			draw_line(
+				rect.position + Vector2(0, y_offset),
+				rect.position + Vector2(rect.size.x, y_offset),
+				wood,
+				5.0
+			)
+		return
+	for y_ratio in [1.0 / 6.0, 0.5, 5.0 / 6.0]:
+		var y_offset: float = rect.size.y * y_ratio
+		draw_line(
+			rect.position + Vector2(rect.size.x * 0.19, y_offset),
+			rect.position + Vector2(rect.size.x * 0.83, y_offset),
+			shadow,
+			7.0
+		)
+		draw_line(
+			rect.position + Vector2(rect.size.x * 0.19, y_offset),
+			rect.position + Vector2(rect.size.x * 0.83, y_offset),
+			wood,
+			4.0
+		)
+	for x_ratio in [0.375, 0.646]:
+		var x_offset: float = rect.size.x * x_ratio
+		draw_line(
+			rect.position + Vector2(x_offset, 0),
+			rect.position + Vector2(x_offset, rect.size.y),
+			shadow,
+			8.0
+		)
+		draw_line(
+			rect.position + Vector2(x_offset, 0),
+			rect.position + Vector2(x_offset, rect.size.y),
+			wood,
+			5.0
+		)
 
 
 func _draw_npc(map: ExplorationMapDefinition, npc: NpcDefinition) -> void:
