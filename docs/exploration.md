@@ -1,6 +1,6 @@
 # Exploration
 
-This module adds Pokedot's first playable field scene: **Mosslight Crossing**. It combines deterministic grid movement, terrain, NPC and treasure-chest collision, dialogue and chest interaction, data-driven wild encounter zones, and a tested handoff into the existing wild battle state machine.
+This module provides two connected playable field maps: **Mosslight Crossing** and **Dewstone Vale**. It combines deterministic grid movement, terrain, NPC and treasure-chest collision, dialogue and chest interaction, data-driven wild encounter zones, smooth map travel, and a tested handoff into the existing wild battle state machine.
 
 ## Play the vertical slice
 
@@ -15,6 +15,7 @@ Controls:
 | Action | Keyboard |
 | --- | --- |
 | Move | WASD or arrow keys |
+| Travel between maps | Walk through a glowing trail gate |
 | Interact / advance dialogue | E, Space, or Enter |
 | Open captured creatures | P |
 | Choose the next fighter | Click/focus a creature card and press Enter |
@@ -26,7 +27,7 @@ Controls:
 | Capture / Potion / run | C / I / R (Escape also runs) |
 | Return after battle | Enter, Space, Escape, or click Continue |
 
-Walk through bright grass or mistferns to trigger wild encounters. Stand next to Ranger Mira, face her, and interact to read her dialogue. Face a closed treasure chest and interact to receive one random Potion, Mega Potion, Ultra Potion, or Elixir. Walls, NPCs, and chests block movement. Battle damage persists after returning to the field; press **B** to inspect or use the updated restorative inventory between encounters.
+Walk through bright grass or mistferns to trigger wild encounters. The east gate in Mosslight Crossing leads to Dewstone Vale; its west gate returns to Mosslight. Stand next to Ranger Mira or Wayfinder Orin, face them, and interact to read their dialogue. Face a closed treasure chest and interact to receive one random Potion, Mega Potion, Ultra Potion, or Elixir. Walls, NPCs, and chests block movement. Battle damage persists after returning to the field; press **B** to inspect or use the updated restorative inventory between encounters.
 
 ## Architecture
 
@@ -36,11 +37,11 @@ Exploration follows the same scene-independent boundaries as combat:
 JSON map content
     ↓ load and cross-reference validation
 ExplorationMapDefinition
-    ↓ immutable terrain, zones, NPC and chest placements
+    ↓ immutable terrain, zones, NPC, chest, and exit placements
 ExplorationSession
     ├─ movement and collision
     ├─ facing, dialogue and one-time chest interaction
-    ├─ state transitions and cooldown
+    ├─ battle/map state transitions and cooldown
     ├─ domain events
     └─ TreasureChestService → atomic InventoryService deposit
          ↓ encounter request
@@ -63,6 +64,7 @@ BattleManager.start_wild_battle()
 - Encounter rate and post-battle cooldown per zone
 - NPC position, facing, name, and dialogue
 - Treasure-chest ID, position, quantity, and item reward pool
+- Map-exit ID, position, destination map/cell, and arrival facing
 
 Initial tile symbols:
 
@@ -73,11 +75,11 @@ Initial tile symbols:
 | `g` | Sunmeadow Grass encounter tile |
 | `f` | Mistfern Patch encounter tile |
 
-`ContentValidator` rejects uneven rows, bad spawns, unknown tile symbols, unused or duplicated zone symbols, invalid encounter values, unknown species, invalid NPC placement/facing, overlapping interactables, missing dialogue, duplicate chest IDs/rewards, invalid chest positions/quantities, empty pools, and unknown reward items.
+`ContentValidator` rejects uneven rows, bad spawns, unknown tile symbols, unused or duplicated zone symbols, invalid encounter values, unknown species, invalid NPC placement/facing, overlapping interactables, missing dialogue, duplicate chest IDs/rewards, invalid chest positions/quantities, empty pools, unknown reward items, invalid exit destinations/facing, occupied arrival cells, and map links without a return route.
 
 ## Treasure chest rewards
 
-Mosslight Crossing contains three map-defined chests. Each chest selects one item uniformly from its configured restorative pool using the injected `ExplorationRandomSource`:
+Each map contains three map-defined chests. Every chest selects one item uniformly from its configured restorative pool using the injected `ExplorationRandomSource`:
 
 - Potion
 - Mega Potion
@@ -97,11 +99,15 @@ not_started
 active ── successful encounter roll ──► battle_transition
   ▲                                          │
   └──────────── resume_after_battle() ───────┘
+
+active ── step onto map exit ──► map_transition
+  ▲                                  │
+  └──── complete_map_transition() ────┘
 ```
 
-Only cardinal movement is accepted. A blocked move changes facing but does not change position or increment the step counter. Movement is rejected while a battle transition is pending.
+Only cardinal movement is accepted. A blocked move changes facing but does not change position or increment the step counter. Movement is rejected while a battle or map transition is pending. Map travel uses a two-phase contract: entering a gate creates a typed `MapTransitionRequest` and locks input; the presentation fades to black, commits the destination at full black, and fades the new map in. Reduced-motion mode shortens both fade phases.
 
-The session emits stable observer events for map start, movement, NPC interaction, treasure collection, wild encounters, and exploration resume. These events are suitable for animation, audio, quests, analytics, and replay tooling.
+The session emits stable observer events for map start, movement, NPC interaction, treasure collection, map departure/arrival, wild encounters, and exploration resume. These events are suitable for animation, audio, quests, analytics, and replay tooling. The same live session remains active across map changes, preserving creature HP/XP, the selected fighter, inventory quantities, and opened chests.
 
 ## Wild encounter selection
 
@@ -125,7 +131,7 @@ This boundary allows later scene routing to animate fades, load a full battle UI
 ## Extension points
 
 - Replace the renderer with authored TileMap layers and sprites while retaining map IDs and session rules.
-- Add doors and map exits as new tile metadata and transition requests.
+- Add conditional doors or one-way routes on top of the existing typed map-exit contract.
 - Add NPC state, quest conditions, and branching dialogue behind stable NPC IDs.
 - Persist opened chest IDs when the live exploration scene is connected to save-slot orchestration.
 - Add terrain abilities by decorating movement validation.

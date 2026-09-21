@@ -233,6 +233,20 @@ func _load_maps(items: Array, result: ContentLoadResult) -> void:
 					)
 		else:
 			_add_error(result, &"invalid_field_type", path + ".treasure_chests", "Expected an array.")
+		var raw_exits: Variant = data.get("map_exits", [])
+		if raw_exits is Array:
+			for exit_index in raw_exits.size():
+				var exit_data := _as_dictionary(
+					raw_exits[exit_index],
+					path + ".map_exits[%d]" % exit_index,
+					result
+				)
+				if not exit_data.is_empty():
+					definition.map_exits.append(
+						_to_map_exit(exit_data, path, exit_index, result)
+					)
+		else:
+			_add_error(result, &"invalid_field_type", path + ".map_exits", "Expected an array.")
 		_add_map(definition, path + ".id", result)
 
 
@@ -366,6 +380,34 @@ func _to_treasure_chest(
 	chest.reward_item_ids = _to_string_name_array(data.get("reward_item_ids", []))
 	chest.reward_quantity = int(data.get("reward_quantity", 1))
 	return chest
+
+
+func _to_map_exit(
+	data: Dictionary,
+	map_path: String,
+	index: int,
+	result: ContentLoadResult
+) -> MapExitDefinition:
+	var map_exit := MapExitDefinition.new()
+	var exit_path := map_path + ".map_exits[%d]" % index
+	map_exit.exit_id = StringName(str(data.get("id", "")))
+	map_exit.grid_position = _to_vector2i(
+		data.get("position", []),
+		exit_path + ".position",
+		result
+	)
+	map_exit.destination_map_id = StringName(str(data.get("destination_map_id", "")))
+	map_exit.destination_position = _to_vector2i(
+		data.get("destination_position", []),
+		exit_path + ".destination_position",
+		result
+	)
+	map_exit.destination_facing = _to_vector2i(
+		data.get("destination_facing", [0, 1]),
+		exit_path + ".destination_facing",
+		result
+	)
+	return map_exit
 
 
 func _to_vector2i(value: Variant, path: String, result: ContentLoadResult) -> Vector2i:

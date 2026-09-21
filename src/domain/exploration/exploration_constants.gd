@@ -4,6 +4,7 @@ extends RefCounted
 const PHASE_NOT_STARTED: StringName = &"not_started"
 const PHASE_ACTIVE: StringName = &"active"
 const PHASE_BATTLE_TRANSITION: StringName = &"battle_transition"
+const PHASE_MAP_TRANSITION: StringName = &"map_transition"
 
 const EVENT_MAP_STARTED: StringName = &"map_started"
 const EVENT_MOVEMENT_RESOLVED: StringName = &"movement_resolved"
@@ -11,6 +12,8 @@ const EVENT_NPC_INTERACTED: StringName = &"npc_interacted"
 const EVENT_TREASURE_CHEST_OPENED: StringName = &"treasure_chest_opened"
 const EVENT_WILD_ENCOUNTER: StringName = &"wild_encounter"
 const EVENT_EXPLORATION_RESUMED: StringName = &"exploration_resumed"
+const EVENT_MAP_TRANSITION_STARTED: StringName = &"map_transition_started"
+const EVENT_MAP_CHANGED: StringName = &"map_changed"
 
 const INTERACTION_NPC: StringName = &"npc"
 const INTERACTION_TREASURE_CHEST: StringName = &"treasure_chest"

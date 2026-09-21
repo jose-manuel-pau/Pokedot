@@ -76,6 +76,23 @@ func attempt_move(direction: Vector2i) -> MovementResult:
 	state.step_count += 1
 	result.moved = true
 	result.to_position = target
+	var map_exit := map.get_map_exit_at(target)
+	if map_exit != null:
+		result.map_transition = MapTransitionRequest.create(
+			map_exit,
+			state.map_id,
+			target
+		)
+		state.pending_map_transition = result.map_transition
+		_emit_movement(result)
+		_change_phase(ExplorationConstants.PHASE_MAP_TRANSITION)
+		_emit_event(ExplorationConstants.EVENT_MAP_TRANSITION_STARTED, {
+			"exit_id": result.map_transition.exit_id,
+			"source_map_id": result.map_transition.source_map_id,
+			"destination_map_id": result.map_transition.destination_map_id,
+			"position": target,
+		})
+		return result
 	if state.encounter_cooldown_steps > 0:
 		state.encounter_cooldown_steps -= 1
 	else:
@@ -102,6 +119,37 @@ func attempt_move(direction: Vector2i) -> MovementResult:
 			"position": result.encounter.grid_position,
 		})
 	return result
+
+
+func complete_map_transition() -> bool:
+	last_error = &""
+	if state.phase != ExplorationConstants.PHASE_MAP_TRANSITION \
+			or state.pending_map_transition == null:
+		return _reject(&"no_map_transition")
+	var request := state.pending_map_transition
+	var destination_map := _catalog.get_map(request.destination_map_id)
+	if destination_map == null \
+			or not destination_map.is_walkable(request.destination_position):
+		return _reject(&"invalid_map_transition")
+	if destination_map.get_npc_at(request.destination_position) != null \
+			or destination_map.get_treasure_chest_at(request.destination_position) != null \
+			or destination_map.get_map_exit_at(request.destination_position) != null:
+		return _reject(&"occupied_map_transition_destination")
+	var source_map_id := state.map_id
+	state.map_id = request.destination_map_id
+	state.player_position = request.destination_position
+	state.facing = request.destination_facing
+	state.encounter_cooldown_steps = 0
+	state.pending_map_transition = null
+	_change_phase(ExplorationConstants.PHASE_ACTIVE)
+	_emit_event(ExplorationConstants.EVENT_MAP_CHANGED, {
+		"exit_id": request.exit_id,
+		"source_map_id": source_map_id,
+		"destination_map_id": state.map_id,
+		"position": state.player_position,
+		"facing": state.facing,
+	})
+	return true
 
 
 func interact(inventory: Inventory = null) -> InteractionResult:

@@ -301,6 +301,7 @@ func _validate_creature_concepts(catalog: ContentCatalog, issues: Array[Validati
 
 
 func _validate_maps(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> void:
+	var global_chest_ids: Dictionary = {}
 	for raw_definition in catalog.maps_by_id.values():
 		var definition := raw_definition as ExplorationMapDefinition
 		var path := "maps.%s" % definition.map_id
@@ -369,6 +370,8 @@ func _validate_maps(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> 
 			_validate_display_name(chest.display_name, chest_path, issues)
 			if chest_ids.has(chest.chest_id):
 				_add_error(issues, &"duplicate_treasure_chest_id", path + ".treasure_chests", "Treasure chest ID is repeated.")
+			if global_chest_ids.has(chest.chest_id):
+				_add_error(issues, &"duplicate_global_treasure_chest_id", chest_path + ".id", "Treasure chest IDs must be unique across maps.")
 			if not definition.is_walkable(chest.grid_position):
 				_add_error(issues, &"invalid_treasure_chest_position", chest_path + ".position", "Treasure chests must be on walkable tiles.")
 			if chest.grid_position == definition.spawn_position:
@@ -387,7 +390,41 @@ func _validate_maps(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> 
 					_add_error(issues, &"duplicate_chest_reward", chest_path + ".reward_item_ids", "Reward item '%s' is repeated." % reward_item_id)
 				reward_ids[reward_item_id] = true
 			chest_ids[chest.chest_id] = true
+			global_chest_ids[chest.chest_id] = true
 			occupied[chest.grid_position] = true
+		var exit_ids: Dictionary = {}
+		for map_exit in definition.map_exits:
+			var exit_path := path + ".map_exits.%s" % map_exit.exit_id
+			_validate_content_id(map_exit.exit_id, exit_path + ".id", issues)
+			if exit_ids.has(map_exit.exit_id):
+				_add_error(issues, &"duplicate_map_exit_id", path + ".map_exits", "Map exit ID is repeated.")
+			if not definition.is_walkable(map_exit.grid_position):
+				_add_error(issues, &"invalid_map_exit_position", exit_path + ".position", "Map exits must be on walkable tiles.")
+			if map_exit.grid_position == definition.spawn_position:
+				_add_error(issues, &"map_exit_on_spawn", exit_path + ".position", "Map exits cannot occupy the spawn.")
+			if occupied.has(map_exit.grid_position):
+				_add_error(issues, &"overlapping_map_interactable", exit_path + ".position", "Map interactables cannot share a position.")
+			if not _is_cardinal(map_exit.destination_facing):
+				_add_error(issues, &"invalid_map_exit_facing", exit_path + ".destination_facing", "Destination facing must be cardinal.")
+			var destination_map := catalog.get_map(map_exit.destination_map_id)
+			if destination_map == null:
+				_add_error(issues, &"unknown_destination_map", exit_path + ".destination_map_id", "Destination map does not exist.")
+			else:
+				if not destination_map.is_walkable(map_exit.destination_position):
+					_add_error(issues, &"invalid_map_exit_destination", exit_path + ".destination_position", "Destination must be a walkable tile.")
+				if destination_map.get_npc_at(map_exit.destination_position) != null \
+						or destination_map.get_treasure_chest_at(map_exit.destination_position) != null \
+						or destination_map.get_map_exit_at(map_exit.destination_position) != null:
+					_add_error(issues, &"occupied_map_exit_destination", exit_path + ".destination_position", "Destination must be a free arrival tile.")
+				var has_return_route := false
+				for return_exit in destination_map.map_exits:
+					if return_exit.destination_map_id == definition.map_id:
+						has_return_route = true
+						break
+				if not has_return_route:
+					_add_error(issues, &"missing_return_map_exit", exit_path, "Connected maps need a return route.")
+			exit_ids[map_exit.exit_id] = true
+			occupied[map_exit.grid_position] = true
 
 
 func _validate_encounter_zone(

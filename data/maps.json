@@ -82,6 +82,107 @@
           "reward_item_ids": ["potion", "mega_potion", "ultra_potion", "elixir"],
           "reward_quantity": 1
         }
+      ],
+      "map_exits": [
+        {
+          "id": "eastward_trail",
+          "position": [16, 9],
+          "destination_map_id": "dewstone_vale",
+          "destination_position": [2, 9],
+          "destination_facing": [1, 0]
+        }
+      ]
+    },
+    {
+      "id": "dewstone_vale",
+      "display_name": "Dewstone Vale",
+      "tile_size": 48,
+      "spawn": [2, 9],
+      "tile_rows": [
+        "##################",
+        "#....gggg........#",
+        "#....gggg..###...#",
+        "#..........###...#",
+        "#..ffff..........#",
+        "#..ffff..####....#",
+        "#.............g..#",
+        "#..###....gggg...#",
+        "#.........gggg...#",
+        "#................#",
+        "##################"
+      ],
+      "encounter_zones": [
+        {
+          "id": "dewgrass_run",
+          "display_name": "Dewgrass Run",
+          "tile_code": "g",
+          "encounter_rate": 0.22,
+          "cooldown_steps": 3,
+          "entries": [
+            {"species_id": "cindermite", "min_level": 6, "max_level": 8, "weight": 20},
+            {"species_id": "reedling", "min_level": 6, "max_level": 9, "weight": 30},
+            {"species_id": "aurorook", "min_level": 7, "max_level": 9, "weight": 20},
+            {"species_id": "cairnback", "min_level": 7, "max_level": 9, "weight": 15},
+            {"species_id": "gustlet", "min_level": 6, "max_level": 9, "weight": 15}
+          ]
+        },
+        {
+          "id": "silverfern_hollow",
+          "display_name": "Silverfern Hollow",
+          "tile_code": "f",
+          "encounter_rate": 0.28,
+          "cooldown_steps": 4,
+          "entries": [
+            {"species_id": "reedling", "min_level": 7, "max_level": 10, "weight": 25},
+            {"species_id": "aurorook", "min_level": 8, "max_level": 10, "weight": 30},
+            {"species_id": "cairnback", "min_level": 8, "max_level": 10, "weight": 20},
+            {"species_id": "gustlet", "min_level": 7, "max_level": 10, "weight": 25}
+          ]
+        }
+      ],
+      "npcs": [
+        {
+          "id": "wayfinder_orin",
+          "display_name": "Wayfinder Orin",
+          "position": [12, 6],
+          "facing": [0, 1],
+          "dialogue": [
+            "Dewstone Vale gathers the morning mist long after the sun rises.",
+            "The western trail returns to Mosslight Crossing whenever you need supplies."
+          ]
+        }
+      ],
+      "treasure_chests": [
+        {
+          "id": "dewstone_west_cache",
+          "display_name": "Dewstone West Cache",
+          "position": [3, 3],
+          "reward_item_ids": ["potion", "mega_potion", "ultra_potion", "elixir"],
+          "reward_quantity": 1
+        },
+        {
+          "id": "dewstone_center_cache",
+          "display_name": "Dewstone Center Cache",
+          "position": [10, 6],
+          "reward_item_ids": ["potion", "mega_potion", "ultra_potion", "elixir"],
+          "reward_quantity": 1
+        },
+        {
+          "id": "dewstone_east_cache",
+          "display_name": "Dewstone East Cache",
+          "position": [15, 8],
+          "reward_item_ids": ["potion", "mega_potion", "ultra_potion", "elixir"],
+          "reward_quantity": 1
+        }
+      ],
+      "map_exits": [
+        {
+          "id": "westward_trail",
+          "position": [1, 9],
+          "destination_map_id": "mosslight_crossing",
+          "destination_position": [15, 9],
+          "destination_facing": [-1, 0]
+        }
       ]
     }
   ]

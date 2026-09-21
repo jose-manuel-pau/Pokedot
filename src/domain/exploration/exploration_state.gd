@@ -9,6 +9,7 @@ var facing: Vector2i = Vector2i.DOWN
 var step_count: int = 0
 var encounter_cooldown_steps: int = 0
 var pending_encounter: WildEncounterRequest
+var pending_map_transition: MapTransitionRequest
 var opened_chest_ids: Array[StringName] = []
 var pending_chest_reward_by_id: Dictionary = {}
 

@@ -70,9 +70,21 @@
       },
       "additionalProperties": false
     },
+    "mapExit": {
+      "type": "object",
+      "required": ["id", "position", "destination_map_id", "destination_position", "destination_facing"],
+      "properties": {
+        "id": {"$ref": "#/$defs/contentId"},
+        "position": {"$ref": "#/$defs/gridPosition"},
+        "destination_map_id": {"$ref": "#/$defs/contentId"},
+        "destination_position": {"$ref": "#/$defs/gridPosition"},
+        "destination_facing": {"$ref": "#/$defs/gridPosition"}
+      },
+      "additionalProperties": false
+    },
     "map": {
       "type": "object",
-      "required": ["id", "display_name", "tile_size", "spawn", "tile_rows", "encounter_zones", "npcs", "treasure_chests"],
+      "required": ["id", "display_name", "tile_size", "spawn", "tile_rows", "encounter_zones", "npcs", "treasure_chests", "map_exits"],
       "properties": {
         "id": {"$ref": "#/$defs/contentId"},
         "display_name": {"type": "string", "minLength": 1},
@@ -81,7 +93,8 @@
         "tile_rows": {"type": "array", "minItems": 3, "items": {"type": "string", "minLength": 3}},
         "encounter_zones": {"type": "array", "items": {"$ref": "#/$defs/encounterZone"}},
         "npcs": {"type": "array", "items": {"$ref": "#/$defs/npc"}},
-        "treasure_chests": {"type": "array", "items": {"$ref": "#/$defs/treasureChest"}}
+        "treasure_chests": {"type": "array", "items": {"$ref": "#/$defs/treasureChest"}},
+        "map_exits": {"type": "array", "items": {"$ref": "#/$defs/mapExit"}}
       },
       "additionalProperties": false
     }

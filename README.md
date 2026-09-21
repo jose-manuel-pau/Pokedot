@@ -42,11 +42,13 @@ Capture and Inventory adds:
 
 Exploration adds:
 
-- A playable top-down field map with keyboard movement and collision
-- Versioned map, encounter-zone, NPC dialogue, and treasure-chest content
+- Two playable top-down field maps with keyboard movement and collision
+- Versioned map, encounter-zone, NPC dialogue, treasure-chest, and map-exit content
+- Smooth bidirectional fades between Mosslight Crossing and Dewstone Vale
+- Transition input locking with preserved roster, HP, inventory, selected fighter, and opened chests
 - Seeded weighted encounters with level ranges and cooldowns
 - NPC interaction and observer events
-- Three one-time treasure chests with deterministic random restorative rewards
+- Six one-time treasure chests with deterministic random restorative rewards
 - Atomic Potion, Mega Potion, Ultra Potion, or Elixir deposits into the live inventory
 - A typed handoff that creates a live capturable wild battle
 

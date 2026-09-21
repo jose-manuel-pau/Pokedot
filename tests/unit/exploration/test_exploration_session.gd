@@ -17,6 +17,8 @@ func run() -> void:
 	_test_encounter_transition_and_resume()
 	_test_encounter_cooldown_suppresses_rolls()
 	_test_seeded_sessions_are_reproducible()
+	_test_bidirectional_map_transition()
+	_test_map_transition_rejects_early_completion()
 
 
 func _test_start_and_unknown_map() -> void:
@@ -177,3 +179,42 @@ func _test_seeded_sessions_are_reproducible() -> void:
 	)
 	assert_equal(first.state.phase, second.state.phase)
 	assert_equal(first.event_history.size(), second.event_history.size())
+
+
+func _test_bidirectional_map_transition() -> void:
+	begin_case("bidirectional map transition")
+	var session := ExplorationSession.new(catalog, FixedExplorationRandomSource.new([0.99]))
+	assert_true(session.start(&"mosslight_crossing"))
+	session.state.player_position = Vector2i(15, 9)
+	session.state.opened_chest_ids.append(&"trailhead_cache")
+	var outbound := session.attempt_move(Vector2i.RIGHT)
+	assert_true(outbound.moved)
+	assert_not_null(outbound.map_transition)
+	assert_equal(outbound.map_transition.destination_map_id, &"dewstone_vale")
+	assert_equal(session.state.phase, ExplorationConstants.PHASE_MAP_TRANSITION)
+	assert_equal(session.state.map_id, &"mosslight_crossing")
+	assert_equal(session.attempt_move(Vector2i.LEFT).reason, &"exploration_not_active")
+	assert_true(session.complete_map_transition())
+	assert_equal(session.state.phase, ExplorationConstants.PHASE_ACTIVE)
+	assert_equal(session.state.map_id, &"dewstone_vale")
+	assert_equal(session.state.player_position, Vector2i(2, 9))
+	assert_equal(session.state.facing, Vector2i.RIGHT)
+	assert_true(session.state.is_chest_open(&"trailhead_cache"))
+	assert_equal(session.state.pending_map_transition, null)
+	assert_equal(session.events_of_type(ExplorationConstants.EVENT_MAP_TRANSITION_STARTED).size(), 1)
+	assert_equal(session.events_of_type(ExplorationConstants.EVENT_MAP_CHANGED).size(), 1)
+	var inbound := session.attempt_move(Vector2i.LEFT)
+	assert_not_null(inbound.map_transition)
+	assert_true(session.complete_map_transition())
+	assert_equal(session.state.map_id, &"mosslight_crossing")
+	assert_equal(session.state.player_position, Vector2i(15, 9))
+	assert_equal(session.state.facing, Vector2i.LEFT)
+
+
+func _test_map_transition_rejects_early_completion() -> void:
+	begin_case("map transition guards")
+	var session := ExplorationSession.new(catalog)
+	session.start(&"mosslight_crossing")
+	assert_false(session.complete_map_transition())
+	assert_equal(session.last_error, &"no_map_transition")
+	assert_equal(session.state.map_id, &"mosslight_crossing")
