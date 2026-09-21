@@ -45,6 +45,7 @@ const EXPLORATION_ROSTER_INTEGRATION_TEST := preload("res://tests/unit/presentat
 const OBJECT_MENU_TEST := preload("res://tests/unit/presentation/test_object_menu.gd")
 const EXPLORATION_OBJECT_MENU_INTEGRATION_TEST := preload("res://tests/unit/presentation/test_exploration_object_menu_integration.gd")
 const EXPLORATION_TREASURE_CHEST_INTEGRATION_TEST := preload("res://tests/unit/presentation/test_exploration_treasure_chest_integration.gd")
+const EXPLORATION_MAP_TRANSITION_INTEGRATION_TEST := preload("res://tests/unit/presentation/test_exploration_map_transition_integration.gd")
 const PRODUCTION_READINESS_TEST := preload("res://tests/unit/production/test_production_readiness_service.gd")
 
 
@@ -98,6 +99,7 @@ func _run_all() -> void:
 		OBJECT_MENU_TEST.new(),
 		EXPLORATION_OBJECT_MENU_INTEGRATION_TEST.new(),
 		EXPLORATION_TREASURE_CHEST_INTEGRATION_TEST.new(),
+		EXPLORATION_MAP_TRANSITION_INTEGRATION_TEST.new(),
 		PRODUCTION_READINESS_TEST.new(),
 	]
 	var total_cases := 0

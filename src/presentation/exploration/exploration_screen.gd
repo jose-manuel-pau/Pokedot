@@ -5,6 +5,14 @@ extends Node2D
 
 const MAP_ID: StringName = &"mosslight_crossing"
 const MAP_ORIGIN := Vector2(208.0, 88.0)
+const MAP_TRANSITION_DURATION := 0.28
+const REDUCED_MAP_TRANSITION_DURATION := 0.05
+
+enum MapTransitionStage {
+	NONE,
+	FADING_OUT,
+	FADING_IN,
+}
 
 signal preferences_changed(preferences: PlayerPreferences)
 
@@ -20,6 +28,7 @@ signal preferences_changed(preferences: PlayerPreferences)
 @onready var accessibility_label: Label = $Interface/AccessibilityStatus
 @onready var help_panel: PanelContainer = $Interface/HelpPanel
 @onready var help_label: Label = $Interface/HelpPanel/Margin/Scroll/HelpText
+@onready var map_transition_overlay: ColorRect = $Interface/MapTransitionOverlay
 @onready var audio_feedback: ProceduralAudioFeedback = $ProceduralAudioFeedback
 
 var session: ExplorationSession
@@ -38,6 +47,8 @@ var _active_feedback: FeedbackCue
 var _feedback_remaining: float = 0.0
 var _feedback_total: float = 0.0
 var _last_object_message: String = ""
+var _map_transition_stage: MapTransitionStage = MapTransitionStage.NONE
+var _map_transition_elapsed: float = 0.0
 
 
 func initialize(
@@ -59,7 +70,7 @@ func initialize(
 		status_label.text = "Exploration failed: %s" % session.last_error
 		return
 	title_label.text = session.get_current_map().display_name
-	status_label.text = "Explore the wilds, talk to Ranger Mira, and search for treasure chests."
+	status_label.text = "Explore both wild maps, meet their wayfinders, and search for treasure chests."
 	queue_redraw()
 
 
@@ -74,15 +85,21 @@ func _ready() -> void:
 	object_menu.object_used.connect(_on_object_used)
 	object_menu.menu_closed.connect(_on_object_menu_closed)
 	help_panel.show()
+	map_transition_overlay.hide()
 	set_process_unhandled_input(true)
 	set_process(true)
 
 
 func _process(delta: float) -> void:
-	if _feedback_remaining <= 0.0:
-		return
-	_feedback_remaining = maxf(_feedback_remaining - delta, 0.0)
-	queue_redraw()
+	var needs_redraw := false
+	if _feedback_remaining > 0.0:
+		_feedback_remaining = maxf(_feedback_remaining - delta, 0.0)
+		needs_redraw = true
+	if is_map_transitioning():
+		_advance_map_transition(delta)
+		needs_redraw = true
+	if needs_redraw:
+		queue_redraw()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -90,6 +107,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	var key := event as InputEventKey
 	if not key.pressed or key.echo:
+		return
+	if is_map_transitioning():
 		return
 	if _handle_preference_shortcut(key.keycode):
 		return
@@ -136,6 +155,8 @@ func _draw() -> void:
 	for y in map.get_height():
 		for x in map.get_width():
 			_draw_tile(map, Vector2i(x, y))
+	for map_exit in map.map_exits:
+		_draw_map_exit(map, map_exit)
 	for chest in map.treasure_chests:
 		_draw_treasure_chest(map, chest)
 	for npc in map.npcs:
@@ -148,19 +169,42 @@ func _draw_tile(map: ExplorationMapDefinition, cell: Vector2i) -> void:
 	var tile_size := float(map.tile_size)
 	var rect := Rect2(MAP_ORIGIN + Vector2(cell) * tile_size, Vector2.ONE * tile_size)
 	var code := map.get_tile_code(cell)
-	var color := Color("fff1a8") if _is_high_contrast() else Color("dccb91")
+	var is_dewstone := map.map_id == &"dewstone_vale"
+	var color := Color("fff1a8") if _is_high_contrast() else (
+		Color("bad0bd") if is_dewstone else Color("dccb91")
+	)
 	if code == ExplorationMapDefinition.TILE_WALL:
-		color = Color("20272b") if _is_high_contrast() else Color("344b4b")
+		color = Color("20272b") if _is_high_contrast() else (
+			Color("30434b") if is_dewstone else Color("344b4b")
+		)
 	elif code == "g":
-		color = Color("8bdf63") if _is_high_contrast() else Color("75a95a")
+		color = Color("8bdf63") if _is_high_contrast() else (
+			Color("5d9f75") if is_dewstone else Color("75a95a")
+		)
 	elif code == "f":
-		color = Color("4ed6b0") if _is_high_contrast() else Color("4b8e79")
+		color = Color("4ed6b0") if _is_high_contrast() else (
+			Color("557d91") if is_dewstone else Color("4b8e79")
+		)
 	draw_rect(rect, color)
 	draw_rect(rect, color.darkened(0.18), false, 1.0)
 	if code in ["g", "f"]:
 		var base := rect.position + Vector2(9, tile_size - 8)
 		for offset in [0.0, 12.0, 24.0]:
 			draw_line(base + Vector2(offset, 0), base + Vector2(offset + 3, -10), Color("d6e681"), 2.0)
+
+
+func _draw_map_exit(map: ExplorationMapDefinition, map_exit: MapExitDefinition) -> void:
+	var center := MAP_ORIGIN + (Vector2(map_exit.grid_position) + Vector2(0.5, 0.5)) \
+		* map.tile_size
+	var glow := Color("8ff4ff") if _is_high_contrast() else Color("8ac9d5")
+	var shadow := Color("073341") if _is_high_contrast() else Color("365b64")
+	draw_arc(center + Vector2(0, 4), 15.0, PI, TAU, 20, shadow, 8.0)
+	draw_arc(center + Vector2(0, 4), 15.0, PI, TAU, 20, glow, 3.0)
+	draw_line(center + Vector2(-15, 4), center + Vector2(-15, 19), shadow, 8.0)
+	draw_line(center + Vector2(15, 4), center + Vector2(15, 19), shadow, 8.0)
+	draw_line(center + Vector2(-15, 4), center + Vector2(-15, 19), glow, 3.0)
+	draw_line(center + Vector2(15, 4), center + Vector2(15, 19), glow, 3.0)
+	draw_circle(center + Vector2(0, 13), 4.0, glow)
 
 
 func _draw_npc(map: ExplorationMapDefinition, npc: NpcDefinition) -> void:
@@ -219,14 +263,78 @@ func _draw_feedback() -> void:
 
 
 func _move(direction: Vector2i) -> void:
+	if is_map_transitioning():
+		return
 	var result := session.attempt_move(direction)
 	if result.moved:
 		status_label.text = "Step %d — position %s" % [session.state.step_count, session.state.player_position]
 	else:
 		status_label.text = "Path blocked (%s)." % result.reason
 	queue_redraw()
+	if result.map_transition != null:
+		_begin_map_transition(result.map_transition)
+		return
 	if result.encounter != null:
 		_begin_battle_transition(result.encounter)
+
+
+func _begin_map_transition(request: MapTransitionRequest) -> void:
+	_map_transition_stage = MapTransitionStage.FADING_OUT
+	_map_transition_elapsed = 0.0
+	_set_map_transition_alpha(0.0)
+	var destination := _catalog.get_map(request.destination_map_id)
+	status_label.text = "Following the trail to %s..." % (
+		destination.display_name if destination != null else str(request.destination_map_id)
+	)
+
+
+func _advance_map_transition(delta: float) -> void:
+	var remaining := maxf(delta, 0.0)
+	var duration := get_map_transition_duration()
+	while remaining > 0.0 and is_map_transitioning():
+		var phase_remaining := duration - _map_transition_elapsed
+		var step := minf(remaining, phase_remaining)
+		_map_transition_elapsed += step
+		remaining -= step
+		if _map_transition_stage == MapTransitionStage.FADING_OUT:
+			_set_map_transition_alpha(_map_transition_elapsed / duration)
+			if _map_transition_elapsed >= duration:
+				if not session.complete_map_transition():
+					_map_transition_stage = MapTransitionStage.NONE
+					_set_map_transition_alpha(0.0)
+					status_label.text = "Map transition failed: %s" % session.last_error
+					return
+				_map_transition_stage = MapTransitionStage.FADING_IN
+				_map_transition_elapsed = 0.0
+				title_label.text = session.get_current_map().display_name
+				status_label.text = "Arrived at %s." % session.get_current_map().display_name
+		else:
+			_set_map_transition_alpha(1.0 - (_map_transition_elapsed / duration))
+			if _map_transition_elapsed >= duration:
+				_map_transition_stage = MapTransitionStage.NONE
+				_map_transition_elapsed = 0.0
+				_set_map_transition_alpha(0.0)
+
+
+func _set_map_transition_alpha(alpha: float) -> void:
+	var overlay_color := Color.BLACK
+	overlay_color.a = clampf(alpha, 0.0, 1.0)
+	map_transition_overlay.color = overlay_color
+	map_transition_overlay.visible = overlay_color.a > 0.0
+
+
+func is_map_transitioning() -> bool:
+	return _map_transition_stage != MapTransitionStage.NONE
+
+
+func get_map_transition_alpha() -> float:
+	return map_transition_overlay.color.a
+
+
+func get_map_transition_duration() -> float:
+	if _preferences_service != null and _preferences_service.preferences.reduced_motion:
+		return REDUCED_MAP_TRANSITION_DURATION
+	return MAP_TRANSITION_DURATION
 
 
 func _interact() -> void:

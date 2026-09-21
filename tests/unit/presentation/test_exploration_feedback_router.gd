@@ -28,6 +28,8 @@ func _test_semantic_event_cues() -> void:
 	assert_true(encounter.audio_duration > 0.0)
 	assert_true(encounter.frequency_hz > 0.0)
 	assert_equal(router.route(_event(ExplorationConstants.EVENT_EXPLORATION_RESUMED)).cue_id, &"resume")
+	assert_equal(router.route(_event(ExplorationConstants.EVENT_MAP_TRANSITION_STARTED)).cue_id, &"depart")
+	assert_equal(router.route(_event(ExplorationConstants.EVENT_MAP_CHANGED)).cue_id, &"arrive")
 
 
 func _test_movement_success_and_block_are_distinct() -> void:

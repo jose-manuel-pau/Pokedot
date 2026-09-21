@@ -134,6 +134,19 @@ func _test_invalid_map_rules() -> void:
 	second_chest.grid_position = map.spawn_position
 	second_chest.reward_item_ids = [&"missing_item", &"missing_item"]
 	map.treasure_chests[2].grid_position = Vector2i(0, 0)
+	var second_map := catalog.get_map(&"dewstone_vale")
+	second_map.treasure_chests[0].chest_id = first_chest.chest_id
+	var map_exit := map.map_exits[0]
+	map_exit.grid_position = Vector2i(0, 0)
+	map_exit.destination_position = Vector2i(0, 0)
+	map_exit.destination_facing = Vector2i(1, 1)
+	var duplicate_exit := MapExitDefinition.new()
+	duplicate_exit.exit_id = map_exit.exit_id
+	duplicate_exit.grid_position = Vector2i(14, 9)
+	duplicate_exit.destination_map_id = &"missing_map"
+	duplicate_exit.destination_position = Vector2i(2, 9)
+	duplicate_exit.destination_facing = Vector2i.RIGHT
+	map.map_exits.append(duplicate_exit)
 	var issues := ContentValidator.new().validate(catalog)
 	assert_has_issue(issues, &"invalid_map_spawn")
 	assert_has_issue(issues, &"unknown_map_tile")
@@ -151,6 +164,12 @@ func _test_invalid_map_rules() -> void:
 	assert_has_issue(issues, &"unknown_chest_reward")
 	assert_has_issue(issues, &"duplicate_chest_reward")
 	assert_has_issue(issues, &"invalid_treasure_chest_position")
+	assert_has_issue(issues, &"duplicate_global_treasure_chest_id")
+	assert_has_issue(issues, &"invalid_map_exit_position")
+	assert_has_issue(issues, &"invalid_map_exit_destination")
+	assert_has_issue(issues, &"invalid_map_exit_facing")
+	assert_has_issue(issues, &"duplicate_map_exit_id")
+	assert_has_issue(issues, &"unknown_destination_map")
 
 
 func _test_invalid_art_direction_rules() -> void:

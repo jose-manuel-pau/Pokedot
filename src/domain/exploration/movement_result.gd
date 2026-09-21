@@ -6,3 +6,4 @@ var from_position: Vector2i
 var to_position: Vector2i
 var reason: StringName = &""
 var encounter: WildEncounterRequest
+var map_transition: MapTransitionRequest

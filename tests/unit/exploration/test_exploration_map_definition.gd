@@ -14,6 +14,8 @@ func run() -> void:
 	_test_zone_lookup()
 	_test_npc_lookup()
 	_test_treasure_chest_lookup()
+	_test_map_exit_lookup()
+	_test_second_map_layout()
 
 
 func _test_dimensions_and_tile_queries() -> void:
@@ -62,3 +64,28 @@ func _test_treasure_chest_lookup() -> void:
 	])
 	assert_equal(chest.reward_quantity, 1)
 	assert_equal(map.get_treasure_chest_at(Vector2i(3, 9)), null)
+
+
+func _test_map_exit_lookup() -> void:
+	begin_case("map exit placement")
+	var map_exit := map.get_map_exit_at(Vector2i(16, 9))
+	assert_not_null(map_exit)
+	assert_equal(map_exit.exit_id, &"eastward_trail")
+	assert_equal(map_exit.destination_map_id, &"dewstone_vale")
+	assert_equal(map_exit.destination_position, Vector2i(2, 9))
+	assert_equal(map_exit.destination_facing, Vector2i.RIGHT)
+	assert_equal(map.get_map_exit_at(Vector2i(15, 9)), null)
+
+
+func _test_second_map_layout() -> void:
+	begin_case("second map layout")
+	var second_map := BattleTestFactory.create_catalog().get_map(&"dewstone_vale")
+	assert_not_null(second_map)
+	assert_equal(second_map.get_width(), 18)
+	assert_equal(second_map.get_height(), 11)
+	assert_true(second_map.is_walkable(second_map.spawn_position))
+	assert_equal(second_map.get_zone_for_cell(Vector2i(5, 1)).zone_id, &"dewgrass_run")
+	assert_equal(second_map.get_zone_for_cell(Vector2i(3, 4)).zone_id, &"silverfern_hollow")
+	assert_equal(second_map.treasure_chests.size(), 3)
+	assert_equal(second_map.npcs.size(), 1)
+	assert_equal(second_map.get_map_exit_at(Vector2i(1, 9)).destination_map_id, &"mosslight_crossing")

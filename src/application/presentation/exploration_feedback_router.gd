@@ -21,5 +21,9 @@ func route(event: ExplorationEvent) -> FeedbackCue:
 			return FeedbackCue.create(&"encounter", Color("f19b5b"), 0.45, 659.25, 0.16)
 		ExplorationConstants.EVENT_EXPLORATION_RESUMED:
 			return FeedbackCue.create(&"resume", Color("75b9e6"), 0.24, 329.63, 0.08)
+		ExplorationConstants.EVENT_MAP_TRANSITION_STARTED:
+			return FeedbackCue.create(&"depart", Color("a7d7ff"), 0.24, 440.0, 0.07)
+		ExplorationConstants.EVENT_MAP_CHANGED:
+			return FeedbackCue.create(&"arrive", Color("b8f2d0"), 0.32, 554.37, 0.10)
 		_:
 			return null

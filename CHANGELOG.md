@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-21
+
+- Added Dewstone Vale and smooth, bidirectional exploration-map transitions that preserve live player state.
+
 ## 2026-08-13
 
 - Added exploration treasure chests with random restorative inventory rewards.

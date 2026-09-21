@@ -104,6 +104,13 @@ horizontal_scroll_mode = 0
 custom_minimum_size = Vector2(600, 0)
 theme_override_colors/font_color = Color(0.9, 0.95, 0.96, 1)
 theme_override_font_sizes/font_size = 17
-text = "POKEDOT PLAYTEST\n\nExplore Mosslight Crossing and look for creatures in bright grass and mistferns. Battle damage now remains after returning to the field, so use restorative objects between encounters.\n\nFIELD\nMOVE        WASD or Arrow Keys\nINTERACT    E, Space, or Enter\nCREATURES   P — view captures and choose the next fighter\nOBJECTS     B — use Potion, Mega Potion, or Ultra Potion\n\nBATTLE\nMOVES       1–4 or click\nCAPTURE     C\nPOTION      I\nRUN         R or Escape\n\nHELP F1  ·  CONTRAST F2  ·  TEXT F3  ·  MOTION F4  ·  MUTE M\n\nAccessibility choices save automatically.\n\nPress Enter, Space, or Escape to begin."
+text = "POKEDOT PLAYTEST\n\nExplore Mosslight Crossing and Dewstone Vale. Walk through the glowing trail gates to travel smoothly between maps. Battle damage remains after returning to the field, so use restorative objects between encounters.\n\nFIELD\nMOVE        WASD or Arrow Keys\nINTERACT    E, Space, or Enter\nCREATURES   P — view captures and choose the next fighter\nOBJECTS     B — use Potions or an Elixir\n\nBATTLE\nMOVES       1–4 or click\nCAPTURE     C\nPOTION      I\nRUN         R or Escape\n\nHELP F1  ·  CONTRAST F2  ·  TEXT F3  ·  MOTION F4  ·  MUTE M\n\nAccessibility choices save automatically.\n\nPress Enter, Space, or Escape to begin."
 vertical_alignment = 1
 autowrap_mode = 2
+
+[node name="MapTransitionOverlay" type="ColorRect" parent="Interface"]
+visible = false
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0)

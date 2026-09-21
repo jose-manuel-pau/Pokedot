@@ -30,7 +30,7 @@ func _test_valid_catalog_loads() -> void:
 	assert_equal(result.catalog.statuses_by_id.size(), 3)
 	assert_equal(result.catalog.growth_curves_by_id.size(), 3)
 	assert_equal(result.catalog.items_by_id.size(), 13)
-	assert_equal(result.catalog.maps_by_id.size(), 1)
+	assert_equal(result.catalog.maps_by_id.size(), 2)
 	assert_equal(result.catalog.art_directions_by_id.size(), 1)
 	assert_equal(result.catalog.creature_concepts_by_id.size(), 5)
 
@@ -80,6 +80,12 @@ func _test_cross_references_are_resolved() -> void:
 	assert_equal(map.encounter_zones.size(), 2)
 	assert_equal(map.npcs.size(), 1)
 	assert_equal(map.treasure_chests.size(), 3)
+	assert_equal(map.map_exits.size(), 1)
+	assert_equal(map.map_exits[0].destination_map_id, &"dewstone_vale")
+	var second_map := catalog.get_map(&"dewstone_vale")
+	assert_not_null(second_map)
+	assert_equal(second_map.display_name, "Dewstone Vale")
+	assert_equal(second_map.map_exits[0].destination_map_id, &"mosslight_crossing")
 	for zone in map.encounter_zones:
 		for entry in zone.entries:
 			assert_not_null(catalog.get_species(entry.species_id))
