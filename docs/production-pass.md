@@ -1,6 +1,6 @@
 # Production Pass and Playtest Guide
 
-Pokedot version 0.15.0 is a production-hardened PC vertical slice. It includes balance diagnostics, persistent accessibility preferences, semantic audio/visual feedback, original branding, a verified Windows export preset, two connected exploration maps, playable graphical wild battles, cumulative XP and level-ups, persistent battle damage, explorer-accessible creature and object menus, Elixir revival, and collectible treasure chests.
+Pokedot version 0.15.1 is a production-hardened PC vertical slice. It includes balance diagnostics, persistent accessibility preferences, semantic audio/visual feedback, original branding, a verified Windows export preset, two outdoor maps connected by open boundary trails, blocking wooden fences, playable graphical wild battles, cumulative XP and level-ups, persistent battle damage, explorer-accessible creature and object menus, Elixir revival, and collectible treasure chests.
 
 ## Start playing
 
@@ -30,7 +30,7 @@ From PowerShell in the repository root:
 | Action | Keys |
 | --- | --- |
 | Move | WASD or Arrow Keys |
-| Travel between maps | Walk through a glowing trail gate |
+| Travel between maps | Follow the open east/west trail through the map boundary |
 | Interact / advance dialogue | E, Space, or Enter |
 | Open captured-creature roster | P |
 | Choose next battle creature | Click/focus a roster card and press Enter |
@@ -58,20 +58,21 @@ Accessibility choices save immediately. A corrupt, missing, or future-version pr
 2. Walk into a wall and verify movement is blocked with red visual/audio feedback.
 3. Move beside the nearby chest southeast of the starting position, face it, and press E. Verify it opens, awards one random restorative, and cannot award again.
 4. Press B and confirm the awarded Potion, Mega Potion, Ultra Potion, or Elixir quantity is already updated.
-5. Walk to the glowing east gate, verify the field fades smoothly into Dewstone Vale, and confirm movement is locked during the fade.
-6. Return through Dewstone Vale's west gate and verify HP, inventory, selected fighter, and opened-chest state are unchanged.
-7. Walk toward Ranger Mira or Wayfinder Orin, face them, and press E to read both dialogue lines.
-8. Walk through bright grass (`g`) and mistferns (`f`) until a seeded wild encounter appears.
-9. Press P on the explorer map and confirm every party and storage capture is listed. Select a creature and close the menu with P or Escape.
-10. Confirm the graphical battle uses the selected creature and shows both original silhouettes, levels, HP, statuses, the combat log, two to four moves, capsule count, Potion count, and Run.
-11. Select moves and verify the wild AI responds, HP bars change, move uses decrease, statuses appear, and the turn counter advances.
-12. Defeat the wild creature and verify the XP reward, level-up message when a threshold is crossed, and updated blue XP bar.
-13. Press R after taking damage, return to the map, and verify the creature is not automatically healed.
-14. Press B, confirm Potion, Mega Potion, Ultra Potion, and Elixir are first. Use Up/Down to reach the creature and Use controls, heal a damaged creature, and verify its HP and object quantity update.
-15. Let a creature reach zero HP, then use Elixir from the B menu. Verify it revives with half maximum HP and the Elixir count decreases by one.
-16. Reopen the roster and confirm HP, earned XP, and level persist; also confirm a new capture appears, then select it and verify it leads the following encounter.
-17. Toggle F2, F3, F4, and M. Restart the game and verify those preferences remain active.
-18. Check that map-start, movement, collision, treasure, map-transition, dialogue, encounter, battle, and resume feedback remain visually distinct.
+5. Walk into horizontal and vertical fence sections. Verify both block movement while changing the player's facing direction.
+6. Follow Mosslight Crossing's open east trail through the screen boundary, verify the field fades smoothly into Dewstone Vale, and confirm movement is locked during the fade.
+7. Return through Dewstone Vale's open west trail and verify HP, inventory, selected fighter, and opened-chest state are unchanged.
+8. Walk toward Ranger Mira or Wayfinder Orin, face them, and press E to read both dialogue lines.
+9. Walk through bright grass (`g`) and mistferns (`f`) until a seeded wild encounter appears.
+10. Press P on the explorer map and confirm every party and storage capture is listed. Select a creature and close the menu with P or Escape.
+11. Confirm the graphical battle uses the selected creature and shows both original silhouettes, levels, HP, statuses, the combat log, two to four moves, capsule count, Potion count, and Run.
+12. Select moves and verify the wild AI responds, HP bars change, move uses decrease, statuses appear, and the turn counter advances.
+13. Defeat the wild creature and verify the XP reward, level-up message when a threshold is crossed, and updated blue XP bar.
+14. Press R after taking damage, return to the map, and verify the creature is not automatically healed.
+15. Press B, confirm Potion, Mega Potion, Ultra Potion, and Elixir are first. Use Up/Down to reach the creature and Use controls, heal a damaged creature, and verify its HP and object quantity update.
+16. Let a creature reach zero HP, then use Elixir from the B menu. Verify it revives with half maximum HP and the Elixir count decreases by one.
+17. Reopen the roster and confirm HP, earned XP, and level persist; also confirm a new capture appears, then select it and verify it leads the following encounter.
+18. Toggle F2, F3, F4, and M. Restart the game and verify those preferences remain active.
+19. Check that map-start, movement, collision, treasure, map-transition, dialogue, encounter, battle, and resume feedback remain visually distinct.
 
 Wild encounters are now command-driven one-versus-one battles. The UI observes the same tested battle events used by headless coverage; it does not duplicate damage, status, AI, inventory, capture, or progression rules. Battle XP rewards and automatic level-ups are exposed in this compact screen; party switching and save-slot management remain domain-complete but do not yet have dedicated battle/menu controls.
 

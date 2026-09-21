@@ -2,6 +2,7 @@
 
 ## 2026-09-21
 
+- Replaced outdoor gate props with open boundary trails and added blocking fences to both maps.
 - Added Dewstone Vale and smooth, bidirectional exploration-map transitions that preserve live player state.
 
 ## 2026-08-13

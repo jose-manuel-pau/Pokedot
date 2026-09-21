@@ -11,6 +11,7 @@ func _init() -> void:
 func run() -> void:
 	_test_start_and_unknown_map()
 	_test_movement_and_collision()
+	_test_fence_collision()
 	_test_npc_collision_and_interaction()
 	_test_treasure_chest_collision_and_one_time_reward()
 	_test_failed_treasure_deposit_leaves_chest_available()
@@ -50,6 +51,24 @@ func _test_movement_and_collision() -> void:
 	assert_equal(moved.to_position, Vector2i(2, 1))
 	assert_equal(session.state.step_count, 1)
 	assert_equal(session.events_of_type(ExplorationConstants.EVENT_MOVEMENT_RESOLVED).size(), 2)
+
+
+func _test_fence_collision() -> void:
+	begin_case("fence collision")
+	var session := ExplorationSession.new(catalog, FixedExplorationRandomSource.new([0.99]))
+	session.start(&"mosslight_crossing")
+	session.state.player_position = Vector2i(9, 1)
+	var horizontal := session.attempt_move(Vector2i.RIGHT)
+	assert_false(horizontal.moved)
+	assert_equal(horizontal.reason, &"terrain_blocked")
+	assert_equal(session.state.player_position, Vector2i(9, 1))
+	assert_equal(session.state.step_count, 0)
+	session.state.player_position = Vector2i(7, 3)
+	var vertical := session.attempt_move(Vector2i.RIGHT)
+	assert_false(vertical.moved)
+	assert_equal(vertical.reason, &"terrain_blocked")
+	assert_equal(session.state.player_position, Vector2i(7, 3))
+	assert_equal(session.state.step_count, 0)
 
 
 func _test_npc_collision_and_interaction() -> void:
@@ -185,7 +204,7 @@ func _test_bidirectional_map_transition() -> void:
 	begin_case("bidirectional map transition")
 	var session := ExplorationSession.new(catalog, FixedExplorationRandomSource.new([0.99]))
 	assert_true(session.start(&"mosslight_crossing"))
-	session.state.player_position = Vector2i(15, 9)
+	session.state.player_position = Vector2i(16, 9)
 	session.state.opened_chest_ids.append(&"trailhead_cache")
 	var outbound := session.attempt_move(Vector2i.RIGHT)
 	assert_true(outbound.moved)
@@ -197,7 +216,7 @@ func _test_bidirectional_map_transition() -> void:
 	assert_true(session.complete_map_transition())
 	assert_equal(session.state.phase, ExplorationConstants.PHASE_ACTIVE)
 	assert_equal(session.state.map_id, &"dewstone_vale")
-	assert_equal(session.state.player_position, Vector2i(2, 9))
+	assert_equal(session.state.player_position, Vector2i(1, 9))
 	assert_equal(session.state.facing, Vector2i.RIGHT)
 	assert_true(session.state.is_chest_open(&"trailhead_cache"))
 	assert_equal(session.state.pending_map_transition, null)
@@ -207,7 +226,7 @@ func _test_bidirectional_map_transition() -> void:
 	assert_not_null(inbound.map_transition)
 	assert_true(session.complete_map_transition())
 	assert_equal(session.state.map_id, &"mosslight_crossing")
-	assert_equal(session.state.player_position, Vector2i(15, 9))
+	assert_equal(session.state.player_position, Vector2i(16, 9))
 	assert_equal(session.state.facing, Vector2i.LEFT)
 
 

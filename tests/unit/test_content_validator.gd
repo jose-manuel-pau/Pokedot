@@ -12,6 +12,7 @@ func run() -> void:
 	_test_invalid_content_id()
 	_test_invalid_item_rules()
 	_test_invalid_map_rules()
+	_test_fence_tile_rules()
 	_test_invalid_art_direction_rules()
 	_test_invalid_creature_concept_rules()
 
@@ -170,6 +171,17 @@ func _test_invalid_map_rules() -> void:
 	assert_has_issue(issues, &"invalid_map_exit_facing")
 	assert_has_issue(issues, &"duplicate_map_exit_id")
 	assert_has_issue(issues, &"unknown_destination_map")
+
+
+func _test_fence_tile_rules() -> void:
+	begin_case("fence tiles are reserved terrain")
+	var catalog := _fresh_catalog()
+	var map := catalog.get_map(&"mosslight_crossing")
+	assert_false(map.is_walkable(Vector2i(10, 1)))
+	assert_false(map.is_walkable(Vector2i(8, 3)))
+	map.encounter_zones[0].tile_code = ExplorationMapDefinition.TILE_FENCE_HORIZONTAL
+	var issues := ContentValidator.new().validate(catalog)
+	assert_has_issue(issues, &"invalid_zone_tile")
 
 
 func _test_invalid_art_direction_rules() -> void:

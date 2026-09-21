@@ -15,7 +15,7 @@ Controls:
 | Action | Keyboard |
 | --- | --- |
 | Move | WASD or arrow keys |
-| Travel between maps | Walk through a glowing trail gate |
+| Travel between maps | Follow an open trail through the east/west map boundary |
 | Interact / advance dialogue | E, Space, or Enter |
 | Open captured creatures | P |
 | Choose the next fighter | Click/focus a creature card and press Enter |
@@ -27,7 +27,7 @@ Controls:
 | Capture / Potion / run | C / I / R (Escape also runs) |
 | Return after battle | Enter, Space, Escape, or click Continue |
 
-Walk through bright grass or mistferns to trigger wild encounters. The east gate in Mosslight Crossing leads to Dewstone Vale; its west gate returns to Mosslight. Stand next to Ranger Mira or Wayfinder Orin, face them, and interact to read their dialogue. Face a closed treasure chest and interact to receive one random Potion, Mega Potion, Ultra Potion, or Elixir. Walls, NPCs, and chests block movement. Battle damage persists after returning to the field; press **B** to inspect or use the updated restorative inventory between encounters.
+Walk through bright grass or mistferns to trigger wild encounters. The open east trail in Mosslight Crossing continues into Dewstone Vale; its open west trail returns to Mosslight. No building gate is used for these outdoor connections. Stand next to Ranger Mira or Wayfinder Orin, face them, and interact to read their dialogue. Face a closed treasure chest and interact to receive one random Potion, Mega Potion, Ultra Potion, or Elixir. Walls, horizontal fences, vertical fences, NPCs, and chests block movement. Battle damage persists after returning to the field; press **B** to inspect or use the updated restorative inventory between encounters.
 
 ## Architecture
 
@@ -72,10 +72,12 @@ Initial tile symbols:
 | --- | --- |
 | `#` | Impassable terrain |
 | `.` | Walkable path |
+| `-` | Impassable horizontal wooden fence |
+| `\|` | Impassable vertical wooden fence |
 | `g` | Sunmeadow Grass encounter tile |
 | `f` | Mistfern Patch encounter tile |
 
-`ContentValidator` rejects uneven rows, bad spawns, unknown tile symbols, unused or duplicated zone symbols, invalid encounter values, unknown species, invalid NPC placement/facing, overlapping interactables, missing dialogue, duplicate chest IDs/rewards, invalid chest positions/quantities, empty pools, unknown reward items, invalid exit destinations/facing, occupied arrival cells, and map links without a return route.
+Fence symbols are reserved terrain rather than encounter-zone codes. `ContentValidator` rejects uneven rows, bad spawns, unknown tile symbols, encounter zones that reuse reserved wall/path/fence symbols, unused or duplicated zone symbols, invalid encounter values, unknown species, invalid NPC placement/facing, overlapping interactables, missing dialogue, duplicate chest IDs/rewards, invalid chest positions/quantities, empty pools, unknown reward items, invalid exit destinations/facing, occupied arrival cells, and map links without a return route.
 
 ## Treasure chest rewards
 
@@ -105,7 +107,7 @@ active ── step onto map exit ──► map_transition
   └──── complete_map_transition() ────┘
 ```
 
-Only cardinal movement is accepted. A blocked move changes facing but does not change position or increment the step counter. Movement is rejected while a battle or map transition is pending. Map travel uses a two-phase contract: entering a gate creates a typed `MapTransitionRequest` and locks input; the presentation fades to black, commits the destination at full black, and fades the new map in. Reduced-motion mode shortens both fade phases.
+Only cardinal movement is accepted. Walls and both fence orientations use the same authoritative terrain-collision rule. A blocked move changes facing but does not change position or increment the step counter. Movement is rejected while a battle or map transition is pending. Map travel uses a two-phase contract: stepping onto the open path cell at the map boundary creates a typed `MapTransitionRequest` and locks input; the presentation fades to black, commits the destination one tile inside the connected route, and fades the new area in. Reduced-motion mode shortens both fade phases.
 
 The session emits stable observer events for map start, movement, NPC interaction, treasure collection, map departure/arrival, wild encounters, and exploration resume. These events are suitable for animation, audio, quests, analytics, and replay tooling. The same live session remains active across map changes, preserving creature HP/XP, the selected fighter, inventory quantities, and opened chests.
 

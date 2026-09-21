@@ -335,7 +335,7 @@ func _validate_maps(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> 
 			var row := definition.tile_rows[row_index]
 			for column in row.length():
 				var tile_code := row.substr(column, 1)
-				if tile_code in [ExplorationMapDefinition.TILE_WALL, ExplorationMapDefinition.TILE_PATH]:
+				if ExplorationMapDefinition.is_reserved_tile_code(tile_code):
 					continue
 				if not zone_codes.has(tile_code):
 					_add_error(issues, &"unknown_map_tile", path + ".tile_rows[%d]" % row_index, "Tile '%s' has no terrain rule." % tile_code)
@@ -436,7 +436,8 @@ func _validate_encounter_zone(
 	var path := map_path + ".encounter_zones.%s" % zone.zone_id
 	_validate_content_id(zone.zone_id, path + ".id", issues)
 	_validate_display_name(zone.display_name, path, issues)
-	if zone.tile_code.length() != 1 or zone.tile_code in [ExplorationMapDefinition.TILE_WALL, ExplorationMapDefinition.TILE_PATH]:
+	if zone.tile_code.length() != 1 \
+			or ExplorationMapDefinition.is_reserved_tile_code(zone.tile_code):
 		_add_error(issues, &"invalid_zone_tile", path + ".tile_code", "Use one non-reserved tile character.")
 	if zone.encounter_rate < 0.0 or zone.encounter_rate > 1.0:
 		_add_error(issues, &"invalid_encounter_rate", path + ".encounter_rate", "Must be from 0 to 1.")
