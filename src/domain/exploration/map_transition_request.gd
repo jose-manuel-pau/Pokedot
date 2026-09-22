@@ -8,6 +8,7 @@ var source_position: Vector2i
 var destination_map_id: StringName
 var destination_position: Vector2i
 var destination_facing: Vector2i
+var transition_style: StringName
 
 
 static func create(
@@ -22,5 +23,6 @@ static func create(
 	request.destination_map_id = exit_definition.destination_map_id
 	request.destination_position = exit_definition.destination_position
 	request.destination_facing = exit_definition.destination_facing
+	request.transition_style = exit_definition.transition_style
 	return request
 

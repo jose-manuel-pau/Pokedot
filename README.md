@@ -42,14 +42,16 @@ Capture and Inventory adds:
 
 Exploration adds:
 
-- Two playable top-down field maps with keyboard movement and collision
-- Versioned map, encounter-zone, NPC dialogue, treasure-chest, and map-exit content
-- Open boundary trails with smooth bidirectional fades between Mosslight Crossing and Dewstone Vale
+- Three playable top-down outdoor maps plus the first building interior
+- Versioned map, encounter-zone, NPC dialogue, treasure-chest, creature-gift, and map-exit content
+- Open boundary trails with smooth bidirectional fades from Mosslight Crossing through Dewstone Vale to Lumenstead Village
+- A visible research-house door leading to Professor Lumen and three color-coded creature eggs
+- A required professor conversation followed by one permanent egg choice that hatches into a level-five companion
 - Data-driven horizontal and vertical fences that visibly deny passage
-- Transition input locking with preserved roster, HP, inventory, selected fighter, and opened chests
+- Transition input locking with preserved roster, HP, inventory, selected fighter, opened chests, NPC conversations, and egg choice
 - Seeded weighted encounters with level ranges and cooldowns
 - NPC interaction and observer events
-- Six one-time treasure chests with deterministic random restorative rewards
+- Seven one-time treasure chests with deterministic random restorative rewards
 - Atomic Potion, Mega Potion, Ultra Potion, or Elixir deposits into the live inventory
 - A typed handoff that creates a live capturable wild battle
 

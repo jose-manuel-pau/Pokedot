@@ -13,6 +13,7 @@ func _init() -> void:
 func run() -> void:
 	_test_smooth_transition_preserves_live_state()
 	_test_reduced_motion_uses_short_transition()
+	_test_open_trail_to_village_and_house_door()
 
 
 func _screen(preferences: PlayerPreferences = null) -> ExplorationScreen:
@@ -87,4 +88,30 @@ func _test_reduced_motion_uses_short_transition() -> void:
 	screen._process(0.10)
 	assert_false(screen.is_map_transitioning())
 	assert_equal(screen.session.state.map_id, &"dewstone_vale")
+	screen.free()
+
+
+func _test_open_trail_to_village_and_house_door() -> void:
+	begin_case("village trail and research-house door presentation")
+	var screen := _screen()
+	assert_true(screen.session.start(&"dewstone_vale"))
+	screen.session.state.player_position = Vector2i(16, 9)
+	_press_move(screen, KEY_RIGHT)
+	assert_true(screen.status_label.text.contains("Following the trail"))
+	screen._process(screen.get_map_transition_duration() * 2.0)
+	assert_equal(screen.session.state.map_id, &"lumenstead_village")
+	assert_equal(screen.title_label.text, "Lumenstead Village")
+	screen.session.state.player_position = Vector2i(8, 4)
+	_press_move(screen, KEY_UP)
+	assert_true(screen.status_label.text.contains("Entering Lumen Research House"))
+	assert_equal(screen.session.state.phase, ExplorationConstants.PHASE_MAP_TRANSITION)
+	screen._process(screen.get_map_transition_duration() * 2.0)
+	assert_equal(screen.session.state.map_id, &"lumen_research_house")
+	assert_equal(screen.session.state.player_position, Vector2i(8, 8))
+	assert_equal(screen.title_label.text, "Lumen Research House")
+	screen.session.state.player_position = Vector2i(8, 9)
+	_press_move(screen, KEY_DOWN)
+	screen._process(screen.get_map_transition_duration() * 2.0)
+	assert_equal(screen.session.state.map_id, &"lumenstead_village")
+	assert_equal(screen.session.state.player_position, Vector2i(8, 4))
 	screen.free()

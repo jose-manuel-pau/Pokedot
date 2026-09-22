@@ -302,6 +302,9 @@ func _validate_creature_concepts(catalog: ContentCatalog, issues: Array[Validati
 
 func _validate_maps(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> void:
 	var global_chest_ids: Dictionary = {}
+	var global_npc_ids: Dictionary = {}
+	var global_gift_ids: Dictionary = {}
+	var gift_groups: Dictionary = {}
 	for raw_definition in catalog.maps_by_id.values():
 		var definition := raw_definition as ExplorationMapDefinition
 		var path := "maps.%s" % definition.map_id
@@ -351,6 +354,8 @@ func _validate_maps(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> 
 			_validate_display_name(npc.display_name, path + ".npcs.%s" % npc.npc_id, issues)
 			if npc_ids.has(npc.npc_id):
 				_add_error(issues, &"duplicate_npc_id", path + ".npcs", "NPC ID is repeated.")
+			if global_npc_ids.has(npc.npc_id):
+				_add_error(issues, &"duplicate_global_npc_id", path + ".npcs", "NPC IDs must be unique across maps.")
 			if not definition.is_walkable(npc.grid_position):
 				_add_error(issues, &"invalid_npc_position", path + ".npcs.%s.position" % npc.npc_id, "NPC must be on a walkable tile.")
 			if npc.grid_position == definition.spawn_position:
@@ -362,6 +367,7 @@ func _validate_maps(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> 
 			if npc.dialogue.is_empty():
 				_add_error(issues, &"npc_without_dialogue", path + ".npcs.%s.dialogue" % npc.npc_id, "NPC needs dialogue.")
 			npc_ids[npc.npc_id] = true
+			global_npc_ids[npc.npc_id] = true
 			occupied[npc.grid_position] = true
 		var chest_ids: Dictionary = {}
 		for chest in definition.treasure_chests:
@@ -392,6 +398,42 @@ func _validate_maps(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> 
 			chest_ids[chest.chest_id] = true
 			global_chest_ids[chest.chest_id] = true
 			occupied[chest.grid_position] = true
+		var gift_ids: Dictionary = {}
+		for gift in definition.creature_gifts:
+			var gift_path := path + ".creature_gifts.%s" % gift.gift_id
+			_validate_content_id(gift.gift_id, gift_path + ".id", issues)
+			_validate_content_id(gift.choice_group_id, gift_path + ".choice_group_id", issues)
+			_validate_display_name(gift.display_name, gift_path, issues)
+			if gift_ids.has(gift.gift_id):
+				_add_error(issues, &"duplicate_creature_gift_id", path + ".creature_gifts", "Creature gift ID is repeated.")
+			if global_gift_ids.has(gift.gift_id):
+				_add_error(issues, &"duplicate_global_creature_gift_id", gift_path + ".id", "Creature gift IDs must be unique across maps.")
+			if not definition.is_walkable(gift.grid_position):
+				_add_error(issues, &"invalid_creature_gift_position", gift_path + ".position", "Creature gifts must be on walkable tiles.")
+			if gift.grid_position == definition.spawn_position:
+				_add_error(issues, &"creature_gift_on_spawn", gift_path + ".position", "Creature gifts cannot occupy the spawn.")
+			if occupied.has(gift.grid_position):
+				_add_error(issues, &"overlapping_map_interactable", gift_path + ".position", "Map interactables cannot share a position.")
+			if catalog.get_species(gift.species_id) == null:
+				_add_error(issues, &"unknown_creature_gift_species", gift_path + ".species_id", "Gift species does not exist.")
+			if gift.level < 1 or gift.level > 200:
+				_add_error(issues, &"invalid_creature_gift_level", gift_path + ".level", "Gift level must be from 1 to 200.")
+			if not _catalog_has_npc(catalog, gift.prerequisite_npc_id):
+				_add_error(issues, &"unknown_creature_gift_prerequisite", gift_path + ".prerequisite_npc_id", "Prerequisite NPC does not exist.")
+			var group: Dictionary = gift_groups.get(gift.choice_group_id, {
+				"prerequisite_npc_id": gift.prerequisite_npc_id,
+				"species_ids": {},
+			})
+			if group["prerequisite_npc_id"] != gift.prerequisite_npc_id:
+				_add_error(issues, &"inconsistent_creature_gift_prerequisite", gift_path, "Every egg in a choice group must use the same prerequisite NPC.")
+			var group_species_ids := group["species_ids"] as Dictionary
+			if group_species_ids.has(gift.species_id):
+				_add_error(issues, &"duplicate_creature_gift_species", gift_path + ".species_id", "Choice-group species must be unique.")
+			group_species_ids[gift.species_id] = true
+			gift_groups[gift.choice_group_id] = group
+			gift_ids[gift.gift_id] = true
+			global_gift_ids[gift.gift_id] = true
+			occupied[gift.grid_position] = true
 		var exit_ids: Dictionary = {}
 		for map_exit in definition.map_exits:
 			var exit_path := path + ".map_exits.%s" % map_exit.exit_id
@@ -406,6 +448,11 @@ func _validate_maps(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> 
 				_add_error(issues, &"overlapping_map_interactable", exit_path + ".position", "Map interactables cannot share a position.")
 			if not _is_cardinal(map_exit.destination_facing):
 				_add_error(issues, &"invalid_map_exit_facing", exit_path + ".destination_facing", "Destination facing must be cardinal.")
+			if map_exit.transition_style not in [MapExitDefinition.STYLE_OPEN_PATH, MapExitDefinition.STYLE_DOOR]:
+				_add_error(issues, &"invalid_map_exit_style", exit_path + ".transition_style", "Use 'open_path' or 'door'.")
+			if map_exit.transition_style == MapExitDefinition.STYLE_OPEN_PATH \
+					and not _is_boundary_cell(definition, map_exit.grid_position):
+				_add_error(issues, &"open_path_exit_not_on_boundary", exit_path + ".position", "Open-path exits must occupy a map boundary cell.")
 			var destination_map := catalog.get_map(map_exit.destination_map_id)
 			if destination_map == null:
 				_add_error(issues, &"unknown_destination_map", exit_path + ".destination_map_id", "Destination map does not exist.")
@@ -414,6 +461,7 @@ func _validate_maps(catalog: ContentCatalog, issues: Array[ValidationIssue]) -> 
 					_add_error(issues, &"invalid_map_exit_destination", exit_path + ".destination_position", "Destination must be a walkable tile.")
 				if destination_map.get_npc_at(map_exit.destination_position) != null \
 						or destination_map.get_treasure_chest_at(map_exit.destination_position) != null \
+						or destination_map.get_creature_gift_at(map_exit.destination_position) != null \
 						or destination_map.get_map_exit_at(map_exit.destination_position) != null:
 					_add_error(issues, &"occupied_map_exit_destination", exit_path + ".destination_position", "Destination must be a free arrival tile.")
 				var has_return_route := false
@@ -456,6 +504,21 @@ func _validate_encounter_zone(
 
 func _is_cardinal(direction: Vector2i) -> bool:
 	return direction in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
+
+
+func _is_boundary_cell(map: ExplorationMapDefinition, cell: Vector2i) -> bool:
+	return cell.x == 0 or cell.y == 0 \
+		or cell.x == map.get_width() - 1 \
+		or cell.y == map.get_height() - 1
+
+
+func _catalog_has_npc(catalog: ContentCatalog, npc_id: StringName) -> bool:
+	for raw_map in catalog.maps_by_id.values():
+		var map := raw_map as ExplorationMapDefinition
+		for npc in map.npcs:
+			if npc.npc_id == npc_id:
+				return true
+	return false
 
 
 func _validate_base_stats(stats: CreatureStats, path: String, issues: Array[ValidationIssue]) -> void:

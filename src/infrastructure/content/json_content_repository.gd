@@ -247,6 +247,20 @@ func _load_maps(items: Array, result: ContentLoadResult) -> void:
 					)
 		else:
 			_add_error(result, &"invalid_field_type", path + ".map_exits", "Expected an array.")
+		var raw_gifts: Variant = data.get("creature_gifts", [])
+		if raw_gifts is Array:
+			for gift_index in raw_gifts.size():
+				var gift_data := _as_dictionary(
+					raw_gifts[gift_index],
+					path + ".creature_gifts[%d]" % gift_index,
+					result
+				)
+				if not gift_data.is_empty():
+					definition.creature_gifts.append(
+						_to_creature_gift(gift_data, path, gift_index, result)
+					)
+		else:
+			_add_error(result, &"invalid_field_type", path + ".creature_gifts", "Expected an array.")
 		_add_map(definition, path + ".id", result)
 
 
@@ -407,7 +421,33 @@ func _to_map_exit(
 		exit_path + ".destination_facing",
 		result
 	)
+	map_exit.transition_style = StringName(str(data.get(
+		"transition_style",
+		MapExitDefinition.STYLE_OPEN_PATH
+	)))
 	return map_exit
+
+
+func _to_creature_gift(
+	data: Dictionary,
+	map_path: String,
+	index: int,
+	result: ContentLoadResult
+) -> CreatureGiftDefinition:
+	var gift := CreatureGiftDefinition.new()
+	var gift_path := map_path + ".creature_gifts[%d]" % index
+	gift.gift_id = StringName(str(data.get("id", "")))
+	gift.choice_group_id = StringName(str(data.get("choice_group_id", "")))
+	gift.display_name = str(data.get("display_name", ""))
+	gift.grid_position = _to_vector2i(
+		data.get("position", []),
+		gift_path + ".position",
+		result
+	)
+	gift.species_id = StringName(str(data.get("species_id", "")))
+	gift.level = int(data.get("level", 5))
+	gift.prerequisite_npc_id = StringName(str(data.get("prerequisite_npc_id", "")))
+	return gift
 
 
 func _to_vector2i(value: Variant, path: String, result: ContentLoadResult) -> Vector2i:

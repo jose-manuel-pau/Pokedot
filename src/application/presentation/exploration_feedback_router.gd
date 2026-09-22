@@ -17,6 +17,8 @@ func route(event: ExplorationEvent) -> FeedbackCue:
 			return FeedbackCue.create(&"interaction", Color("f4cf65"), 0.20, 392.0, 0.08)
 		ExplorationConstants.EVENT_TREASURE_CHEST_OPENED:
 			return FeedbackCue.create(&"treasure", Color("ffd65a"), 0.34, 783.99, 0.12)
+		ExplorationConstants.EVENT_CREATURE_GIFT_CLAIMED:
+			return FeedbackCue.create(&"egg_hatched", Color("f3c8ff"), 0.42, 880.0, 0.14)
 		ExplorationConstants.EVENT_WILD_ENCOUNTER:
 			return FeedbackCue.create(&"encounter", Color("f19b5b"), 0.45, 659.25, 0.16)
 		ExplorationConstants.EVENT_EXPLORATION_RESUMED:

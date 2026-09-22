@@ -13,6 +13,7 @@ var last_error: StringName = &""
 var _catalog: ContentCatalog
 var _encounter_service: WildEncounterService
 var _treasure_chest_service: TreasureChestService
+var _creature_gift_service: CreatureGiftService
 var _encounter_sequence: int = 0
 
 
@@ -25,6 +26,7 @@ func _init(
 		else SeededExplorationRandomSource.new(0)
 	_encounter_service = WildEncounterService.new(source)
 	_treasure_chest_service = TreasureChestService.new(_catalog, source)
+	_creature_gift_service = CreatureGiftService.new(_catalog)
 
 
 func start(map_id: StringName) -> bool:
@@ -71,6 +73,10 @@ func attempt_move(direction: Vector2i) -> MovementResult:
 		result.reason = &"treasure_chest_blocked"
 		_emit_movement(result)
 		return result
+	if map.get_creature_gift_at(target) != null:
+		result.reason = &"creature_gift_blocked"
+		_emit_movement(result)
+		return result
 
 	state.player_position = target
 	state.step_count += 1
@@ -90,6 +96,7 @@ func attempt_move(direction: Vector2i) -> MovementResult:
 			"exit_id": result.map_transition.exit_id,
 			"source_map_id": result.map_transition.source_map_id,
 			"destination_map_id": result.map_transition.destination_map_id,
+			"transition_style": result.map_transition.transition_style,
 			"position": target,
 		})
 		return result
@@ -133,6 +140,7 @@ func complete_map_transition() -> bool:
 		return _reject(&"invalid_map_transition")
 	if destination_map.get_npc_at(request.destination_position) != null \
 			or destination_map.get_treasure_chest_at(request.destination_position) != null \
+			or destination_map.get_creature_gift_at(request.destination_position) != null \
 			or destination_map.get_map_exit_at(request.destination_position) != null:
 		return _reject(&"occupied_map_transition_destination")
 	var source_map_id := state.map_id
@@ -146,13 +154,17 @@ func complete_map_transition() -> bool:
 		"exit_id": request.exit_id,
 		"source_map_id": source_map_id,
 		"destination_map_id": state.map_id,
+		"transition_style": request.transition_style,
 		"position": state.player_position,
 		"facing": state.facing,
 	})
 	return true
 
 
-func interact(inventory: Inventory = null) -> InteractionResult:
+func interact(
+	inventory: Inventory = null,
+	collection: CreatureCollection = null
+) -> InteractionResult:
 	last_error = &""
 	var result := InteractionResult.new()
 	if state.phase != ExplorationConstants.PHASE_ACTIVE:
@@ -163,6 +175,9 @@ func interact(inventory: Inventory = null) -> InteractionResult:
 	var chest := get_current_map().get_treasure_chest_at(interaction_position)
 	if chest != null:
 		return _interact_with_treasure_chest(chest, inventory)
+	var gift := get_current_map().get_creature_gift_at(interaction_position)
+	if gift != null:
+		return _interact_with_creature_gift(gift, collection)
 	var npc := get_current_map().get_npc_at(interaction_position)
 	if npc == null:
 		result.reason = &"nothing_to_interact"
@@ -173,9 +188,48 @@ func interact(inventory: Inventory = null) -> InteractionResult:
 	result.npc_id = npc.npc_id
 	result.speaker_name = npc.display_name
 	result.dialogue.assign(npc.dialogue)
+	if not state.talked_npc_ids.has(npc.npc_id):
+		state.talked_npc_ids.append(npc.npc_id)
 	_emit_event(ExplorationConstants.EVENT_NPC_INTERACTED, {
 		"npc_id": npc.npc_id,
 		"position": npc.grid_position,
+	})
+	return result
+
+
+func _interact_with_creature_gift(
+	gift: CreatureGiftDefinition,
+	collection: CreatureCollection
+) -> InteractionResult:
+	var result := InteractionResult.new()
+	result.interaction_type = ExplorationConstants.INTERACTION_CREATURE_GIFT
+	result.gift_id = gift.gift_id
+	result.choice_group_id = gift.choice_group_id
+	result.species_id = gift.species_id
+	if not state.has_talked_to_npc(gift.prerequisite_npc_id):
+		result.reason = &"creature_gift_prerequisite_not_met"
+		last_error = result.reason
+		return result
+	if not state.get_claimed_creature_gift(gift.choice_group_id).is_empty():
+		result.reason = &"creature_gift_choice_already_claimed"
+		last_error = result.reason
+		return result
+	var claimed := _creature_gift_service.claim(gift, collection)
+	if not claimed.success:
+		result.reason = claimed.reason
+		last_error = result.reason
+		return result
+	result.success = true
+	result.creature_instance_id = claimed.creature.instance_id
+	result.collection_destination = claimed.destination
+	state.claimed_creature_gift_by_group[gift.choice_group_id] = gift.gift_id
+	_emit_event(ExplorationConstants.EVENT_CREATURE_GIFT_CLAIMED, {
+		"gift_id": gift.gift_id,
+		"choice_group_id": gift.choice_group_id,
+		"species_id": gift.species_id,
+		"creature_instance_id": claimed.creature.instance_id,
+		"collection_destination": claimed.destination,
+		"position": gift.grid_position,
 	})
 	return result
 

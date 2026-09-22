@@ -12,6 +12,8 @@ var pending_encounter: WildEncounterRequest
 var pending_map_transition: MapTransitionRequest
 var opened_chest_ids: Array[StringName] = []
 var pending_chest_reward_by_id: Dictionary = {}
+var talked_npc_ids: Array[StringName] = []
+var claimed_creature_gift_by_group: Dictionary = {}
 
 
 func is_chest_open(chest_id: StringName) -> bool:
@@ -20,3 +22,11 @@ func is_chest_open(chest_id: StringName) -> bool:
 
 func get_pending_chest_reward(chest_id: StringName) -> StringName:
 	return StringName(str(pending_chest_reward_by_id.get(chest_id, "")))
+
+
+func has_talked_to_npc(npc_id: StringName) -> bool:
+	return talked_npc_ids.has(npc_id)
+
+
+func get_claimed_creature_gift(choice_group_id: StringName) -> StringName:
+	return StringName(str(claimed_creature_gift_by_group.get(choice_group_id, "")))

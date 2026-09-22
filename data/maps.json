@@ -89,9 +89,11 @@
           "position": [17, 9],
           "destination_map_id": "dewstone_vale",
           "destination_position": [1, 9],
-          "destination_facing": [1, 0]
+          "destination_facing": [1, 0],
+          "transition_style": "open_path"
         }
-      ]
+      ],
+      "creature_gifts": []
     },
     {
       "id": "dewstone_vale",
@@ -108,7 +110,7 @@
         "#.............g..#",
         "#..###....gggg...#",
         "#.........gggg...#",
-        ".................#",
+        "..................",
         "##################"
       ],
       "encounter_zones": [
@@ -181,7 +183,152 @@
           "position": [0, 9],
           "destination_map_id": "mosslight_crossing",
           "destination_position": [16, 9],
-          "destination_facing": [-1, 0]
+          "destination_facing": [-1, 0],
+          "transition_style": "open_path"
+        },
+        {
+          "id": "eastward_village_trail",
+          "position": [17, 9],
+          "destination_map_id": "lumenstead_village",
+          "destination_position": [1, 9],
+          "destination_facing": [1, 0],
+          "transition_style": "open_path"
+        }
+      ],
+      "creature_gifts": []
+    },
+    {
+      "id": "lumenstead_village",
+      "display_name": "Lumenstead Village",
+      "tile_size": 48,
+      "spawn": [1, 9],
+      "tile_rows": [
+        "##################",
+        "#.....HHHHHH.....#",
+        "#.....HHHHHH.....#",
+        "#.....HH.HHH.....#",
+        "#................#",
+        "#..----..........#",
+        "#..........|.....#",
+        "#..gggg....|.....#",
+        "#..gggg..........#",
+        ".................#",
+        "##################"
+      ],
+      "encounter_zones": [
+        {
+          "id": "village_green",
+          "display_name": "Village Green",
+          "tile_code": "g",
+          "encounter_rate": 0.12,
+          "cooldown_steps": 4,
+          "entries": [
+            {"species_id": "reedling", "min_level": 8, "max_level": 10, "weight": 35},
+            {"species_id": "aurorook", "min_level": 9, "max_level": 11, "weight": 25},
+            {"species_id": "cairnback", "min_level": 9, "max_level": 11, "weight": 20},
+            {"species_id": "gustlet", "min_level": 8, "max_level": 11, "weight": 20}
+          ]
+        }
+      ],
+      "npcs": [],
+      "treasure_chests": [
+        {
+          "id": "lumenstead_garden_cache",
+          "display_name": "Lumenstead Garden Cache",
+          "position": [15, 8],
+          "reward_item_ids": ["potion", "mega_potion", "ultra_potion", "elixir"],
+          "reward_quantity": 1
+        }
+      ],
+      "map_exits": [
+        {
+          "id": "westward_vale_trail",
+          "position": [0, 9],
+          "destination_map_id": "dewstone_vale",
+          "destination_position": [16, 9],
+          "destination_facing": [-1, 0],
+          "transition_style": "open_path"
+        },
+        {
+          "id": "research_house_door",
+          "position": [8, 3],
+          "destination_map_id": "lumen_research_house",
+          "destination_position": [8, 8],
+          "destination_facing": [0, -1],
+          "transition_style": "door"
+        }
+      ],
+      "creature_gifts": []
+    },
+    {
+      "id": "lumen_research_house",
+      "display_name": "Lumen Research House",
+      "tile_size": 48,
+      "spawn": [8, 8],
+      "tile_rows": [
+        "##################",
+        "#................#",
+        "#................#",
+        "#................#",
+        "#................#",
+        "#................#",
+        "#................#",
+        "#................#",
+        "#................#",
+        "#................#",
+        "########.#########"
+      ],
+      "encounter_zones": [],
+      "npcs": [
+        {
+          "id": "professor_lumen",
+          "display_name": "Professor Lumen",
+          "position": [8, 2],
+          "facing": [0, 1],
+          "dialogue": [
+            "Welcome, field researcher. I have been caring for three unusual eggs.",
+            "Choose one egg carefully. The creature inside will join your team, while the other two remain here for future research."
+          ]
+        }
+      ],
+      "treasure_chests": [],
+      "map_exits": [
+        {
+          "id": "research_house_exit",
+          "position": [8, 10],
+          "destination_map_id": "lumenstead_village",
+          "destination_position": [8, 4],
+          "destination_facing": [0, 1],
+          "transition_style": "door"
+        }
+      ],
+      "creature_gifts": [
+        {
+          "id": "cindermite_egg",
+          "choice_group_id": "lumen_first_clutch",
+          "display_name": "Ember-speckled Egg",
+          "position": [5, 5],
+          "species_id": "cindermite",
+          "level": 5,
+          "prerequisite_npc_id": "professor_lumen"
+        },
+        {
+          "id": "reedling_egg",
+          "choice_group_id": "lumen_first_clutch",
+          "display_name": "Moss-ringed Egg",
+          "position": [8, 5],
+          "species_id": "reedling",
+          "level": 5,
+          "prerequisite_npc_id": "professor_lumen"
+        },
+        {
+          "id": "gustlet_egg",
+          "choice_group_id": "lumen_first_clutch",
+          "display_name": "Cloud-streaked Egg",
+          "position": [11, 5],
+          "species_id": "gustlet",
+          "level": 5,
+          "prerequisite_npc_id": "professor_lumen"
         }
       ]
     }
