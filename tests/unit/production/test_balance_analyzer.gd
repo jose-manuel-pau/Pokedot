@@ -28,7 +28,7 @@ func _test_current_catalog_is_inside_targets() -> void:
 	assert_equal(report.metrics["species_count"], 5)
 	assert_equal((report.metrics["base_stat_totals"] as Dictionary)["cairnback"], 325)
 	assert_equal((report.metrics["damaging_moves_by_type"] as Dictionary)["ember"], 1)
-	assert_equal((report.metrics["encounter_appearances"] as Dictionary)["aurorook"], 4)
+	assert_equal((report.metrics["encounter_appearances"] as Dictionary)["aurorook"], 5)
 	var data := report.to_dictionary()
 	assert_equal(data["schema_version"], 1)
 	assert_equal(data["issues"], [])

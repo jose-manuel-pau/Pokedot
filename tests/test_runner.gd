@@ -24,6 +24,7 @@ const WILD_ENCOUNTER_TEST := preload("res://tests/unit/exploration/test_wild_enc
 const EXPLORATION_SESSION_TEST := preload("res://tests/unit/exploration/test_exploration_session.gd")
 const WILD_BATTLE_FACTORY_TEST := preload("res://tests/unit/exploration/test_wild_battle_factory.gd")
 const TREASURE_CHEST_SERVICE_TEST := preload("res://tests/unit/exploration/test_treasure_chest_service.gd")
+const CREATURE_GIFT_SERVICE_TEST := preload("res://tests/unit/exploration/test_creature_gift_service.gd")
 const PROGRESSION_TEST := preload("res://tests/unit/progression/test_progression_service.gd")
 const XP_REWARD_TEST := preload("res://tests/unit/progression/test_experience_reward_calculator.gd")
 const BATTLE_REWARD_TEST := preload("res://tests/unit/progression/test_battle_reward_service.gd")
@@ -46,6 +47,7 @@ const OBJECT_MENU_TEST := preload("res://tests/unit/presentation/test_object_men
 const EXPLORATION_OBJECT_MENU_INTEGRATION_TEST := preload("res://tests/unit/presentation/test_exploration_object_menu_integration.gd")
 const EXPLORATION_TREASURE_CHEST_INTEGRATION_TEST := preload("res://tests/unit/presentation/test_exploration_treasure_chest_integration.gd")
 const EXPLORATION_MAP_TRANSITION_INTEGRATION_TEST := preload("res://tests/unit/presentation/test_exploration_map_transition_integration.gd")
+const EXPLORATION_CREATURE_GIFT_INTEGRATION_TEST := preload("res://tests/unit/presentation/test_exploration_creature_gift_integration.gd")
 const PRODUCTION_READINESS_TEST := preload("res://tests/unit/production/test_production_readiness_service.gd")
 
 
@@ -78,6 +80,7 @@ func _run_all() -> void:
 		EXPLORATION_SESSION_TEST.new(),
 		WILD_BATTLE_FACTORY_TEST.new(),
 		TREASURE_CHEST_SERVICE_TEST.new(),
+		CREATURE_GIFT_SERVICE_TEST.new(),
 		PROGRESSION_TEST.new(),
 		XP_REWARD_TEST.new(),
 		BATTLE_REWARD_TEST.new(),
@@ -100,6 +103,7 @@ func _run_all() -> void:
 		EXPLORATION_OBJECT_MENU_INTEGRATION_TEST.new(),
 		EXPLORATION_TREASURE_CHEST_INTEGRATION_TEST.new(),
 		EXPLORATION_MAP_TRANSITION_INTEGRATION_TEST.new(),
+		EXPLORATION_CREATURE_GIFT_INTEGRATION_TEST.new(),
 		PRODUCTION_READINESS_TEST.new(),
 	]
 	var total_cases := 0

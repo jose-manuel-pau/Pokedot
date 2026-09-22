@@ -7,6 +7,7 @@ const TILE_WALL := "#"
 const TILE_PATH := "."
 const TILE_FENCE_HORIZONTAL := "-"
 const TILE_FENCE_VERTICAL := "|"
+const TILE_BUILDING_WALL := "H"
 
 @export var map_id: StringName
 @export var display_name: String
@@ -17,6 +18,7 @@ const TILE_FENCE_VERTICAL := "|"
 @export var npcs: Array[NpcDefinition] = []
 @export var treasure_chests: Array[TreasureChestDefinition] = []
 @export var map_exits: Array[MapExitDefinition] = []
+@export var creature_gifts: Array[CreatureGiftDefinition] = []
 
 
 func get_width() -> int:
@@ -43,7 +45,12 @@ func is_walkable(cell: Vector2i) -> bool:
 
 
 static func is_blocking_tile_code(tile_code: String) -> bool:
-	return tile_code in [TILE_WALL, TILE_FENCE_HORIZONTAL, TILE_FENCE_VERTICAL]
+	return tile_code in [
+		TILE_WALL,
+		TILE_FENCE_HORIZONTAL,
+		TILE_FENCE_VERTICAL,
+		TILE_BUILDING_WALL,
+	]
 
 
 static func is_reserved_tile_code(tile_code: String) -> bool:
@@ -52,6 +59,7 @@ static func is_reserved_tile_code(tile_code: String) -> bool:
 		TILE_PATH,
 		TILE_FENCE_HORIZONTAL,
 		TILE_FENCE_VERTICAL,
+		TILE_BUILDING_WALL,
 	]
 
 
@@ -81,4 +89,11 @@ func get_map_exit_at(cell: Vector2i) -> MapExitDefinition:
 	for map_exit in map_exits:
 		if map_exit.grid_position == cell:
 			return map_exit
+	return null
+
+
+func get_creature_gift_at(cell: Vector2i) -> CreatureGiftDefinition:
+	for gift in creature_gifts:
+		if gift.grid_position == cell:
+			return gift
 	return null

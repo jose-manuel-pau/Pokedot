@@ -70,7 +70,7 @@ func initialize(
 		status_label.text = "Exploration failed: %s" % session.last_error
 		return
 	title_label.text = session.get_current_map().display_name
-	status_label.text = "Explore both wild maps, meet their wayfinders, and search for treasure chests."
+	status_label.text = "Follow the trails to Lumenstead, enter the research house, and meet Professor Lumen."
 	queue_redraw()
 
 
@@ -155,8 +155,13 @@ func _draw() -> void:
 	for y in map.get_height():
 		for x in map.get_width():
 			_draw_tile(map, Vector2i(x, y))
+	for map_exit in map.map_exits:
+		if map_exit.transition_style == MapExitDefinition.STYLE_DOOR:
+			_draw_door(map, map_exit)
 	for chest in map.treasure_chests:
 		_draw_treasure_chest(map, chest)
+	for gift in map.creature_gifts:
+		_draw_creature_gift(map, gift)
 	for npc in map.npcs:
 		_draw_npc(map, npc)
 	_draw_player(map)
@@ -168,13 +173,23 @@ func _draw_tile(map: ExplorationMapDefinition, cell: Vector2i) -> void:
 	var rect := Rect2(MAP_ORIGIN + Vector2(cell) * tile_size, Vector2.ONE * tile_size)
 	var code := map.get_tile_code(cell)
 	var is_dewstone := map.map_id == &"dewstone_vale"
+	var is_lumenstead := map.map_id == &"lumenstead_village"
+	var is_house := map.map_id == &"lumen_research_house"
 	var color := Color("fff1a8") if _is_high_contrast() else (
-		Color("bad0bd") if is_dewstone else Color("dccb91")
+		Color("b9d6a5") if is_lumenstead else (
+			Color("cbbd9d") if is_house else (
+				Color("bad0bd") if is_dewstone else Color("dccb91")
+			)
+		)
 	)
 	if code == ExplorationMapDefinition.TILE_WALL:
 		color = Color("20272b") if _is_high_contrast() else (
-			Color("30434b") if is_dewstone else Color("344b4b")
+			Color("563f34") if is_house else (
+				Color("30434b") if is_dewstone else Color("344b4b")
+			)
 		)
+	elif code == ExplorationMapDefinition.TILE_BUILDING_WALL:
+		color = Color("47302b") if _is_high_contrast() else Color("8e4f43")
 	elif code == "g":
 		color = Color("8bdf63") if _is_high_contrast() else (
 			Color("5d9f75") if is_dewstone else Color("75a95a")
@@ -194,6 +209,67 @@ func _draw_tile(map: ExplorationMapDefinition, cell: Vector2i) -> void:
 		ExplorationMapDefinition.TILE_FENCE_VERTICAL,
 	]:
 		_draw_fence(rect, code)
+	elif code == ExplorationMapDefinition.TILE_BUILDING_WALL:
+		var roof_color := Color("ff785f") if _is_high_contrast() else Color("c76655")
+		draw_rect(Rect2(rect.position + Vector2(2, 2), rect.size - Vector2(4, 4)), roof_color)
+		draw_line(rect.position + Vector2(4, 8), rect.end - Vector2(4, 8), roof_color.lightened(0.18), 3.0)
+
+
+func _draw_door(map: ExplorationMapDefinition, map_exit: MapExitDefinition) -> void:
+	var tile_size := float(map.tile_size)
+	var rect := Rect2(
+		MAP_ORIGIN + Vector2(map_exit.grid_position) * tile_size,
+		Vector2.ONE * tile_size
+	)
+	var frame := Color("fff0b0") if _is_high_contrast() else Color("5b3528")
+	var panel := Color("202020") if _is_high_contrast() else Color("9b6040")
+	draw_rect(Rect2(rect.position + Vector2(7, 3), Vector2(tile_size - 14, tile_size - 3)), frame)
+	draw_rect(Rect2(rect.position + Vector2(11, 7), Vector2(tile_size - 22, tile_size - 7)), panel)
+	draw_circle(rect.position + Vector2(tile_size - 15, tile_size * 0.56), 2.5, Color("ffe269"))
+
+
+func _draw_creature_gift(
+	map: ExplorationMapDefinition,
+	gift: CreatureGiftDefinition
+) -> void:
+	var center := MAP_ORIGIN + (Vector2(gift.grid_position) + Vector2(0.5, 0.5)) \
+		* map.tile_size
+	var claimed_gift_id := session.state.get_claimed_creature_gift(gift.choice_group_id)
+	var unavailable := not claimed_gift_id.is_empty() and claimed_gift_id != gift.gift_id
+	var selected := claimed_gift_id == gift.gift_id
+	var shell := Color("686868") if unavailable else Color("fff4d6")
+	var accent := Color("d6d6d6") if unavailable else _gift_accent_color(gift.species_id)
+	var outline := Color.WHITE if _is_high_contrast() else Color("3f3540")
+	if selected:
+		draw_arc(center + Vector2(0, 8), 15.0, 0.05, PI - 0.05, 16, shell, 7.0)
+		draw_polyline(PackedVector2Array([
+			center + Vector2(-13, 3),
+			center + Vector2(-6, -3),
+			center,
+			center + Vector2(6, -3),
+			center + Vector2(13, 3),
+		]), outline, 2.0)
+		return
+	var egg_points := PackedVector2Array()
+	for point_index in 24:
+		var angle := TAU * float(point_index) / 24.0
+		egg_points.append(center + Vector2(cos(angle) * 14.0, sin(angle) * 19.0))
+	draw_colored_polygon(egg_points, shell)
+	draw_polyline(egg_points, outline, 2.0)
+	draw_circle(center + Vector2(-5, -2), 4.0, accent)
+	draw_circle(center + Vector2(6, 6), 3.0, accent)
+	draw_circle(center + Vector2(4, -10), 2.5, accent)
+
+
+func _gift_accent_color(species_id: StringName) -> Color:
+	match species_id:
+		&"cindermite":
+			return Color("f07a45")
+		&"reedling":
+			return Color("63b66c")
+		&"gustlet":
+			return Color("6caee8")
+	return Color("c48ae8")
 
 
 func _draw_fence(rect: Rect2, tile_code: String) -> void:
@@ -335,9 +411,12 @@ func _begin_map_transition(request: MapTransitionRequest) -> void:
 	_map_transition_elapsed = 0.0
 	_set_map_transition_alpha(0.0)
 	var destination := _catalog.get_map(request.destination_map_id)
-	status_label.text = "Following the trail to %s..." % (
+	var transition_verb := "Entering" \
+		if request.transition_style == MapExitDefinition.STYLE_DOOR \
+		else "Following the trail to"
+	status_label.text = "%s %s..." % [transition_verb,
 		destination.display_name if destination != null else str(request.destination_map_id)
-	)
+	]
 
 
 func _advance_map_transition(delta: float) -> void:
@@ -390,13 +469,17 @@ func get_map_transition_duration() -> float:
 
 
 func _interact() -> void:
-	var result := session.interact(_inventory)
+	var result := session.interact(_inventory, _collection)
 	if not result.success:
 		match result.reason:
 			&"treasure_chest_already_open":
 				status_label.text = "This treasure chest is empty."
 			&"inventory_full", &"stack_limit_exceeded":
 				status_label.text = "The reward stays inside because your inventory cannot hold it."
+			&"creature_gift_prerequisite_not_met":
+				status_label.text = "Professor Lumen must explain the eggs before you choose one."
+			&"creature_gift_choice_already_claimed":
+				status_label.text = "You already chose an egg from this clutch."
 			_:
 				status_label.text = "There is nothing to interact with here."
 		return
@@ -406,6 +489,15 @@ func _interact() -> void:
 			item.display_name if item != null else str(result.item_id),
 			result.quantity,
 			result.quantity_after,
+		]
+		queue_redraw()
+		return
+	if result.interaction_type == ExplorationConstants.INTERACTION_CREATURE_GIFT:
+		var species := _catalog.get_species(result.species_id)
+		_selected_battle_creature_id = result.creature_instance_id
+		status_label.text = "%s hatched and joined your %s! It is now your next battle lead." % [
+			species.display_name if species != null else str(result.species_id),
+			str(result.collection_destination),
 		]
 		queue_redraw()
 		return

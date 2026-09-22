@@ -13,6 +13,7 @@ func run() -> void:
 	_test_invalid_item_rules()
 	_test_invalid_map_rules()
 	_test_fence_tile_rules()
+	_test_creature_gift_and_transition_style_rules()
 	_test_invalid_art_direction_rules()
 	_test_invalid_creature_concept_rules()
 
@@ -181,6 +182,38 @@ func _test_fence_tile_rules() -> void:
 	assert_false(map.is_walkable(Vector2i(8, 3)))
 	map.encounter_zones[0].tile_code = ExplorationMapDefinition.TILE_FENCE_HORIZONTAL
 	var issues := ContentValidator.new().validate(catalog)
+	assert_has_issue(issues, &"invalid_zone_tile")
+
+
+func _test_creature_gift_and_transition_style_rules() -> void:
+	begin_case("creature gifts and door semantics")
+	var catalog := _fresh_catalog()
+	var house := catalog.get_map(&"lumen_research_house")
+	var first := house.creature_gifts[0]
+	var second := house.creature_gifts[1]
+	var third := house.creature_gifts[2]
+	first.grid_position = house.spawn_position
+	first.species_id = &"missing_species"
+	first.level = 0
+	first.prerequisite_npc_id = &"missing_professor"
+	second.gift_id = first.gift_id
+	second.grid_position = first.grid_position
+	third.species_id = second.species_id
+	house.map_exits[0].transition_style = &"teleporter"
+	var village := catalog.get_map(&"lumenstead_village")
+	village.map_exits[1].transition_style = MapExitDefinition.STYLE_OPEN_PATH
+	village.encounter_zones[0].tile_code = ExplorationMapDefinition.TILE_BUILDING_WALL
+	var issues := ContentValidator.new().validate(catalog)
+	assert_has_issue(issues, &"creature_gift_on_spawn")
+	assert_has_issue(issues, &"overlapping_map_interactable")
+	assert_has_issue(issues, &"unknown_creature_gift_species")
+	assert_has_issue(issues, &"invalid_creature_gift_level")
+	assert_has_issue(issues, &"unknown_creature_gift_prerequisite")
+	assert_has_issue(issues, &"duplicate_creature_gift_id")
+	assert_has_issue(issues, &"duplicate_creature_gift_species")
+	assert_has_issue(issues, &"inconsistent_creature_gift_prerequisite")
+	assert_has_issue(issues, &"invalid_map_exit_style")
+	assert_has_issue(issues, &"open_path_exit_not_on_boundary")
 	assert_has_issue(issues, &"invalid_zone_tile")
 
 

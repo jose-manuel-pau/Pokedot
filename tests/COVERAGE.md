@@ -38,10 +38,11 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Encounter rules | Trainer capture rejection, wild failure continuation, device consumption, successful terminal state |
 | Battle items | Command priority, healing/remedy events, stock consumption, target and item validation |
 | Capture events | Attempt evidence, collection destination, terminal outcome, queued counterattack suppression |
-| Exploration content | Typed maps, tile grids, encounter tables, NPC dialogue, treasure chests, reciprocal open-boundary exits, fences, schema and cross-reference validation |
-| Map queries | Dimensions, open boundaries, wall/horizontal-fence/vertical-fence collision, zone, NPC, chest, and exit lookup |
-| Exploration movement | Cardinal validation, facing, blocked terrain/fences/NPCs/chests, successful steps, outdoor area transitions, and state mutation |
-| NPC interaction | Facing-based lookup, dialogue copy, empty interaction rejection, and observer event |
+| Exploration content | Typed maps, tile grids, encounter tables, NPC dialogue, treasure chests, creature gifts, open-path/door exits, fences/building walls, schema and cross-reference validation |
+| Map queries | Dimensions, open boundaries, wall/fence/building collision, zone, NPC, chest, creature-gift, and exit lookup |
+| Exploration movement | Cardinal validation, facing, blocked terrain/fences/buildings/NPCs/chests/eggs, successful steps, outdoor and door transitions, and state mutation |
+| NPC interaction | Facing-based lookup, dialogue copy, persistent conversation prerequisite, empty interaction rejection, and observer event |
+| Creature gifts | Fully initialized level/XP/HP/moves, party/storage routing, missing-content rejection, professor prerequisite, one-choice group exclusivity, event and live next-lead integration |
 | Treasure chest service | Four deterministic roll boundaries, missing/unknown content, stack/slot capacity, atomic deposits |
 | Treasure interaction | Facing-based collection, one-time state/event, retry after deposit failure, live object-menu quantity, opened feedback |
 | Wild encounters | Trigger boundary, weighted first/last entries, inclusive levels, invalid tables, seeded reproducibility |
@@ -79,7 +80,7 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Balance metrics | Deterministic species, reward, move and encounter report serialization |
 | Player preferences | Defaults, bounds, high contrast, text scale, reduced motion, mute and observer signals |
 | Preferences repository | Versioned round-trip, atomic overwrite, missing/corrupt/future fallback and null rejection |
-| Exploration feedback | Semantic map, movement, collision, dialogue, encounter and resume cues |
+| Exploration feedback | Semantic map, movement, collision, dialogue, treasure, egg hatch, encounter, transition and resume cues |
 | Optional audio/VFX | Muted/headless safety, distinct cue colors/frequencies, reduced-motion presentation seam |
 | Production readiness | Main scene, icon, version, launcher, Windows preset, prompts, preferences and balance gate |
 | Export packaging | Windows preset resource collection and headless PCK generation |

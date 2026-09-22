@@ -30,7 +30,7 @@ func _test_valid_catalog_loads() -> void:
 	assert_equal(result.catalog.statuses_by_id.size(), 3)
 	assert_equal(result.catalog.growth_curves_by_id.size(), 3)
 	assert_equal(result.catalog.items_by_id.size(), 13)
-	assert_equal(result.catalog.maps_by_id.size(), 2)
+	assert_equal(result.catalog.maps_by_id.size(), 4)
 	assert_equal(result.catalog.art_directions_by_id.size(), 1)
 	assert_equal(result.catalog.creature_concepts_by_id.size(), 5)
 
@@ -82,10 +82,22 @@ func _test_cross_references_are_resolved() -> void:
 	assert_equal(map.treasure_chests.size(), 3)
 	assert_equal(map.map_exits.size(), 1)
 	assert_equal(map.map_exits[0].destination_map_id, &"dewstone_vale")
+	assert_equal(map.map_exits[0].transition_style, MapExitDefinition.STYLE_OPEN_PATH)
 	var second_map := catalog.get_map(&"dewstone_vale")
 	assert_not_null(second_map)
 	assert_equal(second_map.display_name, "Dewstone Vale")
 	assert_equal(second_map.map_exits[0].destination_map_id, &"mosslight_crossing")
+	assert_equal(second_map.map_exits.size(), 2)
+	var village := catalog.get_map(&"lumenstead_village")
+	assert_not_null(village)
+	assert_equal(village.map_exits.size(), 2)
+	assert_equal(village.map_exits[1].transition_style, MapExitDefinition.STYLE_DOOR)
+	var house := catalog.get_map(&"lumen_research_house")
+	assert_not_null(house)
+	assert_equal(house.npcs[0].npc_id, &"professor_lumen")
+	assert_equal(house.creature_gifts.size(), 3)
+	assert_equal(house.creature_gifts[1].species_id, &"reedling")
+	assert_equal(house.creature_gifts[1].prerequisite_npc_id, &"professor_lumen")
 	for zone in map.encounter_zones:
 		for entry in zone.entries:
 			assert_not_null(catalog.get_species(entry.species_id))
@@ -93,6 +105,9 @@ func _test_cross_references_are_resolved() -> void:
 		assert_true(map.is_walkable(chest.grid_position))
 		for reward_item_id in chest.reward_item_ids:
 			assert_not_null(catalog.get_item(reward_item_id))
+	for gift in house.creature_gifts:
+		assert_true(house.is_walkable(gift.grid_position))
+		assert_not_null(catalog.get_species(gift.species_id))
 	for raw_concept in catalog.creature_concepts_by_id.values():
 		var concept := raw_concept as CreatureConceptDefinition
 		assert_not_null(catalog.get_species(concept.species_id))

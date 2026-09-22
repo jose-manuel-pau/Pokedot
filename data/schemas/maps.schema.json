@@ -72,19 +72,34 @@
     },
     "mapExit": {
       "type": "object",
-      "required": ["id", "position", "destination_map_id", "destination_position", "destination_facing"],
+      "required": ["id", "position", "destination_map_id", "destination_position", "destination_facing", "transition_style"],
       "properties": {
         "id": {"$ref": "#/$defs/contentId"},
         "position": {"$ref": "#/$defs/gridPosition"},
         "destination_map_id": {"$ref": "#/$defs/contentId"},
         "destination_position": {"$ref": "#/$defs/gridPosition"},
-        "destination_facing": {"$ref": "#/$defs/gridPosition"}
+        "destination_facing": {"$ref": "#/$defs/gridPosition"},
+        "transition_style": {"enum": ["open_path", "door"]}
+      },
+      "additionalProperties": false
+    },
+    "creatureGift": {
+      "type": "object",
+      "required": ["id", "choice_group_id", "display_name", "position", "species_id", "level", "prerequisite_npc_id"],
+      "properties": {
+        "id": {"$ref": "#/$defs/contentId"},
+        "choice_group_id": {"$ref": "#/$defs/contentId"},
+        "display_name": {"type": "string", "minLength": 1},
+        "position": {"$ref": "#/$defs/gridPosition"},
+        "species_id": {"$ref": "#/$defs/contentId"},
+        "level": {"type": "integer", "minimum": 1, "maximum": 200},
+        "prerequisite_npc_id": {"$ref": "#/$defs/contentId"}
       },
       "additionalProperties": false
     },
     "map": {
       "type": "object",
-      "required": ["id", "display_name", "tile_size", "spawn", "tile_rows", "encounter_zones", "npcs", "treasure_chests", "map_exits"],
+      "required": ["id", "display_name", "tile_size", "spawn", "tile_rows", "encounter_zones", "npcs", "treasure_chests", "map_exits", "creature_gifts"],
       "properties": {
         "id": {"$ref": "#/$defs/contentId"},
         "display_name": {"type": "string", "minLength": 1},
@@ -94,7 +109,8 @@
         "encounter_zones": {"type": "array", "items": {"$ref": "#/$defs/encounterZone"}},
         "npcs": {"type": "array", "items": {"$ref": "#/$defs/npc"}},
         "treasure_chests": {"type": "array", "items": {"$ref": "#/$defs/treasureChest"}},
-        "map_exits": {"type": "array", "items": {"$ref": "#/$defs/mapExit"}}
+        "map_exits": {"type": "array", "items": {"$ref": "#/$defs/mapExit"}},
+        "creature_gifts": {"type": "array", "items": {"$ref": "#/$defs/creatureGift"}}
       },
       "additionalProperties": false
     }

@@ -16,6 +16,7 @@ func run() -> void:
 	_test_treasure_chest_lookup()
 	_test_map_exit_lookup()
 	_test_second_map_layout()
+	_test_village_and_research_house_layout()
 
 
 func _test_dimensions_and_tile_queries() -> void:
@@ -86,6 +87,7 @@ func _test_map_exit_lookup() -> void:
 	assert_equal(map_exit.destination_map_id, &"dewstone_vale")
 	assert_equal(map_exit.destination_position, Vector2i(1, 9))
 	assert_equal(map_exit.destination_facing, Vector2i.RIGHT)
+	assert_equal(map_exit.transition_style, MapExitDefinition.STYLE_OPEN_PATH)
 	assert_true(map.is_walkable(Vector2i(17, 9)))
 	assert_equal(map.get_map_exit_at(Vector2i(16, 9)), null)
 
@@ -116,3 +118,39 @@ func _test_second_map_layout() -> void:
 	if map_exit != null:
 		assert_equal(map_exit.destination_map_id, &"mosslight_crossing")
 	assert_true(second_map.is_walkable(Vector2i(0, 9)))
+	var east_exit := second_map.get_map_exit_at(Vector2i(17, 9))
+	assert_not_null(east_exit)
+	if east_exit != null:
+		assert_equal(east_exit.destination_map_id, &"lumenstead_village")
+		assert_equal(east_exit.transition_style, MapExitDefinition.STYLE_OPEN_PATH)
+
+
+func _test_village_and_research_house_layout() -> void:
+	begin_case("village house and egg layout")
+	var catalog := BattleTestFactory.create_catalog()
+	var village := catalog.get_map(&"lumenstead_village")
+	assert_not_null(village)
+	if village == null:
+		return
+	assert_equal(village.get_width(), 18)
+	assert_equal(village.get_height(), 11)
+	assert_false(village.is_walkable(Vector2i(6, 1)))
+	assert_equal(village.get_tile_code(Vector2i(6, 1)), ExplorationMapDefinition.TILE_BUILDING_WALL)
+	assert_false(village.is_walkable(Vector2i(4, 5)))
+	var house_door := village.get_map_exit_at(Vector2i(8, 3))
+	assert_not_null(house_door)
+	if house_door != null:
+		assert_equal(house_door.destination_map_id, &"lumen_research_house")
+		assert_equal(house_door.transition_style, MapExitDefinition.STYLE_DOOR)
+	var house := catalog.get_map(&"lumen_research_house")
+	assert_not_null(house)
+	if house == null:
+		return
+	assert_equal(house.encounter_zones.size(), 0)
+	assert_equal(house.npcs.size(), 1)
+	assert_equal(house.npcs[0].display_name, "Professor Lumen")
+	assert_equal(house.creature_gifts.size(), 3)
+	assert_equal(house.get_creature_gift_at(Vector2i(5, 5)).species_id, &"cindermite")
+	assert_equal(house.get_creature_gift_at(Vector2i(8, 5)).species_id, &"reedling")
+	assert_equal(house.get_creature_gift_at(Vector2i(11, 5)).species_id, &"gustlet")
+	assert_equal(house.get_map_exit_at(Vector2i(8, 10)).transition_style, MapExitDefinition.STYLE_DOOR)

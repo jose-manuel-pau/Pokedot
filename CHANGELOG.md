@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-22
+
+- Added Lumenstead Village, its research-house interior, Professor Lumen, and a dialogue-gated choice between three creature eggs.
+
 ## 2026-09-21
 
 - Replaced outdoor gate props with open boundary trails and added blocking fences to both maps.

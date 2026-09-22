@@ -14,9 +14,11 @@ const EVENT_WILD_ENCOUNTER: StringName = &"wild_encounter"
 const EVENT_EXPLORATION_RESUMED: StringName = &"exploration_resumed"
 const EVENT_MAP_TRANSITION_STARTED: StringName = &"map_transition_started"
 const EVENT_MAP_CHANGED: StringName = &"map_changed"
+const EVENT_CREATURE_GIFT_CLAIMED: StringName = &"creature_gift_claimed"
 
 const INTERACTION_NPC: StringName = &"npc"
 const INTERACTION_TREASURE_CHEST: StringName = &"treasure_chest"
+const INTERACTION_CREATURE_GIFT: StringName = &"creature_gift"
 
 
 static func is_cardinal(direction: Vector2i) -> bool:
