@@ -42,7 +42,7 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Map queries | Dimensions, open boundaries, wall/fence/building collision, zone, NPC, chest, creature-gift, and exit lookup |
 | Exploration movement | Cardinal validation, facing, blocked terrain/fences/buildings/NPCs/chests/eggs, successful steps, outdoor and door transitions, and state mutation |
 | NPC interaction | Facing-based lookup, dialogue copy, persistent conversation prerequisite, empty interaction rejection, and observer event |
-| Creature gifts | Fully initialized level/XP/HP/moves, party/storage routing, missing-content rejection, professor prerequisite, one-choice group exclusivity, event and live next-lead integration |
+| Creature gifts | Fully initialized level/XP/HP/moves, party/storage routing, active-party species duplication guard, missing-content rejection, professor prerequisite, one-choice group exclusivity, event and live next-lead integration |
 | Treasure chest service | Four deterministic roll boundaries, missing/unknown content, stack/slot capacity, atomic deposits |
 | Treasure interaction | Facing-based collection, one-time state/event, retry after deposit failure, live object-menu quantity, opened feedback |
 | Wild encounters | Trigger boundary, weighted first/last entries, inclusive levels, invalid tables, seeded reproducibility |

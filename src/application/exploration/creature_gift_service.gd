@@ -29,6 +29,10 @@ func claim(
 	if definition.level < 1 or definition.level > 200:
 		result.reason = &"invalid_gift_level"
 		return result
+	for party_creature in collection.party:
+		if party_creature.species_id == definition.species_id:
+			result.reason = &"gift_species_already_in_party"
+			return result
 	var creature := CreatureInstance.new()
 	creature.instance_id = "gift-%s" % definition.gift_id
 	creature.species_id = definition.species_id

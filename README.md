@@ -46,7 +46,7 @@ Exploration adds:
 - Versioned map, encounter-zone, NPC dialogue, treasure-chest, creature-gift, and map-exit content
 - Open boundary trails with smooth bidirectional fades from Mosslight Crossing through Dewstone Vale to Lumenstead Village
 - A visible research-house door leading to Professor Lumen and three color-coded creature eggs
-- A required professor conversation followed by one permanent egg choice that hatches into a level-five companion
+- A required professor conversation followed by one permanent egg choice that cannot duplicate a species in the active party
 - Data-driven horizontal and vertical fences that visibly deny passage
 - Transition input locking with preserved roster, HP, inventory, selected fighter, opened chests, NPC conversations, and egg choice
 - Seeded weighted encounters with level ranges and cooldowns

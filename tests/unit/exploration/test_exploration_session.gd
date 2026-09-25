@@ -153,6 +153,9 @@ func _test_professor_prerequisite_and_exclusive_egg_choice() -> void:
 	begin_case("professor unlocks one egg gift")
 	var session := ExplorationSession.new(catalog)
 	var collection := CreatureCollection.new()
+	var current_reedling := BattleTestFactory.create_creature(&"reedling", 5, [&"reed_whip"])
+	current_reedling.instance_id = "current-reedling"
+	collection.party.append(current_reedling)
 	assert_true(session.start(&"lumen_research_house"))
 	session.state.player_position = Vector2i(8, 6)
 	session.state.facing = Vector2i.UP
@@ -162,7 +165,7 @@ func _test_professor_prerequisite_and_exclusive_egg_choice() -> void:
 	var premature := session.interact(null, collection)
 	assert_false(premature.success)
 	assert_equal(premature.reason, &"creature_gift_prerequisite_not_met")
-	assert_equal(collection.party.size(), 0)
+	assert_equal(collection.party.size(), 1)
 	session.state.player_position = Vector2i(8, 3)
 	session.state.facing = Vector2i.UP
 	var dialogue := session.interact()
@@ -171,21 +174,27 @@ func _test_professor_prerequisite_and_exclusive_egg_choice() -> void:
 	assert_true(session.state.has_talked_to_npc(&"professor_lumen"))
 	session.state.player_position = Vector2i(8, 6)
 	session.state.facing = Vector2i.UP
+	var duplicate := session.interact(null, collection)
+	assert_false(duplicate.success)
+	assert_equal(duplicate.reason, &"gift_species_already_in_party")
+	assert_equal(session.state.get_claimed_creature_gift(&"lumen_first_clutch"), &"")
+	assert_equal(session.events_of_type(ExplorationConstants.EVENT_CREATURE_GIFT_CLAIMED).size(), 0)
+	session.state.player_position = Vector2i(5, 6)
 	var chosen := session.interact(null, collection)
 	assert_true(chosen.success)
 	assert_equal(chosen.interaction_type, ExplorationConstants.INTERACTION_CREATURE_GIFT)
-	assert_equal(chosen.gift_id, &"reedling_egg")
-	assert_equal(chosen.species_id, &"reedling")
+	assert_equal(chosen.gift_id, &"cairnback_egg")
+	assert_equal(chosen.species_id, &"cairnback")
 	assert_equal(chosen.collection_destination, CollectionAddResult.DESTINATION_PARTY)
-	assert_equal(collection.party.size(), 1)
-	assert_equal(collection.party[0].level, 5)
-	assert_equal(session.state.get_claimed_creature_gift(&"lumen_first_clutch"), &"reedling_egg")
+	assert_equal(collection.party.size(), 2)
+	assert_equal(collection.party[1].level, 5)
+	assert_equal(session.state.get_claimed_creature_gift(&"lumen_first_clutch"), &"cairnback_egg")
 	assert_equal(session.events_of_type(ExplorationConstants.EVENT_CREATURE_GIFT_CLAIMED).size(), 1)
 	session.state.player_position = Vector2i(11, 6)
 	var second_choice := session.interact(null, collection)
 	assert_false(second_choice.success)
 	assert_equal(second_choice.reason, &"creature_gift_choice_already_claimed")
-	assert_equal(collection.party.size(), 1)
+	assert_equal(collection.party.size(), 2)
 
 
 func _test_encounter_transition_and_resume() -> void:

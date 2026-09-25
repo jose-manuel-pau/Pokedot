@@ -304,11 +304,11 @@
       ],
       "creature_gifts": [
         {
-          "id": "cindermite_egg",
+          "id": "cairnback_egg",
           "choice_group_id": "lumen_first_clutch",
-          "display_name": "Ember-speckled Egg",
+          "display_name": "Stone-ridged Egg",
           "position": [5, 5],
-          "species_id": "cindermite",
+          "species_id": "cairnback",
           "level": 5,
           "prerequisite_npc_id": "professor_lumen"
         },

@@ -35,6 +35,12 @@ func _press_interact(screen: ExplorationScreen) -> void:
 func _test_professor_dialogue_unlocks_exactly_one_live_egg_choice() -> void:
 	begin_case("live professor egg selection")
 	var screen := _screen()
+	var initial_species_id := screen.get_selected_battle_creature().species_id
+	for gift_definition in screen.session.get_current_map().creature_gifts:
+		assert_true(gift_definition.species_id != initial_species_id)
+	var current_reedling := BattleTestFactory.create_creature(&"reedling", 5, [&"reed_whip"])
+	current_reedling.instance_id = "current-reedling"
+	screen._collection.party.append(current_reedling)
 	var original_party_size := screen._collection.party.size()
 	screen.session.state.player_position = Vector2i(8, 6)
 	screen.session.state.facing = Vector2i.UP
@@ -49,6 +55,12 @@ func _test_professor_dialogue_unlocks_exactly_one_live_egg_choice() -> void:
 	assert_true(screen.session.state.has_talked_to_npc(&"professor_lumen"))
 	while screen.dialogue_panel.visible:
 		_press_interact(screen)
+	screen.session.state.player_position = Vector2i(8, 6)
+	screen.session.state.facing = Vector2i.UP
+	_press_interact(screen)
+	assert_equal(screen._collection.party.size(), original_party_size)
+	assert_true(screen.status_label.text.contains("already in your active team"))
+	assert_equal(screen.session.state.get_claimed_creature_gift(&"lumen_first_clutch"), &"")
 	screen.session.state.player_position = Vector2i(11, 6)
 	screen.session.state.facing = Vector2i.UP
 	_press_interact(screen)

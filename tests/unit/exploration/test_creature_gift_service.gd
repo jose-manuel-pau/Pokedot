@@ -15,6 +15,7 @@ func _init() -> void:
 func run() -> void:
 	_test_claim_initializes_creature_and_adds_to_party()
 	_test_full_party_routes_gift_to_storage()
+	_test_rejects_species_already_in_active_party()
 	_test_invalid_and_duplicate_claims_are_rejected()
 
 
@@ -25,8 +26,8 @@ func _test_claim_initializes_creature_and_adds_to_party() -> void:
 	assert_true(result.success)
 	assert_equal(result.destination, CollectionAddResult.DESTINATION_PARTY)
 	assert_not_null(result.creature)
-	assert_equal(result.creature.instance_id, "gift-cindermite_egg")
-	assert_equal(result.creature.species_id, &"cindermite")
+	assert_equal(result.creature.instance_id, "gift-cairnback_egg")
+	assert_equal(result.creature.species_id, &"cairnback")
 	assert_equal(result.creature.level, 5)
 	assert_true(result.creature.total_experience > 0)
 	assert_true(result.creature.current_hp > 0)
@@ -48,6 +49,19 @@ func _test_full_party_routes_gift_to_storage() -> void:
 	assert_equal(collection.storage.size(), 1)
 
 
+func _test_rejects_species_already_in_active_party() -> void:
+	begin_case("active-party species cannot be gifted twice")
+	var collection := CreatureCollection.new()
+	var current := BattleTestFactory.create_creature(&"cairnback", 4, [&"stonepulse"])
+	current.instance_id = "current-cairnback"
+	collection.party.append(current)
+	var result := service.claim(gift, collection)
+	assert_false(result.success)
+	assert_equal(result.reason, &"gift_species_already_in_party")
+	assert_equal(collection.party, [current])
+	assert_equal(collection.storage.size(), 0)
+
+
 func _test_invalid_and_duplicate_claims_are_rejected() -> void:
 	begin_case("gift validation")
 	var collection := CreatureCollection.new()
@@ -57,5 +71,7 @@ func _test_invalid_and_duplicate_claims_are_rejected() -> void:
 	invalid.gift_id = &"invalid"
 	invalid.species_id = &"missing_species"
 	assert_equal(service.claim(invalid, collection).reason, &"unknown_gift_species")
-	assert_true(service.claim(gift, collection).success)
+	var existing := BattleTestFactory.create_creature(&"gustlet", 3, [&"crosswind"])
+	existing.instance_id = "gift-cairnback_egg"
+	collection.storage.append(existing)
 	assert_equal(service.claim(gift, collection).reason, &"duplicate_instance_id")
