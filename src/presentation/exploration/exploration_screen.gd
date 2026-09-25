@@ -263,8 +263,8 @@ func _draw_creature_gift(
 
 func _gift_accent_color(species_id: StringName) -> Color:
 	match species_id:
-		&"cindermite":
-			return Color("f07a45")
+		&"cairnback":
+			return Color("9b8069")
 		&"reedling":
 			return Color("63b66c")
 		&"gustlet":
@@ -480,6 +480,8 @@ func _interact() -> void:
 				status_label.text = "Professor Lumen must explain the eggs before you choose one."
 			&"creature_gift_choice_already_claimed":
 				status_label.text = "You already chose an egg from this clutch."
+			&"gift_species_already_in_party":
+				status_label.text = "That species is already in your active team. Choose a different egg."
 			_:
 				status_label.text = "There is nothing to interact with here."
 		return

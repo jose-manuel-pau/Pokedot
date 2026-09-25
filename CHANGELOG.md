@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-25
+
+- Prevented Professor Lumen from gifting a species already present in the active party and replaced the duplicate starter egg with Cairnback.
+
 ## 2026-09-22
 
 - Added Lumenstead Village, its research-house interior, Professor Lumen, and a dialogue-gated choice between three creature eggs.

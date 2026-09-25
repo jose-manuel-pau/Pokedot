@@ -1,6 +1,6 @@
 # Production Pass and Playtest Guide
 
-Pokedot version 0.16.0 is a production-hardened PC vertical slice. It includes balance diagnostics, persistent accessibility preferences, semantic audio/visual feedback, original branding, a verified Windows export preset, three outdoor maps connected by open boundary trails, a door-connected research-house interior, blocking wooden fences, Professor Lumen's creature-egg choice, playable graphical wild battles, cumulative XP and level-ups, persistent battle damage, explorer-accessible creature and object menus, Elixir revival, and collectible treasure chests.
+Pokedot version 0.16.1 is a production-hardened PC vertical slice. It includes balance diagnostics, persistent accessibility preferences, semantic audio/visual feedback, original branding, a verified Windows export preset, three outdoor maps connected by open boundary trails, a door-connected research-house interior, blocking wooden fences, Professor Lumen's non-duplicate creature-egg choice, playable graphical wild battles, cumulative XP and level-ups, persistent battle damage, explorer-accessible creature and object menus, Elixir revival, and collectible treasure chests.
 
 ## Start playing
 
@@ -63,7 +63,7 @@ Accessibility choices save immediately. A corrupt, missing, or future-version pr
 6. Follow Mosslight Crossing's open east trail through the screen boundary, verify the field fades smoothly into Dewstone Vale, and confirm movement is locked during the fade.
 7. Continue through Dewstone Vale's open east trail to Lumenstead Village, then enter the visible research-house door.
 8. Try an egg before speaking to Professor Lumen and verify selection is refused. Speak to him, close both dialogue lines, then choose one of the three eggs.
-9. Verify the chosen egg hatches into a level-five creature, becomes the next battle lead, appears in the P roster, and the other two eggs can no longer be chosen.
+9. Verify the chosen egg hatches into a level-five creature, becomes the next battle lead, appears in the P roster, and the other two eggs can no longer be chosen. If an egg's species is already in the active party, verify it is refused without consuming the choice.
 10. Return through the house door and outdoor trails and verify HP, inventory, selected fighter, opened-chest state, professor conversation, and egg choice are unchanged.
 11. Walk toward Ranger Mira or Wayfinder Orin, face them, and press E to read both dialogue lines.
 12. Walk through bright grass (`g`) and mistferns (`f`) until a seeded wild encounter appears.

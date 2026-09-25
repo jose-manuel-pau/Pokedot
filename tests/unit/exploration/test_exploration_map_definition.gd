@@ -150,7 +150,7 @@ func _test_village_and_research_house_layout() -> void:
 	assert_equal(house.npcs.size(), 1)
 	assert_equal(house.npcs[0].display_name, "Professor Lumen")
 	assert_equal(house.creature_gifts.size(), 3)
-	assert_equal(house.get_creature_gift_at(Vector2i(5, 5)).species_id, &"cindermite")
+	assert_equal(house.get_creature_gift_at(Vector2i(5, 5)).species_id, &"cairnback")
 	assert_equal(house.get_creature_gift_at(Vector2i(8, 5)).species_id, &"reedling")
 	assert_equal(house.get_creature_gift_at(Vector2i(11, 5)).species_id, &"gustlet")
 	assert_equal(house.get_map_exit_at(Vector2i(8, 10)).transition_style, MapExitDefinition.STYLE_DOOR)

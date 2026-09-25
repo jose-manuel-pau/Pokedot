@@ -96,6 +96,8 @@ func _test_cross_references_are_resolved() -> void:
 	assert_not_null(house)
 	assert_equal(house.npcs[0].npc_id, &"professor_lumen")
 	assert_equal(house.creature_gifts.size(), 3)
+	assert_equal(house.creature_gifts[0].gift_id, &"cairnback_egg")
+	assert_equal(house.creature_gifts[0].species_id, &"cairnback")
 	assert_equal(house.creature_gifts[1].species_id, &"reedling")
 	assert_equal(house.creature_gifts[1].prerequisite_npc_id, &"professor_lumen")
 	for zone in map.encounter_zones:
