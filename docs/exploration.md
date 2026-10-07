@@ -30,6 +30,8 @@ Controls:
 
 Walk through bright grass or mistferns to trigger wild encounters. Open east/west boundary trails connect Mosslight Crossing, Dewstone Vale, and Lumenstead Village without artificial outdoor gates. Lumenstead's visible house door leads into the research house and is the only building-style transition. Inside, face Professor Lumen and interact before choosing one of the three eggs. The selected egg hatches into Cairnback, Reedling, or Gustlet at level five, joins the live collection, and becomes the next battle lead; an egg matching a species already in the active party is unavailable, and the other eggs close permanently after a valid choice. Face a closed treasure chest to receive one random Potion, Mega Potion, Ultra Potion, or Elixir. Walls, building walls, fences, NPCs, chests, and eggs block movement. Battle damage persists after returning to the field; press **B** to use restorative inventory between encounters.
 
+The current route is balanced as an early-adventure region. Mosslight begins at levels 2–4, Dewstone rises through levels 3–5, and Lumenstead stays at levels 4–5. No wild creature on these maps can exceed the level-five professor companion, while the zone-to-zone increase still introduces a gentle difficulty curve.
+
 ## Architecture
 
 Exploration follows the same scene-independent boundaries as combat:
@@ -127,6 +129,8 @@ For each successful step onto an encounter tile while cooldown is zero:
 2. On success, roll within the sum of entry weights to select a species.
 3. Roll an integer within the selected entry's inclusive level range.
 4. Emit a `WildEncounterRequest` containing encounter ID, map, zone, cell, species, and level.
+
+Automated coverage asserts each zone's intended range and compares all 22 encounter entries with the professor gift level. Adding a higher-level entry to an existing early map therefore fails the suite instead of silently reintroducing the opening difficulty spike.
 
 Exploration uses its own injected `ExplorationRandomSource`; battle rolls remain isolated in `BattleRandomSource`. Identical seeds and movement sequences therefore reproduce the same exploration outcomes without coupling them to combat randomness.
 

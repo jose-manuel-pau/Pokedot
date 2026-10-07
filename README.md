@@ -50,6 +50,7 @@ Exploration adds:
 - Data-driven horizontal and vertical fences that visibly deny passage
 - Transition input locking with preserved roster, HP, inventory, selected fighter, opened chests, NPC conversations, and egg choice
 - Seeded weighted encounters with level ranges and cooldowns
+- A gradual level 2–5 early-adventure encounter curve capped at the professor companion's starting level
 - NPC interaction and observer events
 - Seven one-time treasure chests with deterministic random restorative rewards
 - Atomic Potion, Mega Potion, Ultra Potion, or Elixir deposits into the live inventory

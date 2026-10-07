@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-07
+
+- Rebalanced every current wild encounter into a gradual level 2–5 early-adventure curve so a new professor companion never faces a higher-level creature.
+
 ## 2026-09-25
 
 - Prevented Professor Lumen from gifting a species already present in the active party and replaced the duplicate starter egg with Cairnback.
