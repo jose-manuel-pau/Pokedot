@@ -207,7 +207,7 @@ func _test_encounter_transition_and_resume() -> void:
 	assert_true(movement.moved)
 	assert_not_null(movement.encounter)
 	assert_equal(movement.encounter.species_id, &"cindermite")
-	assert_equal(movement.encounter.level, 3)
+	assert_equal(movement.encounter.level, 2)
 	assert_equal(session.state.phase, ExplorationConstants.PHASE_BATTLE_TRANSITION)
 	assert_equal(session.state.pending_encounter, movement.encounter)
 	assert_equal(session.events_of_type(ExplorationConstants.EVENT_WILD_ENCOUNTER).size(), 1)

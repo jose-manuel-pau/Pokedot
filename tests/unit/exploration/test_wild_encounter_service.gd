@@ -37,7 +37,7 @@ func _test_weighted_first_entry_and_min_level() -> void:
 	assert_not_null(result)
 	assert_equal(result.encounter_id, "mosslight_crossing_sunmeadow_grass_4")
 	assert_equal(result.species_id, &"cindermite")
-	assert_equal(result.level, 3)
+	assert_equal(result.level, 2)
 	assert_equal(result.grid_position, Vector2i(3, 2))
 	assert_equal(random.call_count, 3)
 
@@ -49,7 +49,7 @@ func _test_weighted_last_entry_and_max_level() -> void:
 		zone, &"mosslight_crossing", Vector2i(6, 7), 2
 	)
 	assert_equal(result.species_id, &"gustlet")
-	assert_equal(result.level, 6)
+	assert_equal(result.level, 4)
 	assert_equal(result.zone_id, &"sunmeadow_grass")
 
 

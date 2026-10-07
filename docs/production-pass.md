@@ -1,6 +1,6 @@
 # Production Pass and Playtest Guide
 
-Pokedot version 0.16.1 is a production-hardened PC vertical slice. It includes balance diagnostics, persistent accessibility preferences, semantic audio/visual feedback, original branding, a verified Windows export preset, three outdoor maps connected by open boundary trails, a door-connected research-house interior, blocking wooden fences, Professor Lumen's non-duplicate creature-egg choice, playable graphical wild battles, cumulative XP and level-ups, persistent battle damage, explorer-accessible creature and object menus, Elixir revival, and collectible treasure chests.
+Pokedot version 0.16.2 is a production-hardened PC vertical slice. It includes balance diagnostics, persistent accessibility preferences, semantic audio/visual feedback, original branding, a verified Windows export preset, three outdoor maps connected by open boundary trails, a door-connected research-house interior, blocking wooden fences, Professor Lumen's non-duplicate creature-egg choice, a level 2–5 early-adventure encounter curve, playable graphical wild battles, cumulative XP and level-ups, persistent battle damage, explorer-accessible creature and object menus, Elixir revival, and collectible treasure chests.
 
 ## Start playing
 
@@ -67,16 +67,17 @@ Accessibility choices save immediately. A corrupt, missing, or future-version pr
 10. Return through the house door and outdoor trails and verify HP, inventory, selected fighter, opened-chest state, professor conversation, and egg choice are unchanged.
 11. Walk toward Ranger Mira or Wayfinder Orin, face them, and press E to read both dialogue lines.
 12. Walk through bright grass (`g`) and mistferns (`f`) until a seeded wild encounter appears.
-13. Press P on the explorer map and confirm every party and storage capture is listed. Select a creature and close the menu with P or Escape.
-14. Confirm the graphical battle uses the selected creature and shows both original silhouettes, levels, HP, statuses, the combat log, two to four moves, capsule count, Potion count, and Run.
-15. Select moves and verify the wild AI responds, HP bars change, move uses decrease, statuses appear, and the turn counter advances.
-16. Defeat the wild creature and verify the XP reward, level-up message when a threshold is crossed, and updated blue XP bar.
-17. Press R after taking damage, return to the map, and verify the creature is not automatically healed.
-18. Press B, confirm Potion, Mega Potion, Ultra Potion, and Elixir are first. Use Up/Down to reach the creature and Use controls, heal a damaged creature, and verify its HP and object quantity update.
-19. Let a creature reach zero HP, then use Elixir from the B menu. Verify it revives with half maximum HP and the Elixir count decreases by one.
-20. Reopen the roster and confirm HP, earned XP, and level persist; also confirm a new capture appears, then select it and verify it leads the following encounter.
-21. Toggle F2, F3, F4, and M. Restart the game and verify those preferences remain active.
-22. Check that map-start, movement, collision, treasure, egg-hatch, map-transition, dialogue, encounter, battle, and resume feedback remain visually distinct.
+13. Verify Mosslight encounters stay within levels 2–4 and that no encounter through Lumenstead exceeds the level-five professor companion.
+14. Press P on the explorer map and confirm every party and storage capture is listed. Select a creature and close the menu with P or Escape.
+15. Confirm the graphical battle uses the selected creature and shows both original silhouettes, levels, HP, statuses, the combat log, two to four moves, capsule count, Potion count, and Run.
+16. Select moves and verify the wild AI responds, HP bars change, move uses decrease, statuses appear, and the turn counter advances.
+17. Defeat the wild creature and verify the XP reward, level-up message when a threshold is crossed, and updated blue XP bar.
+18. Press R after taking damage, return to the map, and verify the creature is not automatically healed.
+19. Press B, confirm Potion, Mega Potion, Ultra Potion, and Elixir are first. Use Up/Down to reach the creature and Use controls, heal a damaged creature, and verify its HP and object quantity update.
+20. Let a creature reach zero HP, then use Elixir from the B menu. Verify it revives with half maximum HP and the Elixir count decreases by one.
+21. Reopen the roster and confirm HP, earned XP, and level persist; also confirm a new capture appears, then select it and verify it leads the following encounter.
+22. Toggle F2, F3, F4, and M. Restart the game and verify those preferences remain active.
+23. Check that map-start, movement, collision, treasure, egg-hatch, map-transition, dialogue, encounter, battle, and resume feedback remain visually distinct.
 
 Wild encounters are now command-driven one-versus-one battles. The UI observes the same tested battle events used by headless coverage; it does not duplicate damage, status, AI, inventory, capture, or progression rules. Battle XP rewards and automatic level-ups are exposed in this compact screen; party switching and save-slot management remain domain-complete but do not yet have dedicated battle/menu controls.
 

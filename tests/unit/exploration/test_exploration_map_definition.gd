@@ -17,6 +17,7 @@ func run() -> void:
 	_test_map_exit_lookup()
 	_test_second_map_layout()
 	_test_village_and_research_house_layout()
+	_test_early_adventure_encounter_curve()
 
 
 func _test_dimensions_and_tile_queries() -> void:
@@ -154,3 +155,34 @@ func _test_village_and_research_house_layout() -> void:
 	assert_equal(house.get_creature_gift_at(Vector2i(8, 5)).species_id, &"reedling")
 	assert_equal(house.get_creature_gift_at(Vector2i(11, 5)).species_id, &"gustlet")
 	assert_equal(house.get_map_exit_at(Vector2i(8, 10)).transition_style, MapExitDefinition.STYLE_DOOR)
+
+
+func _test_early_adventure_encounter_curve() -> void:
+	begin_case("early adventure encounter levels")
+	var catalog := BattleTestFactory.create_catalog()
+	var gift_level := catalog.get_map(&"lumen_research_house").creature_gifts[0].level
+	var expected_zone_ranges := {
+		&"mosslight_crossing": {
+			&"sunmeadow_grass": Vector2i(2, 4),
+			&"mistfern_patch": Vector2i(3, 4),
+		},
+		&"dewstone_vale": {
+			&"dewgrass_run": Vector2i(3, 5),
+			&"silverfern_hollow": Vector2i(4, 5),
+		},
+		&"lumenstead_village": {
+			&"village_green": Vector2i(4, 5),
+		},
+	}
+	for map_id: StringName in expected_zone_ranges:
+		var adventure_map := catalog.get_map(map_id)
+		for zone: EncounterZoneDefinition in adventure_map.encounter_zones:
+			var expected_range: Vector2i = expected_zone_ranges[map_id][zone.zone_id]
+			var zone_minimum := 999
+			var zone_maximum := 0
+			for entry: EncounterEntryDefinition in zone.entries:
+				zone_minimum = mini(zone_minimum, entry.min_level)
+				zone_maximum = maxi(zone_maximum, entry.max_level)
+				assert_true(entry.max_level <= gift_level)
+			assert_equal(zone_minimum, expected_range.x)
+			assert_equal(zone_maximum, expected_range.y)

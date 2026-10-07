@@ -27,11 +27,11 @@
           "encounter_rate": 0.18,
           "cooldown_steps": 3,
           "entries": [
-            {"species_id": "cindermite", "min_level": 3, "max_level": 5, "weight": 30},
-            {"species_id": "reedling", "min_level": 3, "max_level": 5, "weight": 25},
-            {"species_id": "aurorook", "min_level": 4, "max_level": 6, "weight": 15},
-            {"species_id": "cairnback", "min_level": 4, "max_level": 6, "weight": 15},
-            {"species_id": "gustlet", "min_level": 4, "max_level": 6, "weight": 15}
+            {"species_id": "cindermite", "min_level": 2, "max_level": 3, "weight": 30},
+            {"species_id": "reedling", "min_level": 2, "max_level": 3, "weight": 25},
+            {"species_id": "aurorook", "min_level": 2, "max_level": 4, "weight": 15},
+            {"species_id": "cairnback", "min_level": 2, "max_level": 4, "weight": 15},
+            {"species_id": "gustlet", "min_level": 2, "max_level": 4, "weight": 15}
           ]
         },
         {
@@ -41,10 +41,10 @@
           "encounter_rate": 0.24,
           "cooldown_steps": 4,
           "entries": [
-            {"species_id": "reedling", "min_level": 5, "max_level": 7, "weight": 35},
-            {"species_id": "aurorook", "min_level": 5, "max_level": 8, "weight": 20},
-            {"species_id": "cairnback", "min_level": 6, "max_level": 8, "weight": 15},
-            {"species_id": "gustlet", "min_level": 5, "max_level": 8, "weight": 30}
+            {"species_id": "reedling", "min_level": 3, "max_level": 4, "weight": 35},
+            {"species_id": "aurorook", "min_level": 3, "max_level": 4, "weight": 20},
+            {"species_id": "cairnback", "min_level": 3, "max_level": 4, "weight": 15},
+            {"species_id": "gustlet", "min_level": 3, "max_level": 4, "weight": 30}
           ]
         }
       ],
@@ -121,11 +121,11 @@
           "encounter_rate": 0.22,
           "cooldown_steps": 3,
           "entries": [
-            {"species_id": "cindermite", "min_level": 6, "max_level": 8, "weight": 20},
-            {"species_id": "reedling", "min_level": 6, "max_level": 9, "weight": 30},
-            {"species_id": "aurorook", "min_level": 7, "max_level": 9, "weight": 20},
-            {"species_id": "cairnback", "min_level": 7, "max_level": 9, "weight": 15},
-            {"species_id": "gustlet", "min_level": 6, "max_level": 9, "weight": 15}
+            {"species_id": "cindermite", "min_level": 3, "max_level": 4, "weight": 20},
+            {"species_id": "reedling", "min_level": 3, "max_level": 4, "weight": 30},
+            {"species_id": "aurorook", "min_level": 4, "max_level": 5, "weight": 20},
+            {"species_id": "cairnback", "min_level": 4, "max_level": 5, "weight": 15},
+            {"species_id": "gustlet", "min_level": 3, "max_level": 4, "weight": 15}
           ]
         },
         {
@@ -135,10 +135,10 @@
           "encounter_rate": 0.28,
           "cooldown_steps": 4,
           "entries": [
-            {"species_id": "reedling", "min_level": 7, "max_level": 10, "weight": 25},
-            {"species_id": "aurorook", "min_level": 8, "max_level": 10, "weight": 30},
-            {"species_id": "cairnback", "min_level": 8, "max_level": 10, "weight": 20},
-            {"species_id": "gustlet", "min_level": 7, "max_level": 10, "weight": 25}
+            {"species_id": "reedling", "min_level": 4, "max_level": 5, "weight": 25},
+            {"species_id": "aurorook", "min_level": 4, "max_level": 5, "weight": 30},
+            {"species_id": "cairnback", "min_level": 4, "max_level": 5, "weight": 20},
+            {"species_id": "gustlet", "min_level": 4, "max_level": 5, "weight": 25}
           ]
         }
       ],
@@ -223,10 +223,10 @@
           "encounter_rate": 0.12,
           "cooldown_steps": 4,
           "entries": [
-            {"species_id": "reedling", "min_level": 8, "max_level": 10, "weight": 35},
-            {"species_id": "aurorook", "min_level": 9, "max_level": 11, "weight": 25},
-            {"species_id": "cairnback", "min_level": 9, "max_level": 11, "weight": 20},
-            {"species_id": "gustlet", "min_level": 8, "max_level": 11, "weight": 20}
+            {"species_id": "reedling", "min_level": 4, "max_level": 5, "weight": 35},
+            {"species_id": "aurorook", "min_level": 5, "max_level": 5, "weight": 25},
+            {"species_id": "cairnback", "min_level": 5, "max_level": 5, "weight": 20},
+            {"species_id": "gustlet", "min_level": 4, "max_level": 5, "weight": 20}
           ]
         }
       ],

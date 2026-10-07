@@ -45,7 +45,7 @@ Coverage is requirements- and branch-oriented. A future CI pipeline may add engi
 | Creature gifts | Fully initialized level/XP/HP/moves, party/storage routing, active-party species duplication guard, missing-content rejection, professor prerequisite, one-choice group exclusivity, event and live next-lead integration |
 | Treasure chest service | Four deterministic roll boundaries, missing/unknown content, stack/slot capacity, atomic deposits |
 | Treasure interaction | Facing-based collection, one-time state/event, retry after deposit failure, live object-menu quantity, opened feedback |
-| Wild encounters | Trigger boundary, weighted first/last entries, inclusive levels, invalid tables, seeded reproducibility |
+| Wild encounters | Trigger boundary, weighted first/last entries, inclusive levels, invalid tables, seeded reproducibility, per-zone early-adventure ranges, and all-entry level-five cap |
 | Encounter state | Active/transition phases, movement lock during transition, resume, and cooldown roll suppression |
 | Battle handoff | Request validation, wild instance identity/XP/moves, capturable battle initialization, error forwarding |
 | Playable scene | Project bootstrap, keyboard adapter, code-drawn map, dialogue panel, and live graphical battle |
